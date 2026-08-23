@@ -13,22 +13,14 @@ export async function POST(req: Request) {
     }
 
     const chariowApiKey = process.env.CHARIOW_API_KEY || '';
-    const chariowProductId = process.env.CHARIOW_PRODUCT_ID || 'prd_pro_lifetime';
+    const chariowProductId = process.env.CHARIOW_PRODUCT_ID || 'prd_qm4vxf3z';
     const origin = req.headers.get('origin') || 'http://localhost:3000';
+    const chariowDirectUrl = 'https://infosweb.mychariow.store/prd_qm4vxf3z/checkout';
 
-    // If Chariow API key is not configured, simulate demo success for testing
+    // If Chariow API key is not configured or in dev, use direct Chariow store link
     if (!chariowApiKey || chariowApiKey.includes('mock')) {
-      await supabase
-        .from('profiles')
-        .update({
-          is_pro: true,
-          plan: 'pro_lifetime',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
       return NextResponse.json({
-        url: `${origin}/dashboard?payment=success&demo=true`,
+        url: chariowDirectUrl,
       });
     }
 
@@ -52,28 +44,12 @@ export async function POST(req: Request) {
     const result = await chariowResponse.json();
 
     if (!chariowResponse.ok) {
-      throw new Error(result.message || 'Erreur lors de la création du paiement Chariow');
+      console.warn('Chariow API fallback to direct store URL:', result.message);
+      return NextResponse.json({ url: chariowDirectUrl });
     }
 
-    const checkoutUrl = result?.data?.payment?.checkout_url;
-
-    if (checkoutUrl) {
-      return NextResponse.json({ url: checkoutUrl });
-    } else if (result?.data?.step === 'completed') {
-      // Direct completion
-      await supabase
-        .from('profiles')
-        .update({
-          is_pro: true,
-          plan: 'pro_lifetime',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      return NextResponse.json({ url: `${origin}/dashboard?payment=success` });
-    }
-
-    throw new Error('URL de paiement non reçue de Chariow');
+    const checkoutUrl = result?.data?.payment?.checkout_url || chariowDirectUrl;
+    return NextResponse.json({ url: checkoutUrl });
   } catch (error: any) {
     console.error('Chariow Checkout Error:', error);
     return NextResponse.json({ error: error.message || 'Erreur Chariow Checkout' }, { status: 500 });
