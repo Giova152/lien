@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Sparkles, Check, X, Loader2, BookOpen, BarChart3, Palette, UserCheck, Zap, ShieldAlert } from '@/components/ui/Icons';
+import React, { useEffect, useState } from 'react';
+import { Sparkles, Check, X, Loader2, BookOpen, BarChart3, Palette, UserCheck, Zap } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
 interface LifetimeUpgradeModalProps {
@@ -11,27 +11,46 @@ interface LifetimeUpgradeModalProps {
 
 export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalProps) {
   const [loading, setLoading] = useState(false);
+  const [activeView, setActiveView] = useState<'details' | 'widget'>('details');
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Dynamically load Chariow Widget CSS
+    const linkId = 'chariow-widget-css';
+    if (!document.getElementById(linkId)) {
+      const link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      link.href = 'https://js.chariowcdn.com/v1/widget.min.css';
+      document.head.appendChild(link);
+    }
+
+    // Dynamically load Chariow Widget JS
+    const scriptId = 'chariow-widget-js';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://js.chariowcdn.com/v1/widget.min.js';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleCheckout = async (provider: 'chariow' | 'stripe' = 'chariow') => {
+  const handleCheckout = async () => {
     try {
       setLoading(true);
-      const endpoint = provider === 'chariow' ? '/api/chariow/checkout' : '/api/stripe/checkout';
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors de la connexion au système de paiement');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      // Switch view to embedded Chariow Widget or redirect if needed
+      setActiveView('widget');
+      // If widget element is not yet rendered by script, trigger window location
+      setTimeout(() => {
+        const widgetContainer = document.getElementById('chariow-widget');
+        if (!widgetContainer || !widgetContainer.children.length) {
+          window.location.href = 'https://infosweb.mychariow.store/prd_qm4vxf3z/checkout';
+        }
+      }, 1500);
     } catch (err: any) {
       toast.error(err.message || 'Impossible d\'ouvrir la page de paiement');
     } finally {
@@ -40,8 +59,8 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-in fade-in duration-300">
-      <div className="bg-neutral-950/95 border border-amber-500/40 text-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-[0_0_80px_rgba(245,158,11,0.2)] relative overflow-hidden flex flex-col gap-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-in fade-in duration-300 overflow-y-auto">
+      <div className="bg-neutral-950/95 border border-amber-500/40 text-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-[0_0_80px_rgba(245,158,11,0.2)] relative overflow-hidden flex flex-col gap-6 my-auto">
         {/* Ambient Top Glow Orbs */}
         <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-96 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-28 right-0 w-64 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -71,7 +90,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           </p>
         </div>
 
-        {/* Features Grid */}
+        {/* Features Checklist */}
         <div className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 relative z-10 shadow-inner">
           {[
             {
@@ -120,6 +139,25 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           ))}
         </div>
 
+        {/* Embedded Official Chariow Widget Container */}
+        <div className="relative z-10 w-full flex flex-col items-center justify-center">
+          <div className="w-full bg-white rounded-2xl p-2 text-black shadow-2xl overflow-hidden flex justify-center">
+            <div
+              id="chariow-widget"
+              data-product-id="prd_qm4vxf3z"
+              data-store-domain="infosweb.mychariow.store"
+              data-style="frame"
+              data-border-style="rounded"
+              data-cta-width="xs"
+              data-cta-animation="none"
+              data-locale="en"
+              data-primary-color="#008F51"
+              data-background-color="#FFFFFF"
+              className="w-full flex justify-center min-h-[120px]"
+            />
+          </div>
+        </div>
+
         {/* Pricing Offer & Call to Action */}
         <div className="flex flex-col gap-3.5 relative z-10">
           <div className="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-neutral-900/90 border border-amber-500/30 shadow-md">
@@ -147,24 +185,16 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
             </div>
           </div>
 
-          {/* CTA Main Button */}
-          <button
-            onClick={() => handleCheckout('chariow')}
-            disabled={loading}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-neutral-950 font-black text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.35)] hover:shadow-[0_0_35px_rgba(245,158,11,0.55)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2.5 disabled:opacity-50"
+          {/* Direct Link Alternative Button */}
+          <a
+            href="https://infosweb.mychariow.store/prd_qm4vxf3z/checkout"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-neutral-950 font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.35)] hover:shadow-[0_0_35px_rgba(245,158,11,0.55)] transition-all duration-300 flex items-center justify-center gap-2"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin text-neutral-950" />
-                <span>Redirection sécurisée vers Chariow...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 fill-neutral-950 text-neutral-950" />
-                <span>PROFITER DE L'OFFRE PROMO (186 $)</span>
-              </>
-            )}
-          </button>
+            <Sparkles className="w-4 h-4 fill-neutral-950 text-neutral-950" />
+            <span>Ouvrir la page de paiement sécurisée Chariow</span>
+          </a>
 
           <p className="text-[10px] text-center text-neutral-400 font-medium">
             🔒 Paiement 100% sécurisé via Chariow & Stripe • Activation immédiate et automatique
