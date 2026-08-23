@@ -1,6 +1,30 @@
 export type BackgroundType = 'color' | 'gradient' | 'image';
 export type ButtonStyle = 'rounded-none' | 'rounded-md' | 'rounded-xl' | 'rounded-full' | 'outline' | 'glass';
 
+export interface StatItem {
+  id: string;
+  value: string; // e.g. "12+"
+  label: string; // e.g. "Ans d'expérience"
+}
+
+export interface ServiceItem {
+  id: string;
+  title: string;
+  category: string; // e.g. "COACHING", "RDV"
+  subtitle?: string;
+  price?: string; // e.g. "Gratuit" or "49 €"
+  url?: string;
+}
+
+export interface ShopProduct {
+  id: string;
+  title: string;
+  price: string; // e.g. "Gratuit" or "10 $"
+  type: 'free' | 'paid';
+  image_url?: string;
+  url?: string;
+}
+
 export interface ThemeConfig {
   background_type: BackgroundType;
   background_value: string;
@@ -12,6 +36,12 @@ export interface ThemeConfig {
   text_color: string;
   accent_color: string;
   card_glass?: boolean;
+
+  // Custom luxury profile sections (100% editable from Dashboard!)
+  stats?: StatItem[];
+  expertise_tags?: string[];
+  services?: ServiceItem[];
+  products?: ShopProduct[];
 }
 
 export interface Profile {
