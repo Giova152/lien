@@ -14,10 +14,11 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
 
   if (!isOpen) return null;
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (provider: 'chariow' | 'stripe' = 'chariow') => {
     try {
       setLoading(true);
-      const res = await fetch('/api/stripe/checkout', {
+      const endpoint = provider === 'chariow' ? '/api/chariow/checkout' : '/api/stripe/checkout';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -25,7 +26,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur de connexion à Stripe');
+        throw new Error(data.error || 'Erreur lors de la connexion au système de paiement');
       }
 
       if (data.url) {
@@ -98,7 +99,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           </div>
 
           <button
-            onClick={handleCheckout}
+            onClick={() => handleCheckout('chariow')}
             disabled={loading}
             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-neutral-950 font-extrabold text-sm uppercase tracking-wider shadow-xl hover:scale-[1.02] active:scale-[0.98] transition duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
           >
