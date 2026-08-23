@@ -35,10 +35,12 @@ import {
   Upload,
   ArrowRight,
   ChevronRight,
-  Smartphone,
   Layers,
   Camera,
   LayoutDashboard,
+  Wifi,
+  Battery,
+  Signal,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -178,4 +180,7 @@ export {
   Layers,
   Camera,
   LayoutDashboard,
+  Wifi,
+  Battery,
+  Signal,
 };

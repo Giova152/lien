@@ -19,7 +19,10 @@ import {
   LogOut,
   ExternalLink,
   ShieldAlert,
+  Copy,
+  Check,
 } from '@/components/ui/Icons';
+import { toast } from 'sonner';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,6 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
+  const [copied, setCopied] = useState(false);
 
   const fetchDashboardData = async () => {
     try {
@@ -105,6 +109,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.refresh();
   };
 
+  const handleCopyPublicLink = () => {
+    if (!profile?.username) return;
+    const fullUrl = `${window.location.origin}/${profile.username}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopied(true);
+    toast.success('Lien public copié dans le presse-papier !');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const navItems = [
     { href: '/dashboard/links', label: 'Liens', icon: LinkIcon },
     { href: '/dashboard/profile', label: 'Profil', icon: User },
@@ -117,8 +130,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-4">
-        <Sparkles className="w-10 h-10 text-indigo-400 animate-spin mb-3" />
-        <p className="text-sm font-medium text-neutral-400">Chargement de votre espace admin...</p>
+        <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mb-4">
+          <Sparkles className="w-6 h-6 animate-spin" />
+        </div>
+        <p className="text-sm font-semibold text-neutral-300">Chargement de votre espace admin...</p>
       </div>
     );
   }
@@ -126,7 +141,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (errorMessage) {
     return (
       <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mb-4 shadow-lg shadow-rose-500/10">
           <ShieldAlert className="w-8 h-8" />
         </div>
         <h1 className="text-xl font-bold mb-2">Erreur de Connexion Supabase</h1>
@@ -138,7 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             setLoading(true);
             fetchDashboardData();
           }}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl transition shadow-lg"
+          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl transition shadow-lg shadow-indigo-600/25"
         >
           Réessayer
         </button>
@@ -159,39 +174,64 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setContact,
       }}
     >
-      <div className="min-h-screen bg-neutral-950 text-white flex flex-col">
+      <div className="min-h-screen bg-neutral-950 text-white flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
         {/* Top Header */}
-        <header className="w-full border-b border-neutral-800 bg-neutral-900/90 backdrop-blur-md sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="font-black text-xl tracking-tight text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+        <header className="w-full border-b border-neutral-800/80 bg-neutral-950/80 backdrop-blur-xl sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            {/* Left: Brand Logo & Status */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Link href="/" className="font-black text-xl tracking-tight text-white flex items-center gap-2 group">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20 group-hover:scale-105 transition-transform">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <span>Lien<span className="text-indigo-400">.me</span></span>
               </Link>
 
-              {profile?.username && (
-                <a
-                  href={`/${profile.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-medium text-neutral-300 transition"
-                >
-                  <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>lien.me/{profile.username}</span>
-                  <ExternalLink className="w-3 h-3 opacity-50" />
-                </a>
+              {/* Status Indicator */}
+              {profile && (
+                <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-[11px] font-medium">
+                  <span className={`w-2 h-2 rounded-full ${profile.is_published ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                  <span className={profile.is_published ? 'text-emerald-400' : 'text-amber-400'}>
+                    {profile.is_published ? 'Carte Publique' : 'Carte Masquée'}
+                  </span>
+                </div>
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Right: Quick Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {profile?.username && (
+                <>
+                  {/* Copy Link Button */}
+                  <button
+                    onClick={handleCopyPublicLink}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 text-xs font-medium text-neutral-300 transition"
+                    title="Copier le lien public"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-indigo-400" />}
+                    <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier le lien'}</span>
+                  </button>
+
+                  {/* View Public Page Button */}
+                  <a
+                    href={`/${profile.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-xs font-semibold text-indigo-300 transition"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Aperçu Web</span>
+                    <ExternalLink className="w-3 h-3 opacity-60" />
+                  </a>
+                </>
+              )}
+
               {/* Mobile View Switcher */}
-              <div className="flex lg:hidden bg-neutral-800 p-1 rounded-xl">
+              <div className="flex lg:hidden bg-neutral-900 p-1 rounded-xl border border-neutral-800">
                 <button
                   onClick={() => setMobileTab('editor')}
                   className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                    mobileTab === 'editor' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
+                    mobileTab === 'editor' ? 'bg-indigo-600 text-white shadow' : 'text-neutral-400'
                   }`}
                 >
                   Éditeur
@@ -199,16 +239,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <button
                   onClick={() => setMobileTab('preview')}
                   className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                    mobileTab === 'preview' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
+                    mobileTab === 'preview' ? 'bg-indigo-600 text-white shadow' : 'text-neutral-400'
                   }`}
                 >
-                  Aperçu Live
+                  Aperçu
                 </button>
               </div>
 
+              {/* Sign Out */}
               <button
                 onClick={handleSignOut}
-                className="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 rounded-xl transition"
+                className="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-900 border border-transparent hover:border-neutral-800 rounded-xl transition"
                 title="Déconnexion"
               >
                 <LogOut className="w-4 h-4" />
@@ -218,8 +259,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Navigation Sub-bar */}
-        <nav className="w-full border-b border-neutral-800 bg-neutral-900/50 overflow-x-auto no-scrollbar">
-          <div className="max-w-7xl mx-auto px-4 flex items-center gap-1">
+        <nav className="w-full border-b border-neutral-800/80 bg-neutral-900/40 backdrop-blur-md overflow-x-auto no-scrollbar">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
@@ -227,10 +268,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-4 py-3.5 text-xs font-semibold flex items-center gap-2 border-b-2 whitespace-nowrap transition ${
+                  className={`px-4 py-3 text-xs font-bold flex items-center gap-2 border-b-2 whitespace-nowrap transition-all duration-200 ${
                     isActive
-                      ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
-                      : 'border-transparent text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                      ? 'border-indigo-500 text-indigo-400 bg-indigo-500/10'
+                      : 'border-transparent text-neutral-400 hover:text-white hover:bg-neutral-800/40'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
