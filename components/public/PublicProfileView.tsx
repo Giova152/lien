@@ -8,7 +8,7 @@ import { LinkButton } from '@/components/public/LinkButton';
 import { VCardButton } from '@/components/public/VCardButton';
 import { QrCodeModal } from '@/components/public/QrCodeModal';
 import { ThemeWrapper } from '@/components/public/ThemeWrapper';
-import { Sparkles, Calendar, UserCheck, BookOpen, ChevronDown, ChevronUp, ArrowRight } from '@/components/ui/Icons';
+import { Sparkles, BookOpen, ChevronDown, ChevronUp, ArrowRight } from '@/components/ui/Icons';
 
 interface PublicProfileViewProps {
   profile: Profile;
@@ -24,6 +24,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
   const theme = profile.theme;
   const isLuxuryTheme = theme.font_family === 'Playfair Display' || theme.background_value === '#FBF9F4';
+  const accentColor = theme.accent_color || '#C5A059';
 
   // Dynamic user data or luxury fallbacks
   const stats: StatItem[] = theme.stats?.length
@@ -100,16 +101,23 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
         {activeTab === 'profil' && (
           <div className="w-full max-w-md flex flex-col gap-4 animate-in fade-in duration-300">
             {/* KPI Stat Cards Grid */}
-            <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2`}>
+            <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2.5`}>
               {stats.map((st) => (
                 <div
                   key={st.id}
                   className="bg-white/80 dark:bg-black/30 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl p-3 text-center shadow-sm"
+                  style={{ borderColor: `${accentColor}33` }}
                 >
-                  <div className="text-lg sm:text-xl font-black text-amber-600 dark:text-amber-400">
+                  <div
+                    className="text-lg sm:text-xl font-black"
+                    style={{ color: accentColor }}
+                  >
                     {st.value}
                   </div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider opacity-75">
+                  <div
+                    className="text-[10px] font-bold uppercase tracking-wider opacity-75"
+                    style={{ color: theme.text_color }}
+                  >
                     {st.label}
                   </div>
                 </div>
@@ -118,11 +126,14 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
             {/* Section À propos */}
             {profile.bio && (
-              <div className="bg-white/90 dark:bg-black/40 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl p-5 shadow-sm text-left">
-                <h3 className={`text-base font-extrabold mb-2 flex items-center gap-1.5 ${isLuxuryTheme ? 'font-serif' : ''}`}>
-                  <span className="text-amber-500 font-bold">|</span> À propos
+              <div
+                className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-5 shadow-sm text-left"
+                style={{ borderColor: `${accentColor}33` }}
+              >
+                <h3 className={`text-base font-extrabold mb-2 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
+                  <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> À propos
                 </h3>
-                <p className="text-xs opacity-85 leading-relaxed whitespace-pre-line">
+                <p className="text-xs opacity-85 leading-relaxed whitespace-pre-line" style={{ color: theme.text_color }}>
                   {profile.bio}
                 </p>
               </div>
@@ -130,15 +141,23 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
             {/* Section Domaines d'expertise */}
             {tags.length > 0 && (
-              <div className="bg-white/90 dark:bg-black/40 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl p-5 shadow-sm text-left">
-                <h3 className={`text-base font-extrabold mb-3 flex items-center gap-1.5 ${isLuxuryTheme ? 'font-serif' : ''}`}>
-                  <span className="text-amber-500 font-bold">|</span> Domaines d'expertise
+              <div
+                className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-5 shadow-sm text-left"
+                style={{ borderColor: `${accentColor}33` }}
+              >
+                <h3 className={`text-base font-extrabold mb-3 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
+                  <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> Domaines d'expertise
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wider"
+                      className="px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                      style={{
+                        backgroundColor: `${accentColor}15`,
+                        borderColor: `${accentColor}44`,
+                        color: accentColor,
+                      }}
                     >
                       {tag.startsWith('✦') ? tag : `✦ ${tag}`}
                     </span>
@@ -149,7 +168,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
             {/* Links List */}
             {links.length > 0 && (
-              <div className="w-full flex flex-col items-center gap-2 mt-2">
+              <div className="w-full flex flex-col items-center gap-2.5 mt-2">
                 {links.map((link) => (
                   <LinkButton key={link.id} link={link} theme={theme} />
                 ))}
@@ -166,14 +185,19 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               return (
                 <div
                   key={service.id}
-                  className="bg-white/90 dark:bg-black/40 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm transition-all text-left"
+                  className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm transition-all text-left"
+                  style={{ borderColor: `${accentColor}33` }}
                 >
                   <button
                     onClick={() => setOpenServiceAccordion(isOpen ? null : service.id)}
                     className="w-full p-4 flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider"
+                    style={{ color: theme.text_color }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+                      >
                         <Sparkles className="w-4 h-4" />
                       </div>
                       <div>
@@ -186,7 +210,14 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
                     <div className="flex items-center gap-2">
                       {service.price && (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-black">
+                        <span
+                          className="px-2.5 py-0.5 rounded-full text-[10px] font-black border"
+                          style={{
+                            backgroundColor: `${accentColor}20`,
+                            borderColor: `${accentColor}44`,
+                            color: accentColor,
+                          }}
+                        >
                           {service.price}
                         </span>
                       )}
@@ -198,20 +229,24 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     <div className="px-4 pb-4 pt-1 flex flex-col gap-2 border-t border-black/5 dark:border-white/5">
                       <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-between text-left">
                         <div>
-                          <div className="text-xs font-bold">{service.title}</div>
-                          <div className="text-[10px] opacity-70">{service.subtitle || 'Service personnalisé'}</div>
+                          <div className="text-xs font-bold" style={{ color: theme.text_color }}>{service.title}</div>
+                          <div className="text-[10px] opacity-70" style={{ color: theme.text_color }}>{service.subtitle || 'Service personnalisé'}</div>
                         </div>
                         {service.url ? (
                           <a
                             href={service.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-[10px] font-bold"
+                            className="px-3 py-1.5 rounded-lg text-white text-[10px] font-bold shadow"
+                            style={{ backgroundColor: accentColor }}
                           >
                             Réserver
                           </a>
                         ) : (
-                          <span className="px-3 py-1 rounded-lg bg-neutral-800 text-white text-[10px] font-bold">
+                          <span
+                            className="px-3 py-1 rounded-lg text-white text-[10px] font-bold"
+                            style={{ backgroundColor: accentColor }}
+                          >
                             Disponible
                           </span>
                         )}
@@ -228,11 +263,17 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
         {activeTab === 'shop' && (
           <div className="w-full max-w-md flex flex-col gap-4 animate-in fade-in duration-300">
             {/* Header Badge */}
-            <div className="bg-white/90 dark:bg-black/40 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center shrink-0">
+            <div
+              className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left"
+              style={{ borderColor: `${accentColor}33` }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+              >
                 <BookOpen className="w-5 h-5" />
               </div>
-              <div>
+              <div style={{ color: theme.text_color }}>
                 <h3 className="text-sm font-extrabold">Produits digitaux</h3>
                 <p className="text-[10px] opacity-70">E-books gratuits & payants · Téléchargement immédiat</p>
               </div>
@@ -242,28 +283,38 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShopFilter('all')}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                  shopFilter === 'all' ? 'bg-neutral-900 text-white' : 'bg-black/5 dark:bg-white/10 opacity-70'
+                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
+                  shopFilter === 'all' ? 'text-white shadow' : 'opacity-60'
                 }`}
+                style={{
+                  backgroundColor: shopFilter === 'all' ? accentColor : 'rgba(0,0,0,0.1)',
+                  color: shopFilter === 'all' ? '#ffffff' : theme.text_color,
+                }}
               >
                 TOUS
               </button>
               <button
                 onClick={() => setShopFilter('free')}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${
-                  shopFilter === 'free' ? 'bg-emerald-600 text-white' : 'bg-black/5 dark:bg-white/10 opacity-70'
+                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
+                  shopFilter === 'free' ? 'text-white shadow' : 'opacity-60'
                 }`}
+                style={{
+                  backgroundColor: shopFilter === 'free' ? accentColor : 'rgba(0,0,0,0.1)',
+                  color: shopFilter === 'free' ? '#ffffff' : theme.text_color,
+                }}
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 GRATUITS
               </button>
               <button
                 onClick={() => setShopFilter('paid')}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${
-                  shopFilter === 'paid' ? 'bg-amber-600 text-white' : 'bg-black/5 dark:bg-white/10 opacity-70'
+                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
+                  shopFilter === 'paid' ? 'text-white shadow' : 'opacity-60'
                 }`}
+                style={{
+                  backgroundColor: shopFilter === 'paid' ? accentColor : 'rgba(0,0,0,0.1)',
+                  color: shopFilter === 'paid' ? '#ffffff' : theme.text_color,
+                }}
               >
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
                 PAYANTS
               </button>
             </div>
@@ -271,34 +322,38 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
             {/* Products Grid */}
             <div className="grid grid-cols-2 gap-3">
               {filteredProducts.map((prod) => (
-                <div key={prod.id} className="bg-white/90 dark:bg-black/40 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group">
+                <div
+                  key={prod.id}
+                  className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group"
+                  style={{ borderColor: `${accentColor}33` }}
+                >
                   <div className="w-full h-32 relative bg-neutral-800">
                     {prod.image_url ? (
                       <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-105 transition duration-300" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40">
+                      <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
                         E-Book
                       </div>
                     )}
                     <span
-                      className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
-                        prod.type === 'free' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-black'
-                      }`}
+                      className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
+                      style={{ backgroundColor: accentColor, color: '#ffffff' }}
                     >
                       {prod.price}
                     </span>
                   </div>
 
                   <div className="p-3 flex flex-col justify-between flex-1 gap-2">
-                    <h4 className="text-xs font-bold line-clamp-2">{prod.title}</h4>
+                    <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">{prod.price}</span>
+                      <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
                       {prod.url && (
                         <a
                           href={prod.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[10px] font-bold text-indigo-500 hover:underline"
+                          className="text-[10px] font-bold hover:underline"
+                          style={{ color: accentColor }}
                         >
                           Voir ➔
                         </a>
@@ -323,8 +378,8 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
         {/* Customized Branding Footer */}
         <div className="mt-12 text-center">
-          <p className="text-xs opacity-75 font-medium">
-            Réalisé par <span className="font-bold text-amber-600 dark:text-amber-400">Giovanny Gandonou</span>
+          <p className="text-xs opacity-75 font-medium" style={{ color: theme.text_color }}>
+            Réalisé par <span className="font-bold" style={{ color: accentColor }}>Giovanny Gandonou</span>
           </p>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Profile, ThemeConfig } from '@/types';
-import { Building2, Briefcase, Facebook, MessageCircle, Video, Mail, Instagram } from '@/components/ui/Icons';
+import { Facebook, MessageCircle, Video, Mail, Instagram } from '@/components/ui/Icons';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -23,6 +23,7 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
   };
 
   const isLuxuryTheme = theme.font_family === 'Playfair Display' || theme.background_value === '#FBF9F4';
+  const accentColor = theme.accent_color || '#C5A059';
 
   return (
     <div className="flex flex-col items-center text-center w-full max-w-md mx-auto pt-4 pb-2 px-4 relative">
@@ -41,7 +42,10 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
 
       {/* Avatar with Double Ring Accent */}
       <div className="relative mb-3 z-10">
-        <div className="p-1 rounded-full border-2 border-amber-500/30 shadow-xl backdrop-blur-md">
+        <div
+          className="p-1 rounded-full border-2 shadow-xl backdrop-blur-md"
+          style={{ borderColor: `${accentColor}55` }}
+        >
           {profile.avatar_url ? (
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-white/40 shadow-xl relative bg-neutral-900">
               <Image
@@ -55,7 +59,7 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
           ) : (
             <div
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center text-3xl font-bold border-2 border-white/40 shadow-xl text-white"
-              style={{ backgroundColor: theme.accent_color || '#b8860b' }}
+              style={{ backgroundColor: accentColor }}
             >
               {getInitials(profile.display_name || profile.username)}
             </div>
@@ -74,55 +78,46 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
       </h1>
 
       {/* Diamond Separator Ornament */}
-      <div className="flex items-center gap-2 text-amber-500/80 my-1">
-        <div className="w-6 h-[1px] bg-amber-500/30" />
+      <div className="flex items-center gap-2 my-1" style={{ color: accentColor }}>
+        <div className="w-6 h-[1px]" style={{ backgroundColor: `${accentColor}55` }} />
         <span className="text-[10px]">◆</span>
-        <div className="w-6 h-[1px] bg-amber-500/30" />
+        <div className="w-6 h-[1px]" style={{ backgroundColor: `${accentColor}55` }} />
       </div>
 
       {/* Title & Company (Subtitle) */}
       {(profile.title || profile.company) && (
-        <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-80 mb-3">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-80 mb-3" style={{ color: theme.text_color }}>
           {profile.title && <span>{profile.title}</span>}
           {profile.title && profile.company && <span>·</span>}
           {profile.company && <span>{profile.company}</span>}
         </div>
       )}
 
-      {/* Quick Social Action Icons Row */}
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <a
-          href="#"
-          className="w-9 h-9 rounded-full bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 flex items-center justify-center text-neutral-700 dark:text-neutral-200 hover:scale-110 transition shadow-sm"
-          title="Facebook"
-        >
-          <Facebook className="w-4 h-4" />
-        </a>
-        <a
-          href="#"
-          className="w-9 h-9 rounded-full bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:scale-110 transition shadow-sm"
-          title="WhatsApp"
-        >
-          <MessageCircle className="w-4 h-4" />
-        </a>
-        <a
-          href="#"
-          className="w-9 h-9 rounded-full bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 flex items-center justify-center text-neutral-700 dark:text-neutral-200 hover:scale-110 transition shadow-sm"
-          title="TikTok"
-        >
-          <Video className="w-4 h-4" />
-        </a>
-        <a
-          href="#"
-          className="w-9 h-9 rounded-full bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 flex items-center justify-center text-rose-500 hover:scale-110 transition shadow-sm"
-          title="Email"
-        >
-          <Mail className="w-4 h-4" />
-        </a>
+      {/* Quick Social Action Icons Row (Uniform Harmonized Icons) */}
+      <div className="flex items-center justify-center gap-2.5 mb-4">
+        {[
+          { icon: Facebook, label: 'Facebook' },
+          { icon: MessageCircle, label: 'WhatsApp' },
+          { icon: Video, label: 'TikTok' },
+          { icon: Mail, label: 'Email' },
+        ].map((item, idx) => {
+          const IconComponent = item.icon;
+          return (
+            <a
+              key={idx}
+              href="#"
+              className="w-9 h-9 rounded-full bg-white/10 dark:bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+              style={{ color: theme.text_color }}
+              title={item.label}
+            >
+              <IconComponent className="w-4 h-4" />
+            </a>
+          );
+        })}
       </div>
 
       {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) */}
-      <div className="w-full max-w-sm p-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-between mb-4 backdrop-blur-md">
+      <div className="w-full max-w-sm p-1 rounded-full bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 flex items-center justify-between mb-4 backdrop-blur-md">
         {(['profil', 'services', 'shop'] as const).map((tab) => {
           const isActive = activeTab === tab;
           return (
@@ -131,9 +126,13 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
               onClick={() => onTabChange && onTabChange(tab)}
               className={`flex-1 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 ${
                 isActive
-                  ? 'bg-neutral-900 text-white shadow-md scale-[1.02]'
-                  : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
+                  ? 'shadow-md scale-[1.02]'
+                  : 'opacity-60 hover:opacity-100'
               }`}
+              style={{
+                backgroundColor: isActive ? accentColor : 'transparent',
+                color: isActive ? '#ffffff' : theme.text_color,
+              }}
             >
               {tab}
             </button>
