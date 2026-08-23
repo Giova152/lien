@@ -35,6 +35,7 @@ import {
   Upload,
   ArrowRight,
   ChevronRight,
+  Smartphone,
   Layers,
   Camera,
   LayoutDashboard,
