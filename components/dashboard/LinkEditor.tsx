@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { LinkItem } from '@/types';
 import { detectPlatformFromUrl, PLATFORMS } from '@/lib/platform-detector';
@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
+import { DashboardContext } from '@/lib/context/DashboardContext';
 
 interface LinkEditorProps {
   links: LinkItem[];
@@ -32,6 +33,7 @@ export function LinkEditor({
   onDeleteLink,
   onReorderLinks,
 }: LinkEditorProps) {
+  const { profile } = useContext(DashboardContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<Partial<LinkItem> | null>(null);
   const [label, setLabel] = useState('');
@@ -40,6 +42,15 @@ export function LinkEditor({
   const [saving, setSaving] = useState(false);
 
   const openAddModal = () => {
+    // Freemium Limit Check: 3 Links max for free tier
+    if (!profile?.is_pro && links.length >= 3) {
+      toast.error('⚡ Limite de 3 liens atteinte en version Gratuite. Passez au Plan PRO À VIE (186 $) pour ajouter des liens illimités !');
+      // Trigger header PRO upgrade button
+      const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
+      if (upgradeBtn) upgradeBtn.click();
+      return;
+    }
+
     setEditingLink(null);
     setLabel('');
     setUrl('');
@@ -161,6 +172,25 @@ export function LinkEditor({
           <span>Ajouter un lien</span>
         </button>
       </div>
+
+      {/* Freemium Links Usage Banner */}
+      {!profile?.is_pro && (
+        <div
+          onClick={() => {
+            const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
+            if (upgradeBtn) upgradeBtn.click();
+          }}
+          className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex items-center justify-between text-xs text-amber-300 cursor-pointer hover:border-amber-400/50 transition shadow-sm"
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span>Offre Gratuite : <strong>{links.length} / 3 liens</strong> utilisés</span>
+          </div>
+          <span className="text-[11px] font-black text-amber-400 uppercase tracking-wider underline">
+            Passer aux Liens Illimités (PRO) →
+          </span>
+        </div>
+      )}
 
       {/* Links List with Drag & Drop */}
       <DragDropContext onDragEnd={handleDragEnd}>
