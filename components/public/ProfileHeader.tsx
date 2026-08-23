@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Profile, ThemeConfig } from '@/types';
-import { Facebook, MessageCircle, Video, Mail, Instagram } from '@/components/ui/Icons';
+import { Facebook, Whatsapp, Tiktok, Mail, Instagram } from '@/components/ui/Icons';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -93,12 +93,12 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
         </div>
       )}
 
-      {/* Quick Social Action Icons Row (Uniform Harmonized Icons) */}
+      {/* Quick Social Action Icons Row (Authentic Official SVG Logos) */}
       <div className="flex items-center justify-center gap-2.5 mb-4">
         {[
           { icon: Facebook, label: 'Facebook' },
-          { icon: MessageCircle, label: 'WhatsApp' },
-          { icon: Video, label: 'TikTok' },
+          { icon: Whatsapp, label: 'WhatsApp' },
+          { icon: Tiktok, label: 'TikTok' },
           { icon: Mail, label: 'Email' },
         ].map((item, idx) => {
           const IconComponent = item.icon;
@@ -106,7 +106,7 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
             <a
               key={idx}
               href="#"
-              className="w-9 h-9 rounded-full bg-white/10 dark:bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+              className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
               style={{ color: theme.text_color }}
               title={item.label}
             >
