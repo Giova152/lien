@@ -337,47 +337,43 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
               {/* Products Grid */}
               <div className="grid grid-cols-2 gap-3">
-                {filteredProducts.map((prod) => (
-                  <div
-                    key={prod.id}
-                    className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group"
-                    style={{ borderColor: `${accentColor}33` }}
-                  >
-                    <div className="w-full h-32 relative bg-neutral-800">
-                      {prod.image_url ? (
-                        <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-105 transition duration-300" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
-                          E-Book
-                        </div>
-                      )}
-                      <span
-                        className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
-                        style={{ backgroundColor: accentColor, color: '#ffffff' }}
-                      >
-                        {prod.price}
-                      </span>
-                    </div>
-
-                    <div className="p-3 flex flex-col justify-between flex-1 gap-2">
-                      <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
-                        {prod.url && (
-                          <a
-                            href={prod.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] font-bold hover:underline"
-                            style={{ color: accentColor }}
-                          >
-                            Voir ➔
-                          </a>
+                {filteredProducts.map((prod) => {
+                  const CardWrapper = prod.url ? 'a' : 'div';
+                  return (
+                    <CardWrapper
+                      key={prod.id}
+                      {...(prod.url ? { href: prod.url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group hover:scale-[1.03] hover:shadow-lg transition-all duration-300 cursor-pointer"
+                      style={{ borderColor: `${accentColor}33` }}
+                    >
+                      <div className="w-full h-32 relative bg-neutral-800 overflow-hidden">
+                        {prod.image_url ? (
+                          <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-110 transition duration-500" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
+                            E-Book
+                          </div>
                         )}
+                        <span
+                          className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
+                          style={{ backgroundColor: accentColor, color: '#ffffff' }}
+                        >
+                          {prod.price}
+                        </span>
                       </div>
-                    </div>
-                  </div>
-                ))}
+
+                      <div className="p-3 flex flex-col justify-between flex-1 gap-2">
+                        <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
+                          <span className="text-[10px] font-bold opacity-80 group-hover:translate-x-0.5 transition-transform" style={{ color: accentColor }}>
+                            Accéder ➔
+                          </span>
+                        </div>
+                      </div>
+                    </CardWrapper>
+                  );
+                })}
               </div>
             </div>
           )}

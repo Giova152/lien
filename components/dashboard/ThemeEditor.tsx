@@ -473,13 +473,13 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="flex flex-col gap-3">
               {services.map((srv) => (
-                <div key={srv.id} className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-700/60 flex flex-col gap-2">
+                <div key={srv.id} className="p-3.5 rounded-xl bg-neutral-800/60 border border-neutral-700/60 flex flex-col gap-2.5">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={srv.title}
                       onChange={(e) => handleUpdateService(srv.id, 'title', e.target.value)}
-                      placeholder="Titre du service"
+                      placeholder="Titre du service (ex: RÉSERVER UN RDV)"
                       className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-white font-bold"
                     />
                     <input
@@ -499,6 +499,13 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     onChange={(e) => handleUpdateService(srv.id, 'subtitle', e.target.value)}
                     placeholder="Description / Sous-titre"
                     className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-300"
+                  />
+                  <input
+                    type="url"
+                    value={srv.url || ''}
+                    onChange={(e) => handleUpdateService(srv.id, 'url', e.target.value)}
+                    placeholder="Lien de réservation / Calendly / WhatsApp (ex: https://...)"
+                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-indigo-300 font-mono"
                   />
                 </div>
               ))}
@@ -523,7 +530,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="flex flex-col gap-3">
               {products.map((prod) => (
-                <div key={prod.id} className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-700/60 flex flex-col gap-2">
+                <div key={prod.id} className="p-3.5 rounded-xl bg-neutral-800/60 border border-neutral-700/60 flex flex-col gap-2.5">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -555,8 +562,15 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     type="url"
                     value={prod.image_url || ''}
                     onChange={(e) => handleUpdateProduct(prod.id, 'image_url', e.target.value)}
-                    placeholder="URL de l'image de couverture (ex: https://images.unsplash.com/...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-400 font-mono"
+                    placeholder="📷 URL de l'image de couverture (ex: https://images.unsplash.com/...)"
+                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-300 font-mono"
+                  />
+                  <input
+                    type="url"
+                    value={prod.url || ''}
+                    onChange={(e) => handleUpdateProduct(prod.id, 'url', e.target.value)}
+                    placeholder="🔗 Lien de redirection au clic / Achat / Téléchargement (ex: https://...)"
+                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-indigo-300 font-mono"
                   />
                 </div>
               ))}
