@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { QrCode, X, Download, Copy, Check } from '@/components/ui/Icons';
+import { QrCode, X, Download, Copy, Check, ShieldAlert } from '@/components/ui/Icons';
 import { Profile } from '@/types';
+import { sanitizeUsername } from '@/lib/utils';
 
 interface QrCodeModalProps {
   profile: Profile;
@@ -15,15 +16,19 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string>(url || '');
+  const [isLocalhost, setIsLocalhost] = useState(false);
+
+  const cleanUsername = sanitizeUsername(profile.username);
 
   useEffect(() => {
     if (url) {
       setProfileUrl(url);
     } else if (typeof window !== 'undefined') {
-      // Use exact real browser URL (e.g. https://lien-xxxx.vercel.app/giova)
-      setProfileUrl(`${window.location.origin}/${profile.username}`);
+      const origin = window.location.origin;
+      setIsLocalhost(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      setProfileUrl(`${origin}/${cleanUsername}`);
     }
-  }, [url, profile.username]);
+  }, [url, cleanUsername]);
 
   const accentColor = profile.theme?.accent_color || '#C5A059';
   const textColor = profile.theme?.text_color || '#1C1917';
@@ -53,7 +58,7 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
         ctx.drawImage(img, 20, 20);
         const pngFile = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
-        downloadLink.download = `${profile.username}-qrcode.png`;
+        downloadLink.download = `${cleanUsername}-qrcode.png`;
         downloadLink.href = pngFile;
         downloadLink.click();
       }
@@ -100,10 +105,25 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             </button>
 
             <h3 className="text-xl font-bold mb-1">{profile.display_name}</h3>
-            <p className="text-sm text-neutral-400 mb-5">Scannez pour ouvrir la carte</p>
+            <p className="text-sm text-neutral-400 mb-4">Scannez avec l'appareil photo de votre téléphone</p>
 
-            {/* QR Code Container (Dynamic Real Vercel URL) */}
-            <div className="bg-white p-4 rounded-2xl shadow-inner mb-5">
+            {/* Unpublished Warning if Profile is hidden */}
+            {!profile.is_published && (
+              <div className="w-full mb-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] flex items-center gap-2 text-left">
+                <ShieldAlert className="w-4 h-4 shrink-0" />
+                <span>Profil actuellement dépublié. Publiez-le dans les paramètres pour qu'il réponde au scan.</span>
+              </div>
+            )}
+
+            {/* Localhost Warning if scanning on local computer */}
+            {isLocalhost && (
+              <div className="w-full mb-3 p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[11px] text-left">
+                💡 <b>Info Test Local :</b> Sur ordinateur, le QR Code pointe vers <code>localhost</code>. Testez directement depuis votre lien en ligne Vercel !
+              </div>
+            )}
+
+            {/* QR Code Container */}
+            <div className="bg-white p-4 rounded-2xl shadow-inner mb-4">
               {profileUrl ? (
                 <QRCodeSVG
                   id="profile-qrcode-svg"
@@ -121,7 +141,7 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
 
             {/* URL Display & Copy */}
             <div className="w-full flex items-center justify-between bg-neutral-800 rounded-xl px-3 py-2 text-xs mb-4 text-neutral-300">
-              <span className="truncate max-w-[200px] font-mono">{profileUrl}</span>
+              <span className="truncate max-w-[200px] font-mono text-[11px]">{profileUrl}</span>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1 font-medium text-indigo-400 hover:text-indigo-300 ml-2"
