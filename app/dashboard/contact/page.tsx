@@ -90,38 +90,6 @@ export default function ContactPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col gap-5">
-        {/* Toggle vCard button */}
-        <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-800 border border-neutral-700">
-          <div className="flex items-center gap-3">
-            <Download className="w-5 h-5 text-indigo-400" />
-            <div>
-              <span className="text-sm font-semibold text-white block">
-                Bouton "Enregistrer le contact"
-              </span>
-              <span className="text-xs text-neutral-400 block">
-                Affiche le bouton de téléchargement du fichier vCard (.vcf)
-              </span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              const nextVal = !showVCard;
-              setShowVCard(nextVal);
-              if (setContact) setContact((prev) => (prev ? { ...prev, show_save_contact_button: nextVal } : prev));
-            }}
-            className={`w-12 h-6 rounded-full transition-colors relative p-1 ${
-              showVCard ? 'bg-indigo-600' : 'bg-neutral-700'
-            }`}
-          >
-            <div
-              className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                showVCard ? 'translate-x-6' : 'translate-x-0'
-              }`}
-            />
-          </button>
-        </div>
 
         {/* Phone */}
         <div>
