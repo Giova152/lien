@@ -378,12 +378,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
             </div>
           )}
 
-          {/* VCard Download Button */}
-          {contact && contact.show_save_contact_button && (
-            <div className="w-full flex justify-center mt-6">
-              <VCardButton profile={profile} contact={contact} theme={theme} />
-            </div>
-          )}
+
 
           {/* QR Code Trigger */}
           <QrCodeModal profile={profile} />
