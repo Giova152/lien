@@ -174,37 +174,57 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
       {activeTabSection === 'style' ? (
         <>
-          {/* Presets Grid */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
-            <h3 className="text-sm font-semibold text-neutral-300 mb-3 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              Thèmes Prédéfinis
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {THEME_PRESETS.map((preset) => (
-                <button
-                  key={preset.name}
-                  onClick={() => applyPreset(preset.theme)}
-                  className="p-3 rounded-xl border border-neutral-800 hover:border-indigo-500 transition text-left flex flex-col gap-2 relative overflow-hidden group"
-                  style={{
-                    background:
-                      preset.theme.background_type === 'gradient'
-                        ? preset.theme.background_value
-                        : preset.theme.background_value,
-                  }}
-                >
-                  <div
-                    className="h-8 rounded-lg w-full border border-white/20"
-                    style={{ backgroundColor: preset.theme.button_color }}
-                  />
-                  <span
-                    className="text-xs font-semibold truncate"
-                    style={{ color: preset.theme.text_color }}
+          {/* Presets Grid (Ultra-Curated Designer Palettes) */}
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-neutral-200 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                Thèmes & Palettes de Couleur Pro (1-Clic)
+              </h3>
+              <span className="text-[10px] text-neutral-400 font-medium">Harmonie Garantie</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {THEME_PRESETS.map((preset) => {
+                const isSelected = theme.background_value === preset.theme.background_value && theme.accent_color === preset.theme.accent_color;
+                return (
+                  <button
+                    key={preset.name}
+                    onClick={() => applyPreset(preset.theme)}
+                    className={`p-4 rounded-2xl border transition-all text-left flex flex-col justify-between gap-3 relative overflow-hidden group shadow-md ${
+                      isSelected
+                        ? 'border-indigo-500 ring-2 ring-indigo-500/40 bg-neutral-850'
+                        : 'border-neutral-800 hover:border-neutral-700 bg-neutral-900/60'
+                    }`}
                   >
-                    {preset.name}
-                  </span>
-                </button>
-              ))}
+                    {/* Header: Title & Active Indicator */}
+                    <div className="flex items-center justify-between z-10">
+                      <span className="text-xs font-bold text-white truncate">{preset.name}</span>
+                      {isSelected && (
+                        <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+                          <Check className="w-3 h-3" />
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Color Swatch Preview Bar */}
+                    <div className="flex items-center gap-1.5 p-2 rounded-xl bg-neutral-950/40 border border-white/10 z-10">
+                      <div className="w-6 h-6 rounded-lg border border-white/20 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.background_value, color: preset.theme.text_color }} title="Fond">
+                        B
+                      </div>
+                      <div className="w-6 h-6 rounded-lg border border-white/20 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.button_color, color: preset.theme.button_text_color }} title="Bouton">
+                        C
+                      </div>
+                      <div className="w-6 h-6 rounded-lg border border-white/20 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.accent_color, color: '#ffffff' }} title="Accent">
+                        A
+                      </div>
+                      <div className="flex-1 text-right text-[10px] font-mono opacity-60 text-neutral-400">
+                        {preset.theme.font_family}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
