@@ -104,9 +104,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-    router.refresh();
+    try {
+      await supabase.auth.signOut();
+      toast.success('Déconnexion réussie !');
+      window.location.href = '/login';
+    } catch {
+      window.location.href = '/login';
+    }
   };
 
   const handleCopyPublicLink = () => {

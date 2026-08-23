@@ -34,8 +34,7 @@ export default function LoginPage() {
       }
 
       toast.success('Connexion réussie !');
-      router.push('/dashboard');
-      router.refresh();
+      window.location.href = '/dashboard';
     } catch (err: any) {
       toast.error(err?.message || 'Erreur lors de la connexion');
     } finally {
