@@ -246,3 +246,23 @@ DROP POLICY IF EXISTS "Suppression utilisateur authentifié avatars" ON storage.
 CREATE POLICY "Suppression utilisateur authentifié avatars"
     ON storage.objects FOR DELETE
     USING (bucket_id IN ('avatars', 'covers') AND auth.role() = 'authenticated');
+
+
+-- ========================================================
+-- FONCTION RPC : Incrémentation anonyme des clics sur les liens
+-- ========================================================
+
+CREATE OR REPLACE FUNCTION public.increment_link_click(target_link_id UUID)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    UPDATE public.links
+    SET click_count = click_count + 1
+    WHERE id = target_link_id;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.increment_link_click(UUID) TO anon, authenticated;
+
