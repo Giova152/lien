@@ -25,7 +25,11 @@ export default function LinksPage({
   };
 
   const handleSaveLink = async (linkData: Partial<LinkItem>) => {
-    if (!profile) return;
+    if (!profile) {
+      const msg = 'Profil non trouvé. Veuillez rafraîchir la page ou terminer la configuration.';
+      console.error(msg);
+      throw new Error(msg);
+    }
 
     if (linkData.id) {
       // Update
@@ -34,7 +38,10 @@ export default function LinksPage({
         .update(linkData)
         .eq('id', linkData.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur Supabase lors de la modification du lien:', error);
+        throw error;
+      }
     } else {
       // Insert
       const { error } = await supabase.from('links').insert({
@@ -47,7 +54,10 @@ export default function LinksPage({
         is_active: linkData.is_active ?? true,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur Supabase lors de l’ajout du lien:', error);
+        throw error;
+      }
     }
 
     if (refreshDashboard) refreshDashboard();
