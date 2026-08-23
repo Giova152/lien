@@ -42,9 +42,9 @@ export function LinkEditor({
   const [saving, setSaving] = useState(false);
 
   const openAddModal = () => {
-    // Freemium Limit Check: 3 Links max for free tier
-    if (!profile?.is_pro && links.length >= 3) {
-      toast.error('⚡ Limite de 3 liens atteinte en version Gratuite. Passez au Plan PRO À VIE (186 $) pour ajouter des liens illimités !');
+    // Freemium Limit Check: 1 Link max for free tier
+    if (!profile?.is_pro && links.length >= 1) {
+      toast.error('⚡ Limite de 1 lien atteinte en version Gratuite. Passez au Plan PRO À VIE (186 $) pour ajouter des liens illimités !');
       // Trigger header PRO upgrade button
       const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
       if (upgradeBtn) upgradeBtn.click();
@@ -184,7 +184,7 @@ export function LinkEditor({
         >
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span>Offre Gratuite : <strong>{links.length} / 3 liens</strong> utilisés</span>
+            <span>Offre Gratuite : <strong>{links.length} / 1 lien</strong> utilisé</span>
           </div>
           <span className="text-[11px] font-black text-amber-400 uppercase tracking-wider underline">
             Passer aux Liens Illimités (PRO) →
