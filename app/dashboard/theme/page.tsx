@@ -7,17 +7,10 @@ import { createClient } from '@/lib/supabase/client';
 import { DEFAULT_THEME } from '@/lib/utils';
 import { toast } from 'sonner';
 
-interface ThemePageProps {
-  profile?: Profile;
-  setProfile?: React.Dispatch<React.SetStateAction<Profile | null>>;
-  refreshDashboard?: () => void;
-}
+import { useDashboard } from '@/lib/context/DashboardContext';
 
-export default function ThemePage({
-  profile,
-  setProfile,
-  refreshDashboard,
-}: ThemePageProps) {
+export default function ThemePage() {
+  const { profile, setProfile, refreshDashboard } = useDashboard();
   const supabase = createClient();
 
   const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(

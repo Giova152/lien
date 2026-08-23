@@ -2,22 +2,13 @@
 
 import React from 'react';
 import { LinkEditor } from '@/components/dashboard/LinkEditor';
-import { LinkItem, Profile } from '@/types';
+import { LinkItem } from '@/types';
 import { createClient } from '@/lib/supabase/client';
+import { useDashboard } from '@/lib/context/DashboardContext';
+import { toast } from 'sonner';
 
-interface LinksPageProps {
-  profile?: Profile;
-  links?: LinkItem[];
-  setLinks?: React.Dispatch<React.SetStateAction<LinkItem[]>>;
-  refreshDashboard?: () => void;
-}
-
-export default function LinksPage({
-  profile,
-  links = [],
-  setLinks,
-  refreshDashboard,
-}: LinksPageProps) {
+export default function LinksPage() {
+  const { profile, links, setLinks, refreshDashboard } = useDashboard();
   const supabase = createClient();
 
   const handleLinksChange = (updated: LinkItem[]) => {
@@ -26,9 +17,8 @@ export default function LinksPage({
 
   const handleSaveLink = async (linkData: Partial<LinkItem>) => {
     if (!profile) {
-      const msg = 'Profil non trouvé. Veuillez rafraîchir la page ou terminer la configuration.';
-      console.error(msg);
-      throw new Error(msg);
+      toast.error('Profil non chargé. Veuillez rafraîchir la page.');
+      return;
     }
 
     if (linkData.id) {
@@ -38,10 +28,7 @@ export default function LinksPage({
         .update(linkData)
         .eq('id', linkData.id);
 
-      if (error) {
-        console.error('Erreur Supabase lors de la modification du lien:', error);
-        throw error;
-      }
+      if (error) throw error;
     } else {
       // Insert
       const { error } = await supabase.from('links').insert({
@@ -54,10 +41,7 @@ export default function LinksPage({
         is_active: linkData.is_active ?? true,
       });
 
-      if (error) {
-        console.error('Erreur Supabase lors de l’ajout du lien:', error);
-        throw error;
-      }
+      if (error) throw error;
     }
 
     if (refreshDashboard) refreshDashboard();
@@ -70,7 +54,6 @@ export default function LinksPage({
   };
 
   const handleReorderLinks = async (reorderedLinks: LinkItem[]) => {
-    // Bulk position update
     const updates = reorderedLinks.map((l) =>
       supabase.from('links').update({ position: l.position }).eq('id', l.id)
     );

@@ -19,17 +19,10 @@ import {
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
-interface ProfilePageProps {
-  profile?: Profile;
-  setProfile?: React.Dispatch<React.SetStateAction<Profile | null>>;
-  refreshDashboard?: () => void;
-}
+import { useDashboard } from '@/lib/context/DashboardContext';
 
-export default function ProfilePage({
-  profile,
-  setProfile,
-  refreshDashboard,
-}: ProfilePageProps) {
+export default function ProfilePage() {
+  const { profile, setProfile, refreshDashboard } = useDashboard();
   const supabase = createClient();
 
   const [displayName, setDisplayName] = useState(profile?.display_name || '');

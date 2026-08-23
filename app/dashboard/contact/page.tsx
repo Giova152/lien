@@ -15,19 +15,10 @@ import {
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
-interface ContactPageProps {
-  profile?: Profile;
-  contact?: ContactInfo | null;
-  setContact?: React.Dispatch<React.SetStateAction<ContactInfo | null>>;
-  refreshDashboard?: () => void;
-}
+import { useDashboard } from '@/lib/context/DashboardContext';
 
-export default function ContactPage({
-  profile,
-  contact,
-  setContact,
-  refreshDashboard,
-}: ContactPageProps) {
+export default function ContactPage() {
+  const { profile, contact, setContact, refreshDashboard } = useDashboard();
   const supabase = createClient();
 
   const [phone, setPhone] = useState(contact?.phone || '');

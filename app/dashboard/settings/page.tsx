@@ -16,17 +16,10 @@ import {
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
-interface SettingsPageProps {
-  profile?: Profile;
-  setProfile?: React.Dispatch<React.SetStateAction<Profile | null>>;
-  refreshDashboard?: () => void;
-}
+import { useDashboard } from '@/lib/context/DashboardContext';
 
-export default function SettingsPage({
-  profile,
-  setProfile,
-  refreshDashboard,
-}: SettingsPageProps) {
+export default function SettingsPage() {
+  const { profile, setProfile, refreshDashboard } = useDashboard();
   const router = useRouter();
   const supabase = createClient();
 

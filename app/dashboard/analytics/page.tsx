@@ -6,12 +6,10 @@ import { Profile, LinkItem, AnalyticsSummary } from '@/types';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2 } from '@/components/ui/Icons';
 
-interface AnalyticsPageProps {
-  profile?: Profile;
-  links?: LinkItem[];
-}
+import { useDashboard } from '@/lib/context/DashboardContext';
 
-export default function AnalyticsPage({ profile, links = [] }: AnalyticsPageProps) {
+export default function AnalyticsPage() {
+  const { profile, links = [] } = useDashboard();
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<AnalyticsSummary>({

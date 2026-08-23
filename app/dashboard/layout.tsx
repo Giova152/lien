@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Profile, LinkItem, ContactInfo } from '@/types';
+import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import {
   Sparkles,
@@ -17,12 +18,8 @@ import {
   Eye,
   LogOut,
   ExternalLink,
-  Smartphone,
-  ChevronRight,
   ShieldAlert,
-  CheckCircle2,
 } from '@/components/ui/Icons';
-import { toast } from 'sonner';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -45,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       } = await supabase.auth.getUser();
 
       if (authError && authError.message.includes('FetchError')) {
-        setErrorMessage('Impossible de se connecter au serveur Supabase. Vérifiez vos variables d’environnement dans .env.local.');
+        setErrorMessage('Impossible de se connecter au serveur Supabase. Vérifiez vos variables d’environnement.');
         return;
       }
 
@@ -150,110 +147,115 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white flex flex-col">
-      {/* Top Header */}
-      <header className="w-full border-b border-neutral-800 bg-neutral-900/90 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="font-black text-xl tracking-tight text-white flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <span>Lien<span className="text-indigo-400">.me</span></span>
-            </Link>
+    <DashboardContext.Provider
+      value={{
+        profile,
+        links,
+        contact,
+        loading,
+        refreshDashboard: fetchDashboardData,
+        setProfile,
+        setLinks,
+        setContact,
+      }}
+    >
+      <div className="min-h-screen bg-neutral-950 text-white flex flex-col">
+        {/* Top Header */}
+        <header className="w-full border-b border-neutral-800 bg-neutral-900/90 backdrop-blur-md sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link href="/" className="font-black text-xl tracking-tight text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span>Lien<span className="text-indigo-400">.me</span></span>
+              </Link>
 
-            {profile?.username && (
-              <a
-                href={`/${profile.username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-medium text-neutral-300 transition"
-              >
-                <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                <span>lien.me/{profile.username}</span>
-                <ExternalLink className="w-3 h-3 opacity-50" />
-              </a>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Mobile View Switcher */}
-            <div className="flex lg:hidden bg-neutral-800 p-1 rounded-xl">
-              <button
-                onClick={() => setMobileTab('editor')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  mobileTab === 'editor' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
-                }`}
-              >
-                Éditeur
-              </button>
-              <button
-                onClick={() => setMobileTab('preview')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  mobileTab === 'preview' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
-                }`}
-              >
-                Aperçu Live
-              </button>
+              {profile?.username && (
+                <a
+                  href={`/${profile.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-medium text-neutral-300 transition"
+                >
+                  <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>lien.me/{profile.username}</span>
+                  <ExternalLink className="w-3 h-3 opacity-50" />
+                </a>
+              )}
             </div>
 
-            <button
-              onClick={handleSignOut}
-              className="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 rounded-xl transition"
-              title="Déconnexion"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+            <div className="flex items-center gap-2">
+              {/* Mobile View Switcher */}
+              <div className="flex lg:hidden bg-neutral-800 p-1 rounded-xl">
+                <button
+                  onClick={() => setMobileTab('editor')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    mobileTab === 'editor' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
+                  }`}
+                >
+                  Éditeur
+                </button>
+                <button
+                  onClick={() => setMobileTab('preview')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    mobileTab === 'preview' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
+                  }`}
+                >
+                  Aperçu Live
+                </button>
+              </div>
 
-      {/* Navigation Sub-bar */}
-      <nav className="w-full border-b border-neutral-800 bg-neutral-900/50 overflow-x-auto no-scrollbar">
-        <div className="max-w-7xl mx-auto px-4 flex items-center gap-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`px-4 py-3.5 text-xs font-semibold flex items-center gap-2 border-b-2 whitespace-nowrap transition ${
-                  isActive
-                    ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
-                    : 'border-transparent text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                }`}
+              <button
+                onClick={handleSignOut}
+                className="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 rounded-xl transition"
+                title="Déconnexion"
               >
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </header>
 
-      {/* Main Content Area (Split view on Desktop) */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Form Editors */}
-          <div className={`lg:col-span-7 flex flex-col ${mobileTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
-            {React.cloneElement(children as React.ReactElement<any>, {
-              profile,
-              links,
-              contact,
-              refreshDashboard: fetchDashboardData,
-              setProfile,
-              setLinks,
-              setContact,
+        {/* Navigation Sub-bar */}
+        <nav className="w-full border-b border-neutral-800 bg-neutral-900/50 overflow-x-auto no-scrollbar">
+          <div className="max-w-7xl mx-auto px-4 flex items-center gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-4 py-3.5 text-xs font-semibold flex items-center gap-2 border-b-2 whitespace-nowrap transition ${
+                    isActive
+                      ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
+                      : 'border-transparent text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </Link>
+              );
             })}
           </div>
+        </nav>
 
-          {/* Right Column: Live Mobile Mockup Preview */}
-          <div className={`lg:col-span-5 lg:sticky lg:top-24 flex justify-center ${mobileTab === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
-            <MobilePreview profile={profile} links={links} contact={contact} />
+        {/* Main Content Area (Split view on Desktop) */}
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Form Editors */}
+            <div className={`lg:col-span-7 flex flex-col ${mobileTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+              {children}
+            </div>
+
+            {/* Right Column: Live Mobile Mockup Preview */}
+            <div className={`lg:col-span-5 lg:sticky lg:top-24 flex justify-center ${mobileTab === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
+              <MobilePreview profile={profile} links={links} contact={contact} />
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </DashboardContext.Provider>
   );
 }
