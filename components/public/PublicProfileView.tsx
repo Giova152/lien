@@ -88,299 +88,316 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
   return (
     <ThemeWrapper theme={theme}>
-      <div className="min-h-screen w-full flex flex-col items-center px-4 pb-20 pt-4">
-        {/* Profile Header & Navigation Pills */}
-        <ProfileHeader
-          profile={profile}
-          theme={theme}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+      <div className="min-h-screen w-full flex flex-col items-center justify-start px-3 sm:px-6 py-6 sm:py-12">
+        {/* Floating Card Container (Exact 2-Tone Contrast & Subtle Golden Rim Shadow) */}
+        <div
+          className={`w-full max-w-md rounded-[36px] sm:rounded-[44px] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.15)] border transition-all overflow-hidden flex flex-col items-center px-4 sm:px-6 pb-8 pt-2 relative ${
+            isLuxuryTheme
+              ? 'bg-[#FFFFFF] text-[#1C1917] border-[#E8E2D5]'
+              : 'bg-neutral-900/90 text-white border-white/10 backdrop-blur-xl'
+          }`}
+        >
+          {/* Top Gold Rim Accent Line */}
+          <div
+            className="w-full h-1.5 mb-2 rounded-full opacity-80"
+            style={{
+              background: `linear-gradient(90deg, transparent 0%, ${accentColor} 50%, transparent 100%)`,
+            }}
+          />
 
-        {/* Tab 1: PROFIL */}
-        {activeTab === 'profil' && (
-          <div className="w-full max-w-md flex flex-col gap-4 animate-in fade-in duration-300">
-            {/* KPI Stat Cards Grid */}
-            <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2.5`}>
-              {stats.map((st) => (
-                <div
-                  key={st.id}
-                  className="bg-white/80 dark:bg-black/30 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl p-3 text-center shadow-sm"
-                  style={{ borderColor: `${accentColor}33` }}
-                >
+          {/* Profile Header & Navigation Pills */}
+          <ProfileHeader
+            profile={profile}
+            theme={theme}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+
+          {/* Tab 1: PROFIL */}
+          {activeTab === 'profil' && (
+            <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
+              {/* KPI Stat Cards Grid */}
+              <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2`}>
+                {stats.map((st) => (
                   <div
-                    className="text-lg sm:text-xl font-black"
-                    style={{ color: accentColor }}
+                    key={st.id}
+                    className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-3 text-center shadow-sm"
+                    style={{ borderColor: `${accentColor}33` }}
                   >
-                    {st.value}
-                  </div>
-                  <div
-                    className="text-[10px] font-bold uppercase tracking-wider opacity-75"
-                    style={{ color: theme.text_color }}
-                  >
-                    {st.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Section À propos */}
-            {profile.bio && (
-              <div
-                className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-5 shadow-sm text-left"
-                style={{ borderColor: `${accentColor}33` }}
-              >
-                <h3 className={`text-base font-extrabold mb-2 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
-                  <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> À propos
-                </h3>
-                <p className="text-xs opacity-85 leading-relaxed whitespace-pre-line" style={{ color: theme.text_color }}>
-                  {profile.bio}
-                </p>
-              </div>
-            )}
-
-            {/* Section Domaines d'expertise */}
-            {tags.length > 0 && (
-              <div
-                className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-5 shadow-sm text-left"
-                style={{ borderColor: `${accentColor}33` }}
-              >
-                <h3 className={`text-base font-extrabold mb-3 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
-                  <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> Domaines d'expertise
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider shadow-sm"
-                      style={{
-                        backgroundColor: `${accentColor}15`,
-                        borderColor: `${accentColor}44`,
-                        color: accentColor,
-                      }}
+                    <div
+                      className="text-lg sm:text-xl font-black"
+                      style={{ color: accentColor }}
                     >
-                      {tag.startsWith('✦') ? tag : `✦ ${tag}`}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Links List */}
-            {links.length > 0 && (
-              <div className="w-full flex flex-col items-center gap-2.5 mt-2">
-                {links.map((link) => (
-                  <LinkButton key={link.id} link={link} theme={theme} />
+                      {st.value}
+                    </div>
+                    <div
+                      className="text-[10px] font-bold uppercase tracking-wider opacity-75"
+                      style={{ color: theme.text_color }}
+                    >
+                      {st.label}
+                    </div>
+                  </div>
                 ))}
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Tab 2: SERVICES */}
-        {activeTab === 'services' && (
-          <div className="w-full max-w-md flex flex-col gap-3 animate-in fade-in duration-300">
-            {services.map((service) => {
-              const isOpen = openServiceAccordion === service.id;
-              return (
+              {/* Section À propos */}
+              {profile.bio && (
                 <div
-                  key={service.id}
-                  className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm transition-all text-left"
+                  className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left"
                   style={{ borderColor: `${accentColor}33` }}
                 >
-                  <button
-                    onClick={() => setOpenServiceAccordion(isOpen ? null : service.id)}
-                    className="w-full p-4 flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider"
-                    style={{ color: theme.text_color }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+                  <h3 className={`text-base font-extrabold mb-2 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
+                    <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> À propos
+                  </h3>
+                  <p className="text-xs opacity-85 leading-relaxed whitespace-pre-line" style={{ color: theme.text_color }}>
+                    {profile.bio}
+                  </p>
+                </div>
+              )}
+
+              {/* Section Domaines d'expertise */}
+              {tags.length > 0 && (
+                <div
+                  className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left"
+                  style={{ borderColor: `${accentColor}33` }}
+                >
+                  <h3 className={`text-base font-extrabold mb-3 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
+                    <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> Domaines d'expertise
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                        style={{
+                          backgroundColor: `${accentColor}15`,
+                          borderColor: `${accentColor}44`,
+                          color: accentColor,
+                        }}
                       >
-                        <Sparkles className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className="block font-bold">{service.title}</span>
-                        {service.category && (
-                          <span className="text-[10px] opacity-60 font-mono">{service.category}</span>
-                        )}
-                      </div>
-                    </div>
+                        {tag.startsWith('✦') ? tag : `✦ ${tag}`}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                    <div className="flex items-center gap-2">
-                      {service.price && (
-                        <span
-                          className="px-2.5 py-0.5 rounded-full text-[10px] font-black border"
-                          style={{
-                            backgroundColor: `${accentColor}20`,
-                            borderColor: `${accentColor}44`,
-                            color: accentColor,
-                          }}
+              {/* Links List */}
+              {links.length > 0 && (
+                <div className="w-full flex flex-col items-center gap-2.5 mt-2">
+                  {links.map((link) => (
+                    <LinkButton key={link.id} link={link} theme={theme} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Tab 2: SERVICES */}
+          {activeTab === 'services' && (
+            <div className="w-full flex flex-col gap-3 animate-in fade-in duration-300">
+              {services.map((service) => {
+                const isOpen = openServiceAccordion === service.id;
+                return (
+                  <div
+                    key={service.id}
+                    className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm transition-all text-left"
+                    style={{ borderColor: `${accentColor}33` }}
+                  >
+                    <button
+                      onClick={() => setOpenServiceAccordion(isOpen ? null : service.id)}
+                      className="w-full p-4 flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider"
+                      style={{ color: theme.text_color }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-8 h-8 rounded-xl flex items-center justify-center"
+                          style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
                         >
-                          {service.price}
-                        </span>
-                      )}
-                      {isOpen ? <ChevronUp className="w-4 h-4 opacity-60" /> : <ChevronDown className="w-4 h-4 opacity-60" />}
-                    </div>
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-4 pb-4 pt-1 flex flex-col gap-2 border-t border-black/5 dark:border-white/5">
-                      <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-between text-left">
-                        <div>
-                          <div className="text-xs font-bold" style={{ color: theme.text_color }}>{service.title}</div>
-                          <div className="text-[10px] opacity-70" style={{ color: theme.text_color }}>{service.subtitle || 'Service personnalisé'}</div>
+                          <Sparkles className="w-4 h-4" />
                         </div>
-                        {service.url ? (
-                          <a
-                            href={service.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-lg text-white text-[10px] font-bold shadow"
-                            style={{ backgroundColor: accentColor }}
-                          >
-                            Réserver
-                          </a>
-                        ) : (
+                        <div>
+                          <span className="block font-bold">{service.title}</span>
+                          {service.category && (
+                            <span className="text-[10px] opacity-60 font-mono">{service.category}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {service.price && (
                           <span
-                            className="px-3 py-1 rounded-lg text-white text-[10px] font-bold"
-                            style={{ backgroundColor: accentColor }}
+                            className="px-2.5 py-0.5 rounded-full text-[10px] font-black border"
+                            style={{
+                              backgroundColor: `${accentColor}20`,
+                              borderColor: `${accentColor}44`,
+                              color: accentColor,
+                            }}
                           >
-                            Disponible
+                            {service.price}
                           </span>
                         )}
+                        {isOpen ? <ChevronUp className="w-4 h-4 opacity-60" /> : <ChevronDown className="w-4 h-4 opacity-60" />}
                       </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+                    </button>
 
-        {/* Tab 3: SHOP */}
-        {activeTab === 'shop' && (
-          <div className="w-full max-w-md flex flex-col gap-4 animate-in fade-in duration-300">
-            {/* Header Badge */}
-            <div
-              className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left"
-              style={{ borderColor: `${accentColor}33` }}
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
-              >
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <div style={{ color: theme.text_color }}>
-                <h3 className="text-sm font-extrabold">Produits digitaux</h3>
-                <p className="text-[10px] opacity-70">E-books gratuits & payants · Téléchargement immédiat</p>
-              </div>
-            </div>
-
-            {/* Filter Pills */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShopFilter('all')}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
-                  shopFilter === 'all' ? 'text-white shadow' : 'opacity-60'
-                }`}
-                style={{
-                  backgroundColor: shopFilter === 'all' ? accentColor : 'rgba(0,0,0,0.1)',
-                  color: shopFilter === 'all' ? '#ffffff' : theme.text_color,
-                }}
-              >
-                TOUS
-              </button>
-              <button
-                onClick={() => setShopFilter('free')}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
-                  shopFilter === 'free' ? 'text-white shadow' : 'opacity-60'
-                }`}
-                style={{
-                  backgroundColor: shopFilter === 'free' ? accentColor : 'rgba(0,0,0,0.1)',
-                  color: shopFilter === 'free' ? '#ffffff' : theme.text_color,
-                }}
-              >
-                GRATUITS
-              </button>
-              <button
-                onClick={() => setShopFilter('paid')}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
-                  shopFilter === 'paid' ? 'text-white shadow' : 'opacity-60'
-                }`}
-                style={{
-                  backgroundColor: shopFilter === 'paid' ? accentColor : 'rgba(0,0,0,0.1)',
-                  color: shopFilter === 'paid' ? '#ffffff' : theme.text_color,
-                }}
-              >
-                PAYANTS
-              </button>
-            </div>
-
-            {/* Products Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              {filteredProducts.map((prod) => (
-                <div
-                  key={prod.id}
-                  className="bg-white/90 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group"
-                  style={{ borderColor: `${accentColor}33` }}
-                >
-                  <div className="w-full h-32 relative bg-neutral-800">
-                    {prod.image_url ? (
-                      <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-105 transition duration-300" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
-                        E-Book
+                    {isOpen && (
+                      <div className="px-4 pb-4 pt-1 flex flex-col gap-2 border-t border-black/5 dark:border-white/5">
+                        <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-between text-left">
+                          <div>
+                            <div className="text-xs font-bold" style={{ color: theme.text_color }}>{service.title}</div>
+                            <div className="text-[10px] opacity-70" style={{ color: theme.text_color }}>{service.subtitle || 'Service personnalisé'}</div>
+                          </div>
+                          {service.url ? (
+                            <a
+                              href={service.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 rounded-lg text-white text-[10px] font-bold shadow"
+                              style={{ backgroundColor: accentColor }}
+                            >
+                              Réserver
+                            </a>
+                          ) : (
+                            <span
+                              className="px-3 py-1 rounded-lg text-white text-[10px] font-bold"
+                              style={{ backgroundColor: accentColor }}
+                            >
+                              Disponible
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
-                    <span
-                      className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
-                      style={{ backgroundColor: accentColor, color: '#ffffff' }}
-                    >
-                      {prod.price}
-                    </span>
                   </div>
+                );
+              })}
+            </div>
+          )}
 
-                  <div className="p-3 flex flex-col justify-between flex-1 gap-2">
-                    <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
-                      {prod.url && (
-                        <a
-                          href={prod.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] font-bold hover:underline"
-                          style={{ color: accentColor }}
-                        >
-                          Voir ➔
-                        </a>
+          {/* Tab 3: SHOP */}
+          {activeTab === 'shop' && (
+            <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
+              {/* Header Badge */}
+              <div
+                className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left"
+                style={{ borderColor: `${accentColor}33` }}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+                >
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div style={{ color: theme.text_color }}>
+                  <h3 className="text-sm font-extrabold">Produits digitaux</h3>
+                  <p className="text-[10px] opacity-70">E-books gratuits & payants · Téléchargement immédiat</p>
+                </div>
+              </div>
+
+              {/* Filter Pills */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShopFilter('all')}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
+                    shopFilter === 'all' ? 'text-white shadow' : 'opacity-60'
+                  }`}
+                  style={{
+                    backgroundColor: shopFilter === 'all' ? accentColor : 'rgba(0,0,0,0.1)',
+                    color: shopFilter === 'all' ? '#ffffff' : theme.text_color,
+                  }}
+                >
+                  TOUS
+                </button>
+                <button
+                  onClick={() => setShopFilter('free')}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
+                    shopFilter === 'free' ? 'text-white shadow' : 'opacity-60'
+                  }`}
+                  style={{
+                    backgroundColor: shopFilter === 'free' ? accentColor : 'rgba(0,0,0,0.1)',
+                    color: shopFilter === 'free' ? '#ffffff' : theme.text_color,
+                  }}
+                >
+                  GRATUITS
+                </button>
+                <button
+                  onClick={() => setShopFilter('paid')}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition ${
+                    shopFilter === 'paid' ? 'text-white shadow' : 'opacity-60'
+                  }`}
+                  style={{
+                    backgroundColor: shopFilter === 'paid' ? accentColor : 'rgba(0,0,0,0.1)',
+                    color: shopFilter === 'paid' ? '#ffffff' : theme.text_color,
+                  }}
+                >
+                  PAYANTS
+                </button>
+              </div>
+
+              {/* Products Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {filteredProducts.map((prod) => (
+                  <div
+                    key={prod.id}
+                    className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group"
+                    style={{ borderColor: `${accentColor}33` }}
+                  >
+                    <div className="w-full h-32 relative bg-neutral-800">
+                      {prod.image_url ? (
+                        <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-105 transition duration-300" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
+                          E-Book
+                        </div>
                       )}
+                      <span
+                        className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
+                        style={{ backgroundColor: accentColor, color: '#ffffff' }}
+                      >
+                        {prod.price}
+                      </span>
+                    </div>
+
+                    <div className="p-3 flex flex-col justify-between flex-1 gap-2">
+                      <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
+                        {prod.url && (
+                          <a
+                            href={prod.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] font-bold hover:underline"
+                            style={{ color: accentColor }}
+                          >
+                            Voir ➔
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+          )}
+
+          {/* VCard Download Button */}
+          {contact && contact.show_save_contact_button && (
+            <div className="w-full flex justify-center mt-6">
+              <VCardButton profile={profile} contact={contact} theme={theme} />
+            </div>
+          )}
+
+          {/* QR Code Trigger */}
+          <QrCodeModal profile={profile} />
+
+          {/* Customized Branding Footer */}
+          <div className="mt-10 text-center">
+            <p className="text-xs opacity-75 font-medium" style={{ color: theme.text_color }}>
+              Réalisé par <span className="font-bold" style={{ color: accentColor }}>Giovanny Gandonou</span>
+            </p>
           </div>
-        )}
-
-        {/* VCard Download Button */}
-        {contact && contact.show_save_contact_button && (
-          <div className="w-full flex justify-center mt-6">
-            <VCardButton profile={profile} contact={contact} theme={theme} />
-          </div>
-        )}
-
-        {/* QR Code Trigger */}
-        <QrCodeModal profile={profile} />
-
-        {/* Customized Branding Footer */}
-        <div className="mt-12 text-center">
-          <p className="text-xs opacity-75 font-medium" style={{ color: theme.text_color }}>
-            Réalisé par <span className="font-bold" style={{ color: accentColor }}>Giovanny Gandonou</span>
-          </p>
         </div>
       </div>
     </ThemeWrapper>
