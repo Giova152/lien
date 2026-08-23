@@ -8,14 +8,18 @@ import { Profile } from '@/types';
 interface QrCodeModalProps {
   profile: Profile;
   url?: string;
+  triggerStyle?: 'button' | 'icon';
 }
 
-export function QrCodeModal({ profile, url }: QrCodeModalProps) {
+export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const profileUrl =
     url || (typeof window !== 'undefined' ? `${window.location.origin}/${profile.username}` : `https://lien.me/${profile.username}`);
+
+  const accentColor = profile.theme?.accent_color || '#C5A059';
+  const textColor = profile.theme?.text_color || '#1C1917';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(profileUrl);
@@ -52,14 +56,28 @@ export function QrCodeModal({ profile, url }: QrCodeModalProps) {
 
   return (
     <>
-      {/* Floating QR Code Trigger Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-neutral-900/90 text-white border border-white/20 shadow-2xl flex items-center justify-center backdrop-blur-md hover:scale-110 active:scale-95 transition-all"
-        title="Afficher le QR Code"
-      >
-        <QrCode className="w-6 h-6" />
-      </button>
+      {/* Clean Non-Overlapping Inline Trigger Button */}
+      {triggerStyle === 'icon' ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm shrink-0"
+          style={{ color: textColor }}
+          title="QR Code"
+        >
+          <QrCode className="w-4 h-4" />
+        </button>
+      ) : (
+        <div className="w-full flex justify-center my-3">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-md text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
+            style={{ color: textColor }}
+          >
+            <QrCode className="w-4 h-4" style={{ color: accentColor }} />
+            <span>Afficher le QR Code</span>
+          </button>
+        </div>
+      )}
 
       {/* Modal Overlay */}
       {isOpen && (
