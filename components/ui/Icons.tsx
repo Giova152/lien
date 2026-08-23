@@ -47,6 +47,7 @@ import {
   BookOpen,
   ChevronDown,
   ChevronUp,
+  Zap,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -213,4 +214,5 @@ export {
   ChevronDown,
   ChevronUp,
   IconifyIcon,
+  Zap,
 };

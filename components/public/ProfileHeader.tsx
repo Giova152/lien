@@ -67,14 +67,24 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
         </div>
       </div>
 
-      {/* Display Name */}
+      {/* Display Name + Verified Creator Badge */}
       <h1
-        className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-1 ${
+        className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-1 flex items-center justify-center gap-2 ${
           isLuxuryTheme ? 'font-serif' : ''
         }`}
         style={{ color: theme.text_color }}
       >
-        {profile.display_name}
+        <span>{profile.display_name}</span>
+        {profile.is_pro && (
+          <span
+            className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-md shrink-0"
+            title="Créateur Vérifié PRO"
+          >
+            <svg className="w-3 h-3 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </span>
+        )}
       </h1>
 
       {/* Diamond Separator Ornament */}

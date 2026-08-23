@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Profile, LinkItem, ContactInfo } from '@/types';
 import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
+import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
 import {
   Sparkles,
   LinkIcon,
@@ -36,6 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [copied, setCopied] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
   const fetchDashboardData = async () => {
     try {
@@ -191,19 +193,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span>Lien<span className="text-indigo-400">.me</span></span>
               </Link>
 
-              {/* Status Indicator */}
+              {/* Status & PRO Badge Indicator */}
               {profile && (
-                <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-[11px] font-medium">
-                  <span className={`w-2 h-2 rounded-full ${profile.is_published ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                  <span className={profile.is_published ? 'text-emerald-400' : 'text-amber-400'}>
-                    {profile.is_published ? 'Carte Publique' : 'Carte Masquée'}
-                  </span>
+                <div className="hidden md:flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-[11px] font-medium">
+                    <span className={`w-2 h-2 rounded-full ${profile.is_published ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                    <span className={profile.is_published ? 'text-emerald-400' : 'text-amber-400'}>
+                      {profile.is_published ? 'Carte Publique' : 'Carte Masquée'}
+                    </span>
+                  </div>
+
+                  {profile.is_pro ? (
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-400/10 border border-amber-500/40 text-amber-400 text-xs font-black uppercase tracking-wider shadow-sm">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>PRO À VIE</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsUpgradeModalOpen(true)}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-lg hover:scale-105 transition-all"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
+                      <span>Passer PRO (150 $)</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Right: Quick Actions */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Mobile PRO Upgrade Button */}
+              {profile && !profile.is_pro && (
+                <button
+                  onClick={() => setIsUpgradeModalOpen(true)}
+                  className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950 text-[11px] font-black uppercase"
+                >
+                  <Sparkles className="w-3 h-3 fill-neutral-950" />
+                  <span>PRO 150$</span>
+                </button>
+              )}
+
               {profile?.username && (
                 <>
                   {/* Copy Link Button */}
@@ -300,6 +330,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         </main>
+
+        {/* Lifetime Upgrade Modal (150$) */}
+        <LifetimeUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
       </div>
     </DashboardContext.Provider>
   );

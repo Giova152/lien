@@ -55,6 +55,9 @@ export interface Profile {
   cover_url?: string | null;
   theme: ThemeConfig;
   is_published: boolean;
+  is_pro?: boolean;
+  plan?: 'free' | 'pro_lifetime';
+  stripe_payment_id?: string | null;
   created_at: string;
   updated_at: string;
 }

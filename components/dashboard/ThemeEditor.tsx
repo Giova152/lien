@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ThemeConfig, ButtonStyle, BackgroundType, StatItem, ServiceItem, ShopProduct } from '@/types';
 import { THEME_PRESETS } from '@/lib/utils';
 import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers } from '@/components/ui/Icons';
+import { DashboardContext } from '@/lib/context/DashboardContext';
 
 interface ThemeEditorProps {
   theme: ThemeConfig;
@@ -39,6 +40,7 @@ const GRADIENT_PRESETS = [
 ];
 
 export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProps) {
+  const { profile } = useContext(DashboardContext);
   const [activeTabSection, setActiveTabSection] = useState<'style' | 'content'>('style');
 
   const updateField = <K extends keyof ThemeConfig>(field: K, value: ThemeConfig[K]) => {
@@ -149,6 +151,32 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
           Personnalisez les couleurs, la typographie et les contenus de vos 3 onglets (Profil, Services, Shop)
         </p>
       </div>
+
+      {/* Lifetime PRO Promotion Banner */}
+      {!profile?.is_pro && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex items-center justify-between gap-4 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 text-neutral-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/20">
+              <Sparkles className="w-5 h-5 fill-neutral-950" />
+            </div>
+            <div className="flex flex-col text-left">
+              <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider">Plan PRO À VIE – 150 $</h4>
+              <p className="text-[11px] text-neutral-300">
+                Débloquez tous les thèmes de luxe, l'onglet E-books, Services & Analytics pour toujours.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
+              if (upgradeBtn) upgradeBtn.click();
+            }}
+            className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black uppercase tracking-wider shrink-0 transition hover:scale-105 shadow-md"
+          >
+            Débloquer (150$)
+          </button>
+        </div>
+      )}
 
       {/* Switcher Tab between Style & Custom Content */}
       <div className="flex bg-neutral-900 border border-neutral-800 p-1 rounded-2xl">
