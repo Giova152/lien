@@ -7,6 +7,9 @@ import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { ShieldAlert } from '@/components/ui/Icons';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PublicProfileProps {
   params: Promise<{ username: string }>;
 }
