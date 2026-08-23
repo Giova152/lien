@@ -3,12 +3,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { sanitizeUsername } from '@/lib/utils';
-import { ProfileHeader } from '@/components/public/ProfileHeader';
-import { LinkButton } from '@/components/public/LinkButton';
-import { VCardButton } from '@/components/public/VCardButton';
-import { QrCodeModal } from '@/components/public/QrCodeModal';
-import { ThemeWrapper } from '@/components/public/ThemeWrapper';
-import { ShieldAlert, Sparkles } from '@/components/ui/Icons';
+import { PublicProfileView } from '@/components/public/PublicProfileView';
+import { ShieldAlert } from '@/components/ui/Icons';
 import Link from 'next/link';
 
 interface PublicProfileProps {
@@ -104,7 +100,7 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
     .eq('profile_id', profile.id)
     .maybeSingle();
 
-  // Client-side view tracker script trigger script
+  // Client-side view tracker script
   const trackViewScript = `
     (function() {
       try {
@@ -118,55 +114,15 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
   `;
 
   return (
-    <ThemeWrapper theme={profile.theme}>
+    <>
       <script dangerouslySetInnerHTML={{ __html: trackViewScript }} />
-
-      <div className="min-h-screen w-full flex flex-col items-center px-4 pb-20 pt-4">
-        {/* Unpublished Warning Badge for Owner */}
-        {!profile.is_published && isOwner && (
-          <div className="w-full max-w-md bg-amber-500/10 border border-amber-500/30 text-amber-300 px-4 py-2.5 rounded-xl text-xs font-semibold text-center mb-4 flex items-center justify-center gap-2">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span>Mode Aperçu : Votre profil est actuellement masqué au public.</span>
-          </div>
-        )}
-
-        {/* Profile Header */}
-        <ProfileHeader profile={profile} theme={profile.theme} />
-
-        {/* Links List */}
-        <div className="w-full flex flex-col items-center gap-2 mt-4">
-          {links.length > 0 ? (
-            links.map((link) => (
-              <LinkButton key={link.id} link={link} theme={profile.theme} />
-            ))
-          ) : (
-            <div className="p-6 text-center text-xs opacity-60 border border-dashed border-white/20 rounded-xl w-full max-w-md">
-              Aucun lien pour le moment.
-            </div>
-          )}
+      {!profile.is_published && isOwner && (
+        <div className="w-full bg-amber-500/10 border-b border-amber-500/30 text-amber-300 px-4 py-2 text-xs font-semibold text-center flex items-center justify-center gap-2">
+          <ShieldAlert className="w-4 h-4 shrink-0" />
+          <span>Mode Aperçu : Votre profil est actuellement masqué au public.</span>
         </div>
-
-        {/* VCard Download Button */}
-        {contact && contact.show_save_contact_button && (
-          <div className="w-full flex justify-center mt-3">
-            <VCardButton profile={profile} contact={contact} theme={profile.theme} />
-          </div>
-        )}
-
-        {/* QR Code Modal Trigger */}
-        <QrCodeModal profile={profile} />
-
-        {/* Branding Footer */}
-        <div className="mt-12 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-[11px] font-medium opacity-70 hover:opacity-100 transition"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Créé avec Lien.me</span>
-          </Link>
-        </div>
-      </div>
-    </ThemeWrapper>
+      )}
+      <PublicProfileView profile={profile} links={links} contact={contact} isOwner={isOwner} />
+    </>
   );
 }

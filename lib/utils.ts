@@ -81,6 +81,21 @@ export const THEME_PRESETS: { name: string; theme: ThemeConfig }[] = [
     },
   },
   {
+    name: 'Élégance Or & Ivoire',
+    theme: {
+      background_type: 'color',
+      background_value: '#FBF9F4',
+      button_style: 'rounded-xl',
+      button_color: '#ffffff',
+      button_text_color: '#1f1f1f',
+      button_border_color: '#e8e2d5',
+      font_family: 'Playfair Display',
+      text_color: '#1f1f1f',
+      accent_color: '#b8860b',
+      card_glass: false,
+    },
+  },
+  {
     name: 'Cyberpunk Noir',
     theme: {
       background_type: 'color',

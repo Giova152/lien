@@ -42,6 +42,11 @@ import {
   Wifi,
   Battery,
   Signal,
+  Calendar,
+  UserCheck,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -184,4 +189,9 @@ export {
   Wifi,
   Battery,
   Signal,
+  Calendar,
+  UserCheck,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
 };
