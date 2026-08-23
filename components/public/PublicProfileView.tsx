@@ -392,12 +392,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           {/* QR Code Trigger */}
           <QrCodeModal profile={profile} />
 
-          {/* Customized Branding Footer */}
-          <div className="mt-10 text-center">
-            <p className="text-xs opacity-75 font-medium" style={{ color: theme.text_color }}>
-              Réalisé par <span className="font-bold" style={{ color: accentColor }}>Giovanny Gandonou</span>
-            </p>
-          </div>
+
         </div>
       </div>
     </ThemeWrapper>
