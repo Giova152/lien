@@ -2,17 +2,18 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Profile, ThemeConfig } from '@/types';
-import { Facebook, Whatsapp, Tiktok, Mail, Instagram } from '@/components/ui/Icons';
+import { Profile, ThemeConfig, ContactInfo } from '@/types';
+import { Facebook, Whatsapp, Tiktok, Mail, PhoneCall } from '@/components/ui/Icons';
 
 interface ProfileHeaderProps {
   profile: Profile;
   theme: ThemeConfig;
+  contact?: ContactInfo | null;
   activeTab?: 'profil' | 'services' | 'shop';
   onTabChange?: (tab: 'profil' | 'services' | 'shop') => void;
 }
 
-export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChange }: ProfileHeaderProps) {
+export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', onTabChange }: ProfileHeaderProps) {
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -24,6 +25,12 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
 
   const isLuxuryTheme = theme.font_family === 'Playfair Display' || theme.background_value === '#FBF9F4';
   const accentColor = theme.accent_color || '#C5A059';
+
+  const whatsappUrl = contact?.whatsapp
+    ? `https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`
+    : null;
+  const emailUrl = contact?.email ? `mailto:${contact.email}` : null;
+  const phoneUrl = contact?.phone ? `tel:${contact.phone}` : null;
 
   return (
     <div className="flex flex-col items-center text-center w-full max-w-md mx-auto pt-4 pb-2 px-4 relative">
@@ -103,27 +110,39 @@ export function ProfileHeader({ profile, theme, activeTab = 'profil', onTabChang
         </div>
       )}
 
-      {/* Quick Social Action Icons Row (Authentic Official SVG Logos) */}
+      {/* Quick Action Icons Row */}
       <div className="flex items-center justify-center gap-2.5 mb-4">
-        {[
-          { icon: Facebook, label: 'Facebook' },
-          { icon: Whatsapp, label: 'WhatsApp' },
-          { icon: Tiktok, label: 'TikTok' },
-          { icon: Mail, label: 'Email' },
-        ].map((item, idx) => {
-          const IconComponent = item.icon;
-          return (
-            <a
-              key={idx}
-              href="#"
-              className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
-              style={{ color: theme.text_color }}
-              title={item.label}
-            >
-              <IconComponent className="w-4 h-4" />
-            </a>
-          );
-        })}
+        {whatsappUrl && (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+            title="WhatsApp"
+          >
+            <Whatsapp className="w-4 h-4" />
+          </a>
+        )}
+
+        {phoneUrl && (
+          <a
+            href={phoneUrl}
+            className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+            title="Téléphone"
+          >
+            <PhoneCall className="w-4 h-4" />
+          </a>
+        )}
+
+        {emailUrl && (
+          <a
+            href={emailUrl}
+            className="w-9 h-9 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+            title="Email"
+          >
+            <Mail className="w-4 h-4" />
+          </a>
+        )}
       </div>
 
       {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) */}

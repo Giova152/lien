@@ -8,7 +8,7 @@ import { LinkButton } from '@/components/public/LinkButton';
 import { VCardButton } from '@/components/public/VCardButton';
 import { QrCodeModal } from '@/components/public/QrCodeModal';
 import { ThemeWrapper } from '@/components/public/ThemeWrapper';
-import { Sparkles, BookOpen, ChevronDown, ChevronUp, ArrowRight } from '@/components/ui/Icons';
+import { Sparkles, BookOpen, ChevronDown, ChevronUp, ArrowRight, PhoneCall, Whatsapp, Mail } from '@/components/ui/Icons';
 
 interface PublicProfileViewProps {
   profile: Profile;
@@ -109,6 +109,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           <ProfileHeader
             profile={profile}
             theme={theme}
+            contact={contact}
             activeTab={activeTab}
             onTabChange={setActiveTab}
           />
@@ -179,6 +180,53 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Section Coordonnées & Contact */}
+              {contact && (contact.phone || contact.whatsapp || contact.email || contact.address || contact.website) && (
+                <div
+                  className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left flex flex-col gap-2.5"
+                  style={{ borderColor: `${accentColor}33` }}
+                >
+                  <h3 className={`text-sm font-extrabold mb-1 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
+                    <span className="font-bold text-base" style={{ color: accentColor }}>|</span> Coordonnées & Contact
+                  </h3>
+                  
+                  {contact.phone && (
+                    <a href={`tel:${contact.phone}`} className="flex items-center gap-2.5 text-xs font-semibold hover:opacity-80 transition" style={{ color: theme.text_color }}>
+                      <PhoneCall className="w-4 h-4 text-indigo-500 shrink-0" />
+                      <span>{contact.phone}</span>
+                    </a>
+                  )}
+
+                  {contact.whatsapp && (
+                    <a href={`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-xs font-semibold hover:opacity-80 transition" style={{ color: theme.text_color }}>
+                      <Whatsapp className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span>WhatsApp : {contact.whatsapp}</span>
+                    </a>
+                  )}
+
+                  {contact.email && (
+                    <a href={`mailto:${contact.email}`} className="flex items-center gap-2.5 text-xs font-semibold hover:opacity-80 transition" style={{ color: theme.text_color }}>
+                      <Mail className="w-4 h-4 text-purple-500 shrink-0" />
+                      <span>{contact.email}</span>
+                    </a>
+                  )}
+
+                  {contact.address && (
+                    <div className="flex items-center gap-2.5 text-xs font-semibold opacity-90" style={{ color: theme.text_color }}>
+                      <span className="shrink-0">📍</span>
+                      <span>{contact.address}</span>
+                    </div>
+                  )}
+
+                  {contact.website && (
+                    <a href={contact.website.startsWith('http') ? contact.website : `https://${contact.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-xs font-semibold text-indigo-600 hover:underline transition">
+                      <span className="shrink-0">🌐</span>
+                      <span>{contact.website}</span>
+                    </a>
+                  )}
                 </div>
               )}
 
