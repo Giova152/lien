@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { QrCode, X, Download, Copy, Check } from '@/components/ui/Icons';
 import { Profile } from '@/types';
@@ -14,14 +14,22 @@ interface QrCodeModalProps {
 export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string>(url || '');
 
-  const profileUrl =
-    url || (typeof window !== 'undefined' ? `${window.location.origin}/${profile.username}` : `https://lien.me/${profile.username}`);
+  useEffect(() => {
+    if (url) {
+      setProfileUrl(url);
+    } else if (typeof window !== 'undefined') {
+      // Use exact real browser URL (e.g. https://lien-xxxx.vercel.app/giova)
+      setProfileUrl(`${window.location.origin}/${profile.username}`);
+    }
+  }, [url, profile.username]);
 
   const accentColor = profile.theme?.accent_color || '#C5A059';
   const textColor = profile.theme?.text_color || '#1C1917';
 
   const handleCopy = () => {
+    if (!profileUrl) return;
     navigator.clipboard.writeText(profileUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -94,20 +102,26 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             <h3 className="text-xl font-bold mb-1">{profile.display_name}</h3>
             <p className="text-sm text-neutral-400 mb-5">Scannez pour ouvrir la carte</p>
 
-            {/* QR Code Container */}
+            {/* QR Code Container (Dynamic Real Vercel URL) */}
             <div className="bg-white p-4 rounded-2xl shadow-inner mb-5">
-              <QRCodeSVG
-                id="profile-qrcode-svg"
-                value={profileUrl}
-                size={200}
-                level="H"
-                includeMargin={false}
-              />
+              {profileUrl ? (
+                <QRCodeSVG
+                  id="profile-qrcode-svg"
+                  value={profileUrl}
+                  size={200}
+                  level="H"
+                  includeMargin={false}
+                />
+              ) : (
+                <div className="w-[200px] h-[200px] flex items-center justify-center text-xs text-neutral-500">
+                  Génération du QR Code...
+                </div>
+              )}
             </div>
 
             {/* URL Display & Copy */}
             <div className="w-full flex items-center justify-between bg-neutral-800 rounded-xl px-3 py-2 text-xs mb-4 text-neutral-300">
-              <span className="truncate max-w-[200px]">{profileUrl}</span>
+              <span className="truncate max-w-[200px] font-mono">{profileUrl}</span>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1 font-medium text-indigo-400 hover:text-indigo-300 ml-2"
@@ -120,7 +134,7 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             {/* Download Button */}
             <button
               onClick={handleDownloadQr}
-              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl text-sm flex items-center justify-center gap-2 transition"
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg"
             >
               <Download className="w-4 h-4" />
               Télécharger le QR Code PNG
