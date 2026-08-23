@@ -11,6 +11,8 @@
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.9.1",
+    "@iconify/icons-icons8": "^1.2.3",
+    "@iconify/react": "^6.0.2",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "clsx": "^2.1.1",

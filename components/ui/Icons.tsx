@@ -120,7 +120,13 @@ export function GithubIcon({ className = 'w-5 h-5' }: { className?: string }) {
   );
 }
 
+import { Icon as IconifyIcon } from '@iconify/react';
+
 export function PlatformIcon({ name, className = 'w-5 h-5' }: IconProps) {
+  if (name?.includes(':')) {
+    return <IconifyIcon icon={name} className={className} />;
+  }
+
   switch (name?.toLowerCase()) {
     case 'instagram':
       return <InstagramIcon className={className} />;
@@ -206,4 +212,5 @@ export {
   BookOpen,
   ChevronDown,
   ChevronUp,
+  IconifyIcon,
 };
