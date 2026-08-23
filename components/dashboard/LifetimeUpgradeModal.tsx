@@ -96,23 +96,22 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           ))}
         </div>
 
-        {/* Official Embedded Chariow Widget (Clean & Exclusive Payment Container) */}
-        <div className="relative z-10 w-full flex flex-col items-center justify-center">
-          <div className="w-full bg-white rounded-2xl p-2 text-black shadow-2xl overflow-hidden flex justify-center border border-amber-500/30">
-            <div
-              id="chariow-widget"
-              data-product-id="prd_qm4vxf3z"
-              data-store-domain="infosweb.mychariow.store"
-              data-style="frame"
-              data-border-style="rounded"
-              data-cta-width="xs"
-              data-cta-animation="none"
-              data-locale="en"
-              data-primary-color="#008F51"
-              data-background-color="#FFFFFF"
-              className="w-full flex justify-center min-h-[140px]"
-            />
-          </div>
+        {/* Official Embedded Chariow Widget (Tap Button Mode) */}
+        <div className="relative z-10 w-full flex flex-col items-center justify-center pt-1">
+          <div
+            id="chariow-widget"
+            data-product-id="prd_qm4vxf3z"
+            data-store-domain="infosweb.mychariow.store"
+            data-style="tap"
+            data-border-style="rounded"
+            data-cta-width="xs"
+            data-cta-animation="none"
+            data-locale="en"
+            data-primary-color="#008F51"
+            data-background-color="#FFFFFF"
+            data-custom-cta-text="Profiter de l'offre (186 $)"
+            className="w-full flex justify-center min-h-[50px]"
+          />
         </div>
 
         <p className="text-[10px] text-center text-neutral-400 font-medium relative z-10">
