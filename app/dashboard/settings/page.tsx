@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Profile } from '@/types';
 import { createClient } from '@/lib/supabase/client';
 import {
   Settings,
@@ -15,7 +14,6 @@ import {
   Loader2,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
-
 import { useDashboard } from '@/lib/context/DashboardContext';
 
 export default function SettingsPage() {
@@ -119,25 +117,25 @@ export default function SettingsPage() {
   if (!profile) return null;
 
   return (
-    <div className="w-full flex flex-col gap-6 text-white">
+    <div className="w-full flex flex-col gap-6 text-neutral-900 font-sans">
       <div>
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <Settings className="w-5 h-5 text-indigo-400" />
+        <h2 className="text-xl font-bold flex items-center gap-2 text-neutral-900">
+          <Settings className="w-5 h-5 text-indigo-600" />
           Paramètres du Compte & Visibilité
         </h2>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs text-neutral-500 mt-0.5">
           Gérez la publication de votre page et la sécurité de votre compte
         </p>
       </div>
 
       {/* Publier / Dépublier le profil */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white border border-neutral-200/80 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
         <div>
-          <h3 className="text-base font-bold flex items-center gap-2">
-            <Eye className="w-5 h-5 text-indigo-400" />
+          <h3 className="text-base font-bold flex items-center gap-2 text-neutral-900">
+            <Eye className="w-5 h-5 text-indigo-600" />
             Statut de publication de la carte
           </h3>
-          <p className="text-xs text-neutral-400 mt-1">
+          <p className="text-xs text-neutral-500 mt-1">
             {profile.is_published
               ? 'Votre carte est actuellement Publique et accessible via votre lien.'
               : 'Votre carte est Privée (dépubliée). Personne ne peut y accéder.'}
@@ -147,10 +145,10 @@ export default function SettingsPage() {
         <button
           onClick={handleTogglePublish}
           disabled={publishing}
-          className={`px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 transition shrink-0 ${
+          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition shrink-0 shadow-sm ${
             profile.is_published
-              ? 'bg-rose-600/20 text-rose-300 border border-rose-500/30 hover:bg-rose-600/30'
-              : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg'
+              ? 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'
+              : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md'
           }`}
         >
           {publishing ? (
@@ -163,9 +161,9 @@ export default function SettingsPage() {
       </div>
 
       {/* Changer Email */}
-      <form onSubmit={handleUpdateEmail} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col gap-4">
-        <h3 className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
-          <Mail className="w-4 h-4 text-indigo-400" />
+      <form onSubmit={handleUpdateEmail} className="bg-white border border-neutral-200/80 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
+        <h3 className="text-sm font-bold text-neutral-800 flex items-center gap-2">
+          <Mail className="w-4 h-4 text-indigo-600" />
           Modifier l'adresse email
         </h3>
 
@@ -175,14 +173,14 @@ export default function SettingsPage() {
             placeholder="Nouvelle adresse email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500"
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 placeholder:text-neutral-400 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition"
           />
         </div>
 
         <button
           type="submit"
           disabled={updatingEmail || !newEmail}
-          className="self-start px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+          className="self-start px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50"
         >
           <Check className="w-3.5 h-3.5" />
           Mettre à jour l'email
@@ -190,9 +188,9 @@ export default function SettingsPage() {
       </form>
 
       {/* Changer Mot de passe */}
-      <form onSubmit={handleUpdatePassword} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col gap-4">
-        <h3 className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
-          <Lock className="w-4 h-4 text-indigo-400" />
+      <form onSubmit={handleUpdatePassword} className="bg-white border border-neutral-200/80 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
+        <h3 className="text-sm font-bold text-neutral-800 flex items-center gap-2">
+          <Lock className="w-4 h-4 text-indigo-600" />
           Modifier le mot de passe
         </h3>
 
@@ -202,35 +200,35 @@ export default function SettingsPage() {
             placeholder="Nouveau mot de passe (min 6 caractères)"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500"
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 placeholder:text-neutral-400 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition"
           />
         </div>
 
         <button
           type="submit"
           disabled={updatingPassword || !newPassword}
-          className="self-start px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+          className="self-start px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50"
         >
           <Check className="w-3.5 h-3.5" />
           Mettre à jour le mot de passe
         </button>
       </form>
 
-      {/* Zone Danger : Supprimer le compte */}
-      <div className="bg-rose-950/20 border border-rose-900/50 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-4">
+      {/* Zone de Danger : Supprimer le compte (Épuré & Ultra-Clair) */}
+      <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-2 shadow-sm">
         <div>
-          <h3 className="text-sm font-bold text-rose-400 flex items-center gap-2">
-            <Trash2 className="w-4 h-4" />
+          <h3 className="text-base font-black text-rose-700 flex items-center gap-2">
+            <Trash2 className="w-5 h-5 text-rose-600" />
             Zone de Danger : Supprimer le compte
           </h3>
-          <p className="text-xs text-neutral-400 mt-1">
+          <p className="text-xs text-rose-600/90 mt-1 font-medium leading-relaxed">
             Cette action est irréversible. Toutes vos données, liens et statistiques seront définitivement effacés.
           </p>
         </div>
 
         <button
           onClick={handleDeleteAccount}
-          className="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-xs transition shadow-lg shrink-0"
+          className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition shadow-md hover:shadow-rose-600/25 shrink-0"
         >
           Supprimer mon compte
         </button>
