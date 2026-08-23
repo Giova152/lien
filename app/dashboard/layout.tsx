@@ -214,7 +214,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-lg hover:scale-105 transition-all"
                     >
                       <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
-                      <span>Passer PRO (150 $)</span>
+                      <span>Passer PRO (186 $)</span>
                     </button>
                   )}
                 </div>
@@ -230,7 +230,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950 text-[11px] font-black uppercase"
                 >
                   <Sparkles className="w-3 h-3 fill-neutral-950" />
-                  <span>PRO 150$</span>
+                  <span>PRO 186$</span>
                 </button>
               )}
 

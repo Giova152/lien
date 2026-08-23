@@ -63,7 +63,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
             Accès <span className="text-amber-400">PRO À VIE</span>
           </h2>
           <p className="text-xs sm:text-sm text-neutral-400 max-w-sm">
-            Paiement unique de <strong className="text-white">150 $</strong>. Aucun abonnement mensuel, zéro frais cachés.
+            Paiement unique de <strong className="text-white">186 $</strong>. Aucun abonnement mensuel, zéro frais cachés.
           </p>
         </div>
 
@@ -91,12 +91,12 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-neutral-800/80 border border-neutral-700/80">
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-400 line-through font-semibold">300 $</span>
+                <span className="text-xs text-neutral-400 line-through font-semibold">350 $</span>
                 <span className="px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black uppercase">
-                  -50% PROMO
+                  OFFRE PROMO
                 </span>
               </div>
-              <span className="text-2xl font-black text-amber-400">150 $ <span className="text-xs font-semibold text-neutral-300">USD</span></span>
+              <span className="text-2xl font-black text-amber-400">186 $ <span className="text-xs font-semibold text-neutral-300">USD</span></span>
             </div>
             <div className="flex flex-col items-end gap-0.5">
               <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold uppercase tracking-wider">
@@ -119,7 +119,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
             ) : (
               <>
                 <Sparkles className="w-4 h-4 fill-neutral-950" />
-                <span>Profiter de l'offre Promo (150 $)</span>
+                <span>Profiter de l'offre Promo (186 $)</span>
               </>
             )}
           </button>

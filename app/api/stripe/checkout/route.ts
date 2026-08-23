@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         {
           price_data: {
             currency: 'usd',
-            unit_amount: 15000, // $150.00 USD
+            unit_amount: 18600, // $186.00 USD
             product_data: {
               name: 'Plan PRO À VIE – Offre Créateur',
               description:

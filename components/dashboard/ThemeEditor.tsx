@@ -161,12 +161,12 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             </div>
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-2">
-                <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider">OFFRE PROMO À VIE – 150 $</h4>
-                <span className="text-[10px] text-neutral-400 line-through font-semibold">300 $</span>
-                <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[9px] font-black uppercase">-50%</span>
+                <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider">OFFRE PROMO À VIE – 186 $</h4>
+                <span className="text-[10px] text-neutral-400 line-through font-semibold">350 $</span>
+                <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[9px] font-black uppercase">PROMO</span>
               </div>
               <p className="text-[11px] text-neutral-300">
-                Économisez 150 $ aujourd'hui ! Débloquez tous les thèmes de luxe, l'onglet E-books, Services & Analytics pour toujours.
+                Économisez dès aujourd'hui ! Débloquez tous les thèmes de luxe, l'onglet E-books, Services & Analytics pour toujours.
               </p>
             </div>
           </div>
@@ -177,7 +177,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             }}
             className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black uppercase tracking-wider shrink-0 transition hover:scale-105 shadow-md"
           >
-            Offre Promo (150$)
+            Offre Promo (186$)
           </button>
         </div>
       )}
