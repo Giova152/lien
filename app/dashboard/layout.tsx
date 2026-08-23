@@ -103,6 +103,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Instant payment success handling
+    if (typeof window !== 'undefined' && window.location.search.includes('payment=success')) {
+      const upgradeAccount = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from('profiles')
+            .update({ is_pro: true, plan: 'pro_lifetime', updated_at: new Date().toISOString() })
+            .eq('id', user.id);
+
+          fetchDashboardData();
+          toast.success('Félicitations ! Votre compte est désormais PRO À VIE 🎉', {
+            duration: 6000,
+          });
+          // Clean URL parameter
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      };
+      upgradeAccount();
+    }
   }, []);
 
   const handleSignOut = async () => {
