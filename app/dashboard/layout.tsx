@@ -205,6 +205,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setProfile,
         setLinks,
         setContact,
+        openUpgradeModal: () => setIsUpgradeModalOpen(true),
       }}
     >
       <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
@@ -233,7 +234,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {profile.is_pro ? (
                     <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-xs font-black uppercase tracking-wider shadow-xs">
                       <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                      <span>PRO À VIE</span>
+                      <span>PRO ACTIF</span>
                     </div>
                   ) : (
                     <button
@@ -241,7 +242,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-xs hover:scale-105 transition-all"
                     >
                       <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
-                      <span>Passer PRO (186 $)</span>
+                      <span>Passer PRO</span>
                     </button>
                   )}
                 </div>
@@ -257,7 +258,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950 text-[11px] font-black uppercase shadow-xs"
                 >
                   <Sparkles className="w-3 h-3 fill-neutral-950" />
-                  <span>PRO 186$</span>
+                  <span>PRO</span>
                 </button>
               )}
 

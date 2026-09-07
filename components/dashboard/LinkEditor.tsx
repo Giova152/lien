@@ -33,7 +33,7 @@ export function LinkEditor({
   onDeleteLink,
   onReorderLinks,
 }: LinkEditorProps) {
-  const { profile } = useContext(DashboardContext);
+  const { profile, openUpgradeModal } = useContext(DashboardContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<Partial<LinkItem> | null>(null);
   const [label, setLabel] = useState('');
@@ -44,10 +44,8 @@ export function LinkEditor({
   const openAddModal = () => {
     // Freemium Limit Check: 1 Link max for free tier
     if (!profile?.is_pro && links.length >= 1) {
-      toast.error('⚡ Limite de 1 lien atteinte en version Gratuite. Passez au Plan PRO À VIE (186 $) pour ajouter des liens illimités !');
-      // Trigger header PRO upgrade button
-      const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
-      if (upgradeBtn) upgradeBtn.click();
+      toast.error('⚡ Limite de 1 lien atteinte en version Gratuite. Passez à la formule PRO pour débloquer des liens illimités !');
+      openUpgradeModal?.();
       return;
     }
 
