@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useContext } from 'react';
+import Link from 'next/link';
 import { ThemeConfig, ButtonStyle, BackgroundType, StatItem, ServiceItem, ShopProduct } from '@/types';
 import { THEME_PRESETS } from '@/lib/utils';
-import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers } from '@/components/ui/Icons';
+import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers, Zap } from '@/components/ui/Icons';
 import { DashboardContext } from '@/lib/context/DashboardContext';
 
 interface ThemeEditorProps {
@@ -81,43 +82,6 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
   };
   const handleDeleteTag = (index: number) => {
     updateField('expertise_tags', tags.filter((_, idx) => idx !== index));
-  };
-
-  // Service Handlers
-  const handleUpdateService = (id: string, field: keyof ServiceItem, val: string) => {
-    const updated = services.map((s) => (s.id === id ? { ...s, [field]: val } : s));
-    updateField('services', updated);
-  };
-  const handleAddService = () => {
-    const newService: ServiceItem = {
-      id: Date.now().toString(),
-      title: 'NOUVEAU SERVICE',
-      category: 'SERVICE',
-      subtitle: 'Description de la prestation',
-      price: 'Sur devis',
-    };
-    updateField('services', [...services, newService]);
-  };
-  const handleDeleteService = (id: string) => {
-    updateField('services', services.filter((s) => s.id !== id));
-  };
-
-  // Product Handlers
-  const handleUpdateProduct = (id: string, field: keyof ShopProduct, val: any) => {
-    const updated = products.map((p) => (p.id === id ? { ...p, [field]: val } : p));
-    updateField('products', updated);
-  };
-  const handleAddProduct = () => {
-    const newProd: ShopProduct = {
-      id: Date.now().toString(),
-      title: 'NOUVEAU E-BOOK',
-      price: 'Gratuit',
-      type: 'free',
-    };
-    updateField('products', [...products, newProd]);
-  };
-  const handleDeleteProduct = (id: string) => {
-    updateField('products', products.filter((p) => p.id !== id));
   };
 
   return (
@@ -477,125 +441,37 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             </div>
           </div>
 
-          {/* 3. Éditeur des Services */}
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-neutral-900">
-                Services & Prestations (Onglet SERVICES)
-              </h3>
-              <button
-                onClick={handleAddService}
-                className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 hover:bg-indigo-100 transition shadow-xs"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Ajouter un service</span>
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              {services.map((srv) => (
-                <div key={srv.id} className="p-3.5 rounded-xl bg-slate-50 border border-neutral-200 flex flex-col gap-2.5">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={srv.title}
-                      onChange={(e) => handleUpdateService(srv.id, 'title', e.target.value)}
-                      placeholder="Titre du service (ex: RÉSERVER UN RDV)"
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
-                    />
-                    <input
-                      type="text"
-                      value={srv.price || ''}
-                      onChange={(e) => handleUpdateService(srv.id, 'price', e.target.value)}
-                      placeholder="Prix (ex: Gratuit)"
-                      className="w-28 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-amber-700 font-extrabold"
-                    />
-                    <button onClick={() => handleDeleteService(srv.id)} className="p-1.5 text-neutral-400 hover:text-rose-600">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={srv.subtitle || ''}
-                    onChange={(e) => handleUpdateService(srv.id, 'subtitle', e.target.value)}
-                    placeholder="Description / Sous-titre"
-                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-700"
-                  />
-                  <input
-                    type="url"
-                    value={srv.url || ''}
-                    onChange={(e) => handleUpdateService(srv.id, 'url', e.target.value)}
-                    placeholder="Lien de réservation / Calendly / WhatsApp (ex: https://...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-indigo-700 font-mono"
-                  />
+          {/* Raccourcis clairs vers Services & Boutique */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <Link
+              href="/dashboard/services"
+              className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 hover:bg-indigo-100/70 flex items-center justify-between transition group shadow-2xs"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition">
+                  <Zap className="w-4 h-4" />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 4. Éditeur du Shop / E-books */}
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-indigo-600" />
-                Produits Digitaux / E-books (Onglet SHOP)
-              </h3>
-              <button
-                onClick={handleAddProduct}
-                className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 hover:bg-indigo-100 transition shadow-xs"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Ajouter un produit</span>
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              {products.map((prod) => (
-                <div key={prod.id} className="p-3.5 rounded-xl bg-slate-50 border border-neutral-200 flex flex-col gap-2.5">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={prod.title}
-                      onChange={(e) => handleUpdateProduct(prod.id, 'title', e.target.value)}
-                      placeholder="Nom du produit / E-book"
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
-                    />
-                    <select
-                      value={prod.type}
-                      onChange={(e) => handleUpdateProduct(prod.id, 'type', e.target.value)}
-                      className="px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-800 font-bold"
-                    >
-                      <option value="free">Gratuit</option>
-                      <option value="paid">Payant</option>
-                    </select>
-                    <input
-                      type="text"
-                      value={prod.price}
-                      onChange={(e) => handleUpdateProduct(prod.id, 'price', e.target.value)}
-                      placeholder="Prix (ex: 10 $)"
-                      className="w-24 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-emerald-700 font-extrabold"
-                    />
-                    <button onClick={() => handleDeleteProduct(prod.id)} className="p-1.5 text-neutral-400 hover:text-rose-600">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <input
-                    type="url"
-                    value={prod.image_url || ''}
-                    onChange={(e) => handleUpdateProduct(prod.id, 'image_url', e.target.value)}
-                    placeholder="📷 URL de l'image de couverture (ex: https://images.unsplash.com/...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-700 font-mono"
-                  />
-                  <input
-                    type="url"
-                    value={prod.url || ''}
-                    onChange={(e) => handleUpdateProduct(prod.id, 'url', e.target.value)}
-                    placeholder="🔗 Lien de redirection au clic / Achat / Téléchargement (ex: https://...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-indigo-700 font-mono"
-                  />
+                <div className="text-left">
+                  <span className="block text-xs font-bold text-neutral-900">Services & Prestations</span>
+                  <span className="text-[11px] text-indigo-700 font-medium">Gérer mes offres et RDV →</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/dashboard/shop"
+              className="p-4 rounded-2xl bg-amber-50/70 border border-amber-100 hover:bg-amber-100/70 flex items-center justify-between transition group shadow-2xs"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500 text-neutral-950 flex items-center justify-center shadow-xs group-hover:scale-105 transition">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div className="text-left">
+                  <span className="block text-xs font-bold text-neutral-900">Boutique & E-books</span>
+                  <span className="text-[11px] text-amber-800 font-medium">Gérer mes produits digitaux →</span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       )}

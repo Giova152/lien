@@ -22,6 +22,8 @@ import {
   ShieldAlert,
   Copy,
   Check,
+  Zap,
+  BookOpen,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -150,6 +152,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { href: '/dashboard/links', label: 'Liens', icon: LinkIcon },
     { href: '/dashboard/profile', label: 'Profil', icon: User },
+    { href: '/dashboard/services', label: 'Services', icon: Zap },
+    { href: '/dashboard/shop', label: 'Boutique', icon: BookOpen },
     { href: '/dashboard/contact', label: 'Contact (vCard)', icon: PhoneCall },
     { href: '/dashboard/theme', label: 'Thème Visuel', icon: Palette },
     { href: '/dashboard/analytics', label: 'Statistiques', icon: BarChart3 },
