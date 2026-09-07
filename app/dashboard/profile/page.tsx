@@ -237,7 +237,7 @@ export default function ProfilePage() {
             Nom d'utilisateur (URL Slug) *
           </label>
           <div className="relative flex items-center">
-            <span className="absolute left-3.5 text-xs text-neutral-500 font-mono font-bold">lienbio/</span>
+            <span className="absolute left-3.5 text-xs text-neutral-500 font-mono font-bold">lien-bio/</span>
             <input
               type="text"
               required

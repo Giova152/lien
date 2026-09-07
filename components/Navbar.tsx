@@ -29,7 +29,7 @@ export function Navbar({ user, profile }: NavbarProps) {
           <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-sm ring-1 ring-black/5 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
             <Sparkles className="w-4 h-4" />
           </div>
-          <span className="font-sans">Lien <span className="text-indigo-600 font-black">Bio</span></span>
+          <span className="font-sans">Lien<span className="text-indigo-600 font-black">-Bio</span></span>
         </Link>
 
         {/* Center Nav Links (Desktop) */}

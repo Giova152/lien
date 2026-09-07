@@ -9,11 +9,11 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space' });
 
 export const metadata: Metadata = {
-  title: 'Lien Bio — Votre Carte de Visite Digitale & Link in Bio',
+  title: 'Lien-Bio — Votre Carte de Visite Digitale & Link in Bio',
   description:
     'Créez et personnalisez votre page de profil professionnelle, centralisez vos liens sociaux, coordonnées de contact vCard et QR code en une minute.',
   openGraph: {
-    title: 'Lien Bio — Carte de visite digitale & Link in bio',
+    title: 'Lien-Bio — Carte de visite digitale & Link in bio',
     description: 'Partagez tous vos liens et coordonnées professionnelles en un seul endroit.',
     type: 'website',
   },

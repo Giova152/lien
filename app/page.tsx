@@ -243,7 +243,7 @@ export default async function HomePage() {
                 <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-neutral-800 shrink-0" />
-                    <span>Lien personnalisé (`lienbio/@vous`)</span>
+                    <span>Lien personnalisé (`lien-bio/@vous`)</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-neutral-800 shrink-0" />
@@ -322,11 +322,11 @@ export default async function HomePage() {
       <footer className="w-full py-8 border-t border-neutral-200 bg-white text-xs text-neutral-500">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-neutral-900">Lien Bio</span>
+            <span className="font-bold text-neutral-900">Lien-Bio</span>
             <span>— Carte de visite digitale & profil pro</span>
           </div>
 
-          <p>© {new Date().getFullYear()} Lien Bio. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Lien-Bio. Tous droits réservés.</p>
 
           <div className="flex items-center gap-4 text-neutral-600 font-medium">
             <Link href="/login" className="hover:text-neutral-900 transition">
