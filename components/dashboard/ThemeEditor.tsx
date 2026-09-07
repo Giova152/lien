@@ -51,30 +51,11 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
     onChange(presetTheme);
   };
 
-  // Helper getters & setters for custom luxury sections
-  const stats: StatItem[] = theme.stats || [
-    { id: '1', value: '12+', label: "Ans d'expérience" },
-    { id: '2', value: '2k+', label: 'Clients satisfaits' },
-    { id: '3', value: '9', label: 'Programmes' },
-  ];
-
-  const tags: string[] = theme.expertise_tags || [
-    'SOINS NATURELS',
-    'BIEN-ÊTRE FÉMININ',
-    'COACHING',
-    'FORMATION & EBOOKS',
-    'ENTREPRENEURIAT',
-  ];
-
-  const services: ServiceItem[] = theme.services || [
-    { id: '1', title: 'RÉSERVER UN RDV GRATUIT', category: 'RDV', subtitle: 'Appel découverte (30 min) · Gratuit · Confidentiel', price: 'Gratuit' },
-    { id: '2', title: 'COACHING INDIVIDUEL', category: 'Coaching', subtitle: 'Accompagnement personnalisé & Sessions privées (1h)', price: 'Sur devis' },
-  ];
-
-  const products: ShopProduct[] = theme.products || [
-    { id: '1', title: 'Soins de pieds', type: 'free', price: 'Gratuit', image_url: 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=500&auto=format&fit=crop&q=60' },
-    { id: '2', title: '5 étapes pour ouvrir une garderie rentable', type: 'paid', price: '10 $', image_url: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&auto=format&fit=crop&q=60' },
-  ];
+  // Helper getters & setters for custom sections (starts empty for new users)
+  const stats: StatItem[] = theme.stats || [];
+  const tags: string[] = theme.expertise_tags || [];
+  const services: ServiceItem[] = theme.services || [];
+  const products: ShopProduct[] = theme.products || [];
 
   // Stat Handlers
   const handleUpdateStat = (id: string, field: 'value' | 'label', val: string) => {
@@ -429,30 +410,34 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             </div>
 
             <div className="flex flex-col gap-2">
-              {stats.map((s) => (
-                <div key={s.id} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-neutral-200">
-                  <input
-                    type="text"
-                    value={s.value}
-                    onChange={(e) => handleUpdateStat(s.id, 'value', e.target.value)}
-                    placeholder="Ex: 12+"
-                    className="w-24 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-amber-700 font-black"
-                  />
-                  <input
-                    type="text"
-                    value={s.label}
-                    onChange={(e) => handleUpdateStat(s.id, 'label', e.target.value)}
-                    placeholder="Ex: Ans d'expérience"
-                    className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
-                  />
-                  <button
-                    onClick={() => handleDeleteStat(s.id)}
-                    className="p-2 text-neutral-400 hover:text-rose-600 transition"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+              {stats.length === 0 ? (
+                <p className="text-xs text-neutral-400 italic py-1">Aucun indicateur clé configuré (optionnel).</p>
+              ) : (
+                stats.map((s) => (
+                  <div key={s.id} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-neutral-200">
+                    <input
+                      type="text"
+                      value={s.value}
+                      onChange={(e) => handleUpdateStat(s.id, 'value', e.target.value)}
+                      placeholder="Ex: 12+"
+                      className="w-24 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-amber-700 font-black"
+                    />
+                    <input
+                      type="text"
+                      value={s.label}
+                      onChange={(e) => handleUpdateStat(s.id, 'label', e.target.value)}
+                      placeholder="Ex: Ans d'expérience"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
+                    />
+                    <button
+                      onClick={() => handleDeleteStat(s.id)}
+                      className="p-2 text-neutral-400 hover:text-rose-600 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -472,19 +457,23 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {tags.map((t, idx) => (
-                <div key={idx} className="flex items-center gap-1 bg-slate-50 border border-neutral-300 rounded-xl px-2 py-1">
-                  <input
-                    type="text"
-                    value={t}
-                    onChange={(e) => handleUpdateTag(idx, e.target.value)}
-                    className="bg-transparent text-xs text-amber-800 font-bold focus:outline-none w-36"
-                  />
-                  <button onClick={() => handleDeleteTag(idx)} className="text-neutral-400 hover:text-rose-600 p-1">
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+              {tags.length === 0 ? (
+                <p className="text-xs text-neutral-400 italic py-1">Aucun domaine d'expertise configuré (optionnel).</p>
+              ) : (
+                tags.map((t, idx) => (
+                  <div key={idx} className="flex items-center gap-1 bg-slate-50 border border-neutral-300 rounded-xl px-2 py-1">
+                    <input
+                      type="text"
+                      value={t}
+                      onChange={(e) => handleUpdateTag(idx, e.target.value)}
+                      className="bg-transparent text-xs text-amber-800 font-bold focus:outline-none w-36"
+                    />
+                    <button onClick={() => handleDeleteTag(idx)} className="text-neutral-400 hover:text-rose-600 p-1">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

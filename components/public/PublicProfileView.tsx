@@ -56,59 +56,11 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
     ? 'bg-white/5 border-white/10'
     : 'bg-white/80 border-[#E8E2D5]';
 
-  // Dynamic user data or luxury fallbacks
-  const stats: StatItem[] = theme.stats?.length
-    ? theme.stats
-    : [
-        { id: '1', value: '12+', label: "Ans d'expérience" },
-        { id: '2', value: '2k+', label: 'Clients satisfaits' },
-        { id: '3', value: '9', label: 'Programmes' },
-      ];
-
-  const tags: string[] = theme.expertise_tags?.length
-    ? theme.expertise_tags
-    : [
-        '✦ SOINS NATURELS',
-        '✦ BIEN-ÊTRE FÉMININ',
-        '✦ COACHING',
-        '✦ FORMATION & EBOOKS',
-        '✦ ENTREPRENEURIAT',
-      ];
-
-  const services: ServiceItem[] = theme.services?.length
-    ? theme.services
-    : [
-        { id: '1', title: 'RÉSERVER UN RDV GRATUIT', category: 'RDV', subtitle: 'Appel découverte (30 min) · Gratuit · Confidentiel', price: 'Gratuit' },
-        { id: '2', title: 'COACHING INDIVIDUEL', category: 'Coaching', subtitle: 'Accompagnement personnalisé & Sessions privées (1h)', price: 'Sur devis' },
-        { id: '3', title: 'PROGRAMMES COMPLETS', category: 'Programmes', subtitle: 'Transformations pas-à-pas avec suivi hebdomadaire', price: 'Sur mesure' },
-        { id: '4', title: 'FORMATIONS & GUIDES', category: 'Formation', subtitle: 'E-books et supports téléchargeables en PDF', price: 'Immédiat' },
-      ];
-
-  const products: ShopProduct[] = theme.products?.length
-    ? theme.products
-    : [
-        {
-          id: '1',
-          title: 'Soins de pieds',
-          type: 'free',
-          price: 'Gratuit',
-          image_url: 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=500&auto=format&fit=crop&q=60',
-        },
-        {
-          id: '2',
-          title: '5 étapes pour ouvrir une garderie rentable',
-          type: 'paid',
-          price: '10 $',
-          image_url: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&auto=format&fit=crop&q=60',
-        },
-        {
-          id: '3',
-          title: 'Conte pour enfant',
-          type: 'free',
-          price: 'Gratuit',
-          image_url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&auto=format&fit=crop&q=60',
-        },
-      ];
+  // Dynamic user data (only if explicitly configured by the user)
+  const stats: StatItem[] = theme.stats || [];
+  const tags: string[] = theme.expertise_tags || [];
+  const services: ServiceItem[] = theme.services || [];
+  const products: ShopProduct[] = theme.products || [];
 
   const filteredProducts = products.filter((p) => {
     if (shopFilter === 'free') return p.type === 'free';
@@ -144,28 +96,30 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           {activeTab === 'profil' && (
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
               {/* KPI Stat Cards Grid */}
-              <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2`}>
-                {stats.map((st) => (
-                  <div
-                    key={st.id}
-                    className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-3 text-center shadow-sm`}
-                    style={{ borderColor: `${accentColor}33` }}
-                  >
+              {stats.length > 0 && (
+                <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2`}>
+                  {stats.map((st) => (
                     <div
-                      className="text-lg sm:text-xl font-black"
-                      style={{ color: accentColor }}
+                      key={st.id}
+                      className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-3 text-center shadow-sm`}
+                      style={{ borderColor: `${accentColor}33` }}
                     >
-                      {st.value}
+                      <div
+                        className="text-lg sm:text-xl font-black"
+                        style={{ color: accentColor }}
+                      >
+                        {st.value}
+                      </div>
+                      <div
+                        className="text-[10px] font-bold uppercase tracking-wider opacity-75"
+                        style={{ color: theme.text_color }}
+                      >
+                        {st.label}
+                      </div>
                     </div>
-                    <div
-                      className="text-[10px] font-bold uppercase tracking-wider opacity-75"
-                      style={{ color: theme.text_color }}
-                    >
-                      {st.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* Section À propos */}
               {profile.bio && (
@@ -270,7 +224,15 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           {/* Tab 2: SERVICES */}
           {activeTab === 'services' && (
             <div className="w-full flex flex-col gap-3 animate-in fade-in duration-300">
-              {services.map((service) => {
+              {services.length === 0 ? (
+                <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
+                  <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
+                  <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
+                    Aucune prestation ajoutée pour le moment.
+                  </p>
+                </div>
+              ) : (
+                services.map((service) => {
                 const isOpen = openServiceAccordion === service.id;
                 return (
                   <div
@@ -410,45 +372,54 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               </div>
 
               {/* Products Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {filteredProducts.map((prod) => {
-                  const CardWrapper = prod.url ? 'a' : 'div';
-                  return (
-                    <CardWrapper
-                      key={prod.id}
-                      {...(prod.url ? { href: prod.url, target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group hover:scale-[1.03] hover:shadow-lg transition-all duration-300 cursor-pointer`}
-                      style={{ borderColor: `${accentColor}33` }}
-                    >
-                      <div className="w-full h-32 relative bg-neutral-800 overflow-hidden">
-                        {prod.image_url ? (
-                          <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-110 transition duration-500" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
-                            E-Book
-                          </div>
-                        )}
-                        <span
-                          className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
-                          style={{ backgroundColor: accentColor, color: '#ffffff' }}
-                        >
-                          {prod.price}
-                        </span>
-                      </div>
-
-                      <div className="p-3 flex flex-col justify-between flex-1 gap-2">
-                        <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
-                          <span className="text-[10px] font-bold opacity-80 group-hover:translate-x-0.5 transition-transform" style={{ color: accentColor }}>
-                            Accéder ➔
+              {filteredProducts.length === 0 ? (
+                <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
+                  <BookOpen className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
+                  <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
+                    Aucun produit disponible en boutique pour le moment.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {filteredProducts.map((prod) => {
+                    const CardWrapper = prod.url ? 'a' : 'div';
+                    return (
+                      <CardWrapper
+                        key={prod.id}
+                        {...(prod.url ? { href: prod.url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group hover:scale-[1.03] hover:shadow-lg transition-all duration-300 cursor-pointer`}
+                        style={{ borderColor: `${accentColor}33` }}
+                      >
+                        <div className="w-full h-32 relative bg-neutral-800 overflow-hidden">
+                          {prod.image_url ? (
+                            <Image src={prod.image_url} alt={prod.title} fill className="object-cover group-hover:scale-110 transition duration-500" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs font-bold opacity-40" style={{ color: theme.text_color }}>
+                              E-Book
+                            </div>
+                          )}
+                          <span
+                            className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow"
+                            style={{ backgroundColor: accentColor, color: '#ffffff' }}
+                          >
+                            {prod.price}
                           </span>
                         </div>
-                      </div>
-                    </CardWrapper>
-                  );
-                })}
-              </div>
+
+                        <div className="p-3 flex flex-col justify-between flex-1 gap-2">
+                          <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
+                            <span className="text-[10px] font-bold opacity-80 group-hover:translate-x-0.5 transition-transform" style={{ color: accentColor }}>
+                              Accéder ➔
+                            </span>
+                          </div>
+                        </div>
+                      </CardWrapper>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 

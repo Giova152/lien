@@ -145,29 +145,31 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         )}
       </div>
 
-      {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) */}
-      <div className="w-full max-w-sm p-1 rounded-full bg-black/10 border border-black/10 flex items-center justify-between mb-4 backdrop-blur-md">
-        {(['profil', 'services', 'shop'] as const).map((tab) => {
-          const isActive = activeTab === tab;
-          return (
-            <button
-              key={tab}
-              onClick={() => onTabChange && onTabChange(tab)}
-              className={`flex-1 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 ${
-                isActive
-                  ? 'shadow-md scale-[1.02]'
-                  : 'opacity-60 hover:opacity-100'
-              }`}
-              style={{
-                backgroundColor: isActive ? accentColor : 'transparent',
-                color: isActive ? '#ffffff' : theme.text_color,
-              }}
-            >
-              {tab}
-            </button>
-          );
-        })}
-      </div>
+      {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) - Only shown if services or shop products exist */}
+      {((theme.services && theme.services.length > 0) || (theme.products && theme.products.length > 0)) && (
+        <div className="w-full max-w-sm p-1 rounded-full bg-black/10 border border-black/10 flex items-center justify-between mb-4 backdrop-blur-md">
+          {(['profil', 'services', 'shop'] as const).map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => onTabChange && onTabChange(tab)}
+                className={`flex-1 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                  isActive
+                    ? 'shadow-md scale-[1.02]'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
+                style={{
+                  backgroundColor: isActive ? accentColor : 'transparent',
+                  color: isActive ? '#ffffff' : theme.text_color,
+                }}
+              >
+                {tab}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
