@@ -124,7 +124,15 @@ export default function OnboardingPage() {
       });
 
       toast.success('Votre carte digitale est prête !');
-      router.push('/dashboard');
+      let targetDashboard = '/dashboard';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const planParam = params.get('plan');
+        if (planParam) {
+          targetDashboard = `/dashboard?upgrade=true&plan=${planParam}`;
+        }
+      }
+      router.push(targetDashboard);
       router.refresh();
     } catch (err: any) {
       toast.error(err?.message || 'Erreur lors de la création du profil');

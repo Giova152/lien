@@ -44,6 +44,11 @@ export interface ThemeConfig {
   expertise_tags?: string[];
   services?: ServiceItem[];
   products?: ShopProduct[];
+
+  // PRO subscription details stored in JSONB theme
+  is_pro?: boolean;
+  plan?: string;
+  pro_since?: string;
 }
 
 export interface Profile {

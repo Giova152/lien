@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { createClient } from '@/lib/supabase/server';
 import { InteractiveLandingDemo } from '@/components/landing/InteractiveLandingDemo';
+import { LandingPricingCards } from '@/components/landing/LandingPricingCards';
 import {
   Download,
   QrCode,
@@ -230,147 +231,7 @@ export default async function HomePage() {
             Démarrez sans carte bancaire ou passez au niveau supérieur avec nos 2 offres PRO.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left">
-            {/* Free */}
-            <div className="bg-white border border-neutral-200 rounded-2xl p-6 flex flex-col justify-between shadow-xs">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Formule Gratuite</span>
-                <div className="mt-2 mb-3">
-                  <span className="text-3xl font-black text-neutral-900">0 €</span>
-                </div>
-                <p className="text-xs text-neutral-600 mb-5">Parfait pour créer une première carte de visite digitale.</p>
-
-                <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-neutral-800 shrink-0" />
-                    <span>Lien personnalisé (`lien-bio/@vous`)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-neutral-800 shrink-0" />
-                    <span>Boutons Appel & WhatsApp direct</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-neutral-800 shrink-0" />
-                    <span>Téléchargement contact vCard</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-neutral-800 shrink-0" />
-                    <span>QR Code généré automatiquement</span>
-                  </li>
-                </ul>
-              </div>
-
-              <Link
-                href="/register"
-                className="w-full mt-7 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold text-center transition border border-neutral-200"
-              >
-                Commencer gratuitement
-              </Link>
-            </div>
-
-            {/* Pro Subscription */}
-            <div className="bg-white border-2 border-indigo-500/40 rounded-2xl p-6 flex flex-col justify-between shadow-sm relative">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">PRO Abonnement</span>
-                  <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold">
-                    Flexible
-                  </span>
-                </div>
-                <div className="mt-2 mb-1">
-                  <span className="text-3xl font-black text-neutral-900">35 $</span>
-                  <span className="text-xs text-neutral-500 ml-1">/ mois</span>
-                </div>
-                <span className="text-[11px] text-emerald-600 font-bold block mb-4">
-                  ou 300 $ / an (25 $/m • -28%)
-                </span>
-                <p className="text-xs text-neutral-600 mb-5">Idéal pour les créateurs et indépendants avec budget modulable.</p>
-
-                <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span>Tous les thèmes de luxe</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span>Liens personnalisés illimités</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span>Services & Prise de RDV</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span>Boutique & Produits Digitaux</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span>Statistiques & Analytics de clics</span>
-                  </li>
-                </ul>
-              </div>
-
-              <Link
-                href="/register"
-                className="w-full mt-7 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold text-center transition shadow-xs"
-              >
-                Choisir l'Abonnement
-              </Link>
-            </div>
-
-            {/* Pro Lifetime */}
-            <div className="bg-neutral-950 text-white border-2 border-amber-500/60 rounded-2xl p-6 flex flex-col justify-between shadow-lg relative">
-              <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-neutral-950 text-[10px] font-black uppercase tracking-wider shadow-xs">
-                Le Plus Populaire
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-400">PRO À Vie</span>
-                  <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-bold">
-                    Paiement unique
-                  </span>
-                </div>
-                <div className="mt-2 mb-3">
-                  <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500">
-                    500 $
-                  </span>
-                  <span className="text-xs text-amber-400 ml-1.5 font-bold">à vie</span>
-                </div>
-                <p className="text-xs text-neutral-300 mb-5">Payez une seule fois, profitez de toutes les fonctionnalités pour toujours.</p>
-
-                <ul className="flex flex-col gap-2.5 text-xs text-neutral-200">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span className="font-semibold text-white">Tout le plan PRO inclus</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span className="text-amber-300 font-semibold">Accès illimité À VIE (0 $ ensuite)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Badge officiel Créateur Vérifié</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Mises à jour futures incluses</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Support prioritaire VIP</span>
-                  </li>
-                </ul>
-              </div>
-
-              <Link
-                href="/register"
-                className="w-full mt-7 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black text-center transition shadow-md"
-              >
-                Obtenir l'accès à vie
-              </Link>
-            </div>
-          </div>
+          <LandingPricingCards user={user} />
         </div>
       </section>
 

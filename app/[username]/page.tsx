@@ -116,6 +116,17 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
     })();
   `;
 
+  const normalizedProfile = {
+    ...profile,
+    theme: {
+      ...profile.theme,
+      font_family:
+        !profile.theme?.font_family || profile.theme?.font_family === 'Outfit'
+          ? 'Arial'
+          : profile.theme.font_family,
+    },
+  };
+
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: trackViewScript }} />
@@ -125,7 +136,7 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
           <span>Mode Aperçu : Votre profil est actuellement masqué au public.</span>
         </div>
       )}
-      <PublicProfileView profile={profile} links={links} contact={contact} isOwner={isOwner} />
+      <PublicProfileView profile={normalizedProfile} links={links} contact={contact} isOwner={isOwner} />
     </>
   );
 }

@@ -76,7 +76,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return;
       }
 
-      setProfile(prof);
+      const normalizedTheme = {
+        ...(prof.theme || {}),
+        font_family:
+          !prof.theme?.font_family || prof.theme?.font_family === 'Outfit'
+            ? 'Arial'
+            : prof.theme.font_family,
+      };
+      const isPro = Boolean(prof.is_pro || prof.theme?.is_pro);
+      setProfile({
+        ...prof,
+        is_pro: isPro,
+        theme: normalizedTheme,
+      });
 
       // 2. Fetch Links
       const { data: lnks } = await supabase
@@ -106,27 +118,66 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     fetchDashboardData();
 
-    // Instant payment success handling
-    if (typeof window !== 'undefined' && window.location.search.includes('payment=success')) {
-      const upgradeAccount = async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          await supabase
-            .from('profiles')
-            .update({ is_pro: true, plan: 'pro_lifetime', updated_at: new Date().toISOString() })
-            .eq('id', user.id);
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
 
-          fetchDashboardData();
-          toast.success('Félicitations ! Votre compte est désormais PRO À VIE 🎉', {
-            duration: 6000,
-          });
-          // Clean URL parameter
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      };
-      upgradeAccount();
+      // 1. Détection ouverture modale d'upgrade depuis landing page ou navigation
+      if (searchParams.get('upgrade') === 'true') {
+        setIsUpgradeModalOpen(true);
+        searchParams.delete('upgrade');
+        const newSearch = searchParams.toString();
+        const newPath = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+        window.history.replaceState({}, document.title, newPath);
+      }
+
+      // 2. Annulation de paiement PayDunya
+      if (searchParams.get('payment') === 'cancelled') {
+        toast.info('Paiement PayDunya annulé.');
+        searchParams.delete('payment');
+        const newSearch = searchParams.toString();
+        const newPath = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+        window.history.replaceState({}, document.title, newPath);
+      }
+
+      // 3. Instant payment success handling
+      if (searchParams.get('payment') === 'success') {
+        const upgradeAccount = async () => {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (user) {
+            const { data: currentProf } = await supabase
+              .from('profiles')
+              .select('theme')
+              .eq('id', user.id)
+              .maybeSingle();
+
+            const currentTheme = currentProf?.theme || {};
+            const updatedTheme = {
+              ...currentTheme,
+              is_pro: true,
+              plan: 'pro_lifetime',
+              pro_since: new Date().toISOString(),
+            };
+
+            await supabase
+              .from('profiles')
+              .update({
+                theme: updatedTheme,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', user.id);
+
+            fetchDashboardData();
+            toast.success('Félicitations ! Votre paiement PayDunya est validé, votre compte PRO est actif 🎉', {
+              duration: 6000,
+            });
+            // Clean URL parameter
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        };
+        upgradeAccount();
+      }
     }
   }, []);
 

@@ -4,7 +4,7 @@ import React, { useState, useContext } from 'react';
 import Link from 'next/link';
 import { ThemeConfig, ButtonStyle, BackgroundType, StatItem, ServiceItem, ShopProduct } from '@/types';
 import { THEME_PRESETS } from '@/lib/utils';
-import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers, Zap, Upload, Loader2, Camera } from '@/components/ui/Icons';
+import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers, Zap, Upload, Loader2, Camera, Lock } from '@/components/ui/Icons';
 import { DashboardContext } from '@/lib/context/DashboardContext';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
@@ -26,6 +26,7 @@ const BUTTON_STYLES: { id: ButtonStyle; label: string }[] = [
 ];
 
 const FONTS = [
+  'Arial',
   'Inter',
   'Outfit',
   'Roboto',
@@ -54,6 +55,11 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
   const handleUploadBg = async (file: File) => {
     if (!profile) return;
+    if (!profile.is_pro) {
+      toast.info("L'arrière-plan en image personnalisée est réservé aux membres PRO.");
+      openUpgradeModal?.();
+      return;
+    }
     if (!file.type.startsWith('image/')) {
       toast.error('Veuillez choisir un fichier image (JPG, PNG, WebP)');
       return;
@@ -87,7 +93,13 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
     }
   };
 
-  const applyPreset = (presetTheme: ThemeConfig) => {
+  const applyPreset = (presetName: string, presetTheme: ThemeConfig) => {
+    const isProPreset = presetName !== 'Ivoire & Or Luxe (Linette - Default)';
+    if (isProPreset && !profile?.is_pro) {
+      toast.info(`Le thème "${presetName}" est réservé aux membres PRO.`);
+      openUpgradeModal?.();
+      return;
+    }
     onChange(presetTheme);
   };
 
@@ -218,24 +230,42 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {THEME_PRESETS.map((preset) => {
                 const isSelected = theme.background_value === preset.theme.background_value && theme.accent_color === preset.theme.accent_color;
+                const isPro = preset.name !== 'Ivoire & Or Luxe (Linette - Default)';
+                const isLocked = isPro && !profile?.is_pro;
+
                 return (
                   <button
                     key={preset.name}
-                    onClick={() => applyPreset(preset.theme)}
+                    type="button"
+                    onClick={() => applyPreset(preset.name, preset.theme)}
                     className={`p-4 rounded-2xl border transition-all text-left flex flex-col justify-between gap-3 relative overflow-hidden group shadow-xs ${
                       isSelected
                         ? 'border-indigo-600 ring-2 ring-indigo-500/20 bg-indigo-50/40'
+                        : isLocked
+                        ? 'border-neutral-200 hover:border-amber-400 bg-white hover:bg-amber-50/20'
                         : 'border-neutral-200 hover:border-neutral-300 bg-white hover:bg-slate-50/50'
                     }`}
                   >
-                    {/* Header: Title & Active Indicator */}
-                    <div className="flex items-center justify-between z-10">
-                      <span className="text-xs font-bold text-neutral-900 truncate">{preset.name}</span>
-                      {isSelected && (
-                        <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+                    {/* Header: Title & Active Indicator / PRO Lock */}
+                    <div className="flex items-center justify-between z-10 gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xs font-bold text-neutral-900 truncate">{preset.name}</span>
+                        {isPro && (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80 shrink-0">
+                            {isLocked ? <Lock className="w-2.5 h-2.5 text-amber-800" /> : <Sparkles className="w-2.5 h-2.5 text-amber-800" />}
+                            PRO
+                          </span>
+                        )}
+                      </div>
+                      {isSelected ? (
+                        <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0">
                           <Check className="w-3 h-3" />
                         </span>
-                      )}
+                      ) : isLocked ? (
+                        <span className="text-[10px] font-bold text-amber-700 opacity-0 group-hover:opacity-100 transition shrink-0">
+                          Débloquer ➔
+                        </span>
+                      ) : null}
                     </div>
 
                     {/* Color Swatch Preview Bar */}
@@ -264,19 +294,30 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             <h3 className="text-sm font-bold text-neutral-900">Style d'Arrière-plan</h3>
 
             <div className="grid grid-cols-3 gap-2">
-              {(['color', 'gradient', 'image'] as BackgroundType[]).map((type) => (
-                <button
-                  key={type}
-                  onClick={() => updateField('background_type', type)}
-                  className={`py-2 px-3 rounded-xl border text-xs font-bold capitalize transition ${
-                    theme.background_type === type
-                      ? 'bg-indigo-600 border-indigo-500 text-white shadow-sm'
-                      : 'bg-slate-50 border-neutral-200 text-neutral-700 hover:bg-slate-100'
-                  }`}
-                >
-                  {type === 'color' ? 'Couleur unie' : type === 'gradient' ? 'Dégradé' : 'Image URL'}
-                </button>
-              ))}
+              {(['color', 'gradient', 'image'] as BackgroundType[]).map((type) => {
+                const isImageLock = type === 'image' && !profile?.is_pro;
+                return (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      if (isImageLock) {
+                        toast.info("L'arrière-plan image personnalisée est réservé aux membres PRO.");
+                        openUpgradeModal?.();
+                        return;
+                      }
+                      updateField('background_type', type);
+                    }}
+                    className={`py-2 px-3 rounded-xl border text-xs font-bold capitalize transition flex items-center justify-center gap-1.5 ${
+                      theme.background_type === type
+                        ? 'bg-indigo-600 border-indigo-500 text-white shadow-sm'
+                        : 'bg-slate-50 border-neutral-200 text-neutral-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span>{type === 'color' ? 'Couleur unie' : type === 'gradient' ? 'Dégradé' : 'Image URL'}</span>
+                    {isImageLock && <Lock className="w-3 h-3 text-amber-500" />}
+                  </button>
+                );
+              })}
             </div>
 
             {theme.background_type === 'color' && (

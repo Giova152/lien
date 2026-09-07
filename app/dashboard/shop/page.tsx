@@ -16,11 +16,12 @@ import {
   Loader2,
   X,
   Sparkles,
+  Lock,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
 export default function ShopPage() {
-  const { profile, setProfile, refreshDashboard } = useDashboard();
+  const { profile, setProfile, refreshDashboard, openUpgradeModal } = useDashboard();
   const supabase = createClient();
 
   const [saving, setSaving] = useState(false);
@@ -148,7 +149,16 @@ export default function ShopPage() {
       }
       setProducts(cleanedProducts);
 
-      toast.success('Boutique mise à jour avec succès !');
+      if (profile?.is_pro) {
+        toast.success('Boutique mise à jour avec succès !');
+      } else {
+        toast.success('Boutique sauvegardée ! Passez en PRO pour l\'activer sur votre profil public.', {
+          action: {
+            label: 'Passer PRO',
+            onClick: () => openUpgradeModal?.(),
+          },
+        });
+      }
       if (refreshDashboard) refreshDashboard();
     } catch (err: any) {
       toast.error(err?.message || 'Erreur lors de la sauvegarde');
@@ -159,6 +169,36 @@ export default function ShopPage() {
 
   return (
     <div className="w-full flex flex-col gap-6 text-neutral-900 font-sans max-w-4xl pb-16">
+      {/* PRO Upgrade Warning Banner if not PRO */}
+      {!profile?.is_pro && (
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 border border-amber-500/30 p-4 sm:p-5 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5 z-10">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
+              <Lock className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-black text-amber-400 uppercase tracking-wider">Fonctionnalité PRO</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-amber-200 border border-amber-400/20 font-bold">
+                  Boutique inactive en gratuit
+                </span>
+              </div>
+              <p className="text-xs text-neutral-300 mt-1 font-medium max-w-xl leading-relaxed">
+                Vendez ou offrez vos guides PDF, formations et templates en 1 clic. L'onglet <strong>Shop</strong> sera activé et visible sur votre profil dès l'activation du Plan PRO.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openUpgradeModal?.()}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-neutral-950 text-xs font-black uppercase tracking-wider hover:scale-[1.02] transition shadow-md shrink-0 flex items-center justify-center gap-2 z-10"
+          >
+            <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
+            <span>Débloquer la Boutique PRO</span>
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-5">
         <div>

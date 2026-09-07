@@ -15,6 +15,14 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [planParam, setPlanParam] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('plan');
+      if (p) setPlanParam(p);
+    }
+  }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +72,15 @@ export default function RegisterPage() {
       }
 
       toast.success('Compte créé ! Configuration de votre profil...');
-      router.push('/onboarding');
+      let target = '/onboarding';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const planParam = params.get('plan');
+        if (planParam) {
+          target = `/onboarding?plan=${planParam}`;
+        }
+      }
+      router.push(target);
       router.refresh();
     } catch (err: any) {
       if (err?.message?.includes('fetch failed')) {
@@ -111,9 +127,23 @@ export default function RegisterPage() {
         ) : (
           <>
             <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Créer ma carte</h1>
-            <p className="text-xs text-neutral-500 text-center mb-7">
+            <p className="text-xs text-neutral-500 text-center mb-6">
               Obtenez votre URL personnalisée en 60 secondes
             </p>
+
+            {planParam && (
+              <div className="mb-5 p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-950 shadow-xs">
+                <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-black text-amber-900 block">
+                    {planParam === 'lifetime' ? '⭐ Pack PRO À Vie sélectionné (300 000 FCFA)' : '⭐ Formule PRO sélectionnée'}
+                  </span>
+                  <span className="text-amber-800 text-[11px] font-medium mt-0.5 block">
+                    Créez votre compte pour accéder immédiatement au paiement sécurisé PayDunya (Wave, Orange Money, Free, Carte).
+                  </span>
+                </div>
+              </div>
+            )}
 
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
           <div>

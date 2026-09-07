@@ -23,7 +23,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
       .slice(0, 2);
   };
 
-  const isLuxuryTheme = theme.font_family === 'Playfair Display' || theme.background_value === '#FBF9F4';
+  const isLuxuryTheme = theme.font_family === 'Playfair Display';
   const accentColor = theme.accent_color || '#C5A059';
 
   const whatsappUrl = contact?.whatsapp
@@ -76,7 +76,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
 
       {/* Display Name + Verified Creator Badge */}
       <h1
-        className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-1 flex items-center justify-center gap-2 ${
+        className={`text-2xl sm:text-3xl font-black tracking-normal mb-1 flex items-center justify-center gap-2 ${
           isLuxuryTheme ? 'font-serif' : ''
         }`}
         style={{ color: theme.text_color }}
@@ -103,7 +103,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
 
       {/* Title & Company (Subtitle) */}
       {(profile.title || profile.company) && (
-        <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-80 mb-2" style={{ color: theme.text_color }}>
+        <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold tracking-normal opacity-90 mb-2" style={{ color: theme.text_color }}>
           {profile.title && <span>{profile.title}</span>}
           {profile.title && profile.company && <span>·</span>}
           {profile.company && <span>{profile.company}</span>}
@@ -112,8 +112,8 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
 
       {/* Location / City */}
       {(theme.location || contact?.address) && (
-        <div className="flex items-center justify-center gap-1.5 text-xs font-medium opacity-75 mb-3" style={{ color: theme.text_color }}>
-          <MapPin className="w-3.5 h-3.5 opacity-70" />
+        <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm font-normal opacity-85 mb-3" style={{ color: theme.text_color }}>
+          <MapPin className="w-3.5 h-3.5 opacity-80" />
           <span>{theme.location || contact?.address}</span>
         </div>
       )}
@@ -153,8 +153,8 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         )}
       </div>
 
-      {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) - Only shown if services or shop products exist */}
-      {((theme.services && theme.services.length > 0) || (theme.products && theme.products.length > 0)) && (
+      {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) - Unlocked for PRO members */}
+      {profile.is_pro && ((theme.services && theme.services.length > 0) || (theme.products && theme.products.length > 0)) && (
         <div className="w-full max-w-sm p-1 rounded-full bg-black/10 border border-black/10 flex items-center justify-between mb-4 backdrop-blur-md">
           {(['profil', 'services', 'shop'] as const).map((tab) => {
             const isActive = activeTab === tab;

@@ -34,7 +34,18 @@ export default function LoginPage() {
       }
 
       toast.success('Connexion réussie !');
-      window.location.href = '/dashboard';
+      let targetUrl = '/dashboard';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const redirectParam = params.get('redirect');
+        const planParam = params.get('plan');
+        if (redirectParam) {
+          targetUrl = redirectParam;
+        } else if (planParam) {
+          targetUrl = `/dashboard?upgrade=true&plan=${planParam}`;
+        }
+      }
+      window.location.href = targetUrl;
     } catch (err: any) {
       toast.error(err?.message || 'Erreur lors de la connexion');
     } finally {

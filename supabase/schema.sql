@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
         "button_color": "#EDE8DE",
         "button_text_color": "#1C1A17",
         "button_border_color": "rgba(184, 145, 77, 0.25)",
-        "font_family": "Outfit",
+        "font_family": "Arial",
         "text_color": "#1C1A17",
         "accent_color": "#B8914D",
         "card_glass": false

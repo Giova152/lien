@@ -30,9 +30,16 @@ export default function ThemePage() {
 
     try {
       setSaving(true);
+      const themeToSave = {
+        ...currentTheme,
+        is_pro: profile.is_pro || (profile.theme as any)?.is_pro,
+        plan: (profile.theme as any)?.plan,
+        pro_since: (profile.theme as any)?.pro_since,
+      };
+
       const { error } = await supabase
         .from('profiles')
-        .update({ theme: currentTheme })
+        .update({ theme: themeToSave })
         .eq('id', profile.id);
 
       if (error) throw error;

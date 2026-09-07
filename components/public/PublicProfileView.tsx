@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Profile, LinkItem, ContactInfo, StatItem, ServiceItem, ShopProduct } from '@/types';
 import { ProfileHeader } from '@/components/public/ProfileHeader';
 import { LinkButton } from '@/components/public/LinkButton';
@@ -58,7 +59,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
   const isDarkText = isDarkColor(theme.text_color);
   const isDarkBg = isDarkColor(theme.background_value);
   const isDarkCard = isDarkBg || !isDarkText;
-  const isLuxuryTheme = theme.font_family === 'Playfair Display' || !isDarkCard;
+  const isLuxuryTheme = theme.font_family === 'Playfair Display';
   const accentColor = theme.accent_color || '#C5A059';
 
   const cardBoxBg = isDarkCard
@@ -143,7 +144,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                   <h3 className={`text-base font-extrabold mb-2 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
                     <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> À propos
                   </h3>
-                  <p className="text-xs opacity-85 leading-relaxed whitespace-pre-line" style={{ color: theme.text_color }}>
+                  <p className="text-sm font-normal leading-relaxed whitespace-pre-line opacity-95" style={{ color: theme.text_color }}>
                     {profile.bio}
                   </p>
                 </div>
@@ -361,21 +362,11 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           {/* Tab 3: SHOP */}
           {activeTab === 'shop' && (
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
-              {/* Header Badge */}
-              <div
-                className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left`}
-                style={{ borderColor: `${accentColor}33` }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
-                >
-                  <BookOpen className="w-5 h-5" />
-                </div>
-                <div style={{ color: theme.text_color }}>
-                  <h3 className="text-sm font-extrabold">Produits digitaux</h3>
-                  <p className="text-[10px] opacity-70">E-books gratuits & payants · Téléchargement immédiat</p>
-                </div>
+              {/* Title */}
+              <div className="flex items-center justify-between px-1 pt-1 text-left">
+                <h3 className="text-base font-black tracking-tight" style={{ color: theme.text_color }}>
+                  Nos produits
+                </h3>
               </div>
 
               {/* Filter Pills */}
@@ -474,6 +465,20 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
           {/* QR Code Trigger */}
           <QrCodeModal profile={profile} />
+
+          {/* Branding Watermark (Only visible for free accounts; removed for PRO) */}
+          {!profile.is_pro && (
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 text-[10px] tracking-wider uppercase font-extrabold opacity-40 hover:opacity-90 transition-all flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
+              style={{ color: theme.text_color }}
+            >
+              <Sparkles className="w-3 h-3" style={{ color: accentColor }} />
+              <span>Créé avec Lien-Bio</span>
+            </Link>
+          )}
 
 
         </div>
