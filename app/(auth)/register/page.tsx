@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,16 +33,33 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
-        email,
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
         },
       });
 
       if (error) {
-        toast.error(error.message || 'Erreur lors de l’inscription');
+        if (error.message?.includes('fetch failed') || error.message?.includes('Failed to fetch')) {
+          toast.error('Projet Supabase inaccessible ou en pause. Vérifiez le tableau de bord Supabase.');
+        } else {
+          toast.error(error.message || 'Erreur lors de l’inscription');
+        }
+        return;
+      }
+
+      // Check for already existing email
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        toast.error('Cet email est déjà associé à un compte. Veuillez vous connecter.');
+        return;
+      }
+
+      // If email confirmation is required by Supabase (no immediate session)
+      if (data.user && !data.session) {
+        setEmailSent(true);
+        toast.success('Compte créé ! Un email de confirmation vous a été envoyé.');
         return;
       }
 
@@ -49,7 +67,11 @@ export default function RegisterPage() {
       router.push('/onboarding');
       router.refresh();
     } catch (err: any) {
-      toast.error(err?.message || 'Erreur lors de la création de compte');
+      if (err?.message?.includes('fetch failed')) {
+        toast.error('Connexion impossible à Supabase : votre projet Supabase est probablement en pause.');
+      } else {
+        toast.error(err?.message || 'Erreur lors de la création de compte');
+      }
     } finally {
       setLoading(false);
     }
@@ -70,10 +92,28 @@ export default function RegisterPage() {
       </Link>
 
       <div className="w-full max-w-md bg-white/90 backdrop-blur-xl border border-neutral-200/80 rounded-3xl p-8 sm:p-9 shadow-2xl shadow-neutral-300/30 relative z-10">
-        <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Créer ma carte</h1>
-        <p className="text-xs text-neutral-500 text-center mb-7">
-          Obtenez votre URL personnalisée en 60 secondes
-        </p>
+        {emailSent ? (
+          <div className="flex flex-col items-center text-center gap-4 py-4 animate-in fade-in">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shadow-sm">
+              <Mail className="w-7 h-7" />
+            </div>
+            <h1 className="text-2xl font-black text-neutral-900 tracking-tight">Vérifiez vos emails</h1>
+            <p className="text-xs text-neutral-600 leading-relaxed max-w-xs">
+              Un lien de confirmation a été envoyé à <strong>{email}</strong>. Cliquez dessus pour finaliser votre inscription et accéder à votre dashboard.
+            </p>
+            <Link
+              href="/login"
+              className="mt-4 px-6 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs rounded-xl transition shadow-sm"
+            >
+              Retour à la connexion
+            </Link>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Créer ma carte</h1>
+            <p className="text-xs text-neutral-500 text-center mb-7">
+              Obtenez votre URL personnalisée en 60 secondes
+            </p>
 
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
           <div>
@@ -145,6 +185,8 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
+          </>
+        )}
       </div>
     </div>
   );
