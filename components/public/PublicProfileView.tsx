@@ -8,7 +8,20 @@ import { LinkButton } from '@/components/public/LinkButton';
 import { VCardButton } from '@/components/public/VCardButton';
 import { QrCodeModal } from '@/components/public/QrCodeModal';
 import { ThemeWrapper } from '@/components/public/ThemeWrapper';
-import { Sparkles, BookOpen, ChevronDown, ChevronUp, ArrowRight, PhoneCall, Whatsapp, Mail } from '@/components/ui/Icons';
+import {
+  Sparkles,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
+  PhoneCall,
+  Whatsapp,
+  Mail,
+  Calendar,
+  Zap,
+  ExternalLink,
+} from '@/components/ui/Icons';
+import { formatExternalUrl } from '@/lib/utils';
 
 interface PublicProfileViewProps {
   profile: Profile;
@@ -223,7 +236,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
           {/* Tab 2: SERVICES */}
           {activeTab === 'services' && (
-            <div className="w-full flex flex-col gap-3 animate-in fade-in duration-300">
+            <div className="w-full flex flex-col gap-3.5 animate-in fade-in duration-300">
               {services.length === 0 ? (
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
                   <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
@@ -233,37 +246,69 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                 </div>
               ) : (
                 services.map((service) => {
-                const isOpen = openServiceAccordion === service.id;
-                return (
-                  <div
-                    key={service.id}
-                    className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm transition-all text-left`}
-                    style={{ borderColor: `${accentColor}33` }}
-                  >
-                    <button
-                      onClick={() => setOpenServiceAccordion(isOpen ? null : service.id)}
-                      className="w-full p-4 flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider"
-                      style={{ color: theme.text_color }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-8 h-8 rounded-xl flex items-center justify-center"
-                          style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
-                        >
-                          <Sparkles className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <span className="block font-bold">{service.title}</span>
-                          {service.category && (
-                            <span className="text-[10px] opacity-60 font-mono">{service.category}</span>
-                          )}
-                        </div>
-                      </div>
+                  const targetUrl = service.url
+                    ? formatExternalUrl(service.url)
+                    : contact?.whatsapp
+                    ? `https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`
+                    : contact?.email
+                    ? `mailto:${contact.email}`
+                    : null;
 
-                      <div className="flex items-center gap-2">
+                  const isCalendarService =
+                    service.title?.toLowerCase().includes('calend') ||
+                    service.title?.toLowerCase().includes('rdv') ||
+                    service.title?.toLowerCase().includes('booking') ||
+                    service.title?.toLowerCase().includes('agenda') ||
+                    service.title?.toLowerCase().includes('meet') ||
+                    service.category?.toLowerCase().includes('rdv') ||
+                    service.category?.toLowerCase().includes('calend');
+
+                  const defaultActionText = isCalendarService
+                    ? 'Prendre RDV'
+                    : service.url
+                    ? 'Réserver'
+                    : contact?.whatsapp
+                    ? 'Contacter via WhatsApp'
+                    : 'En savoir plus';
+
+                  const buttonLabel = service.button_text?.trim() || defaultActionText;
+
+                  return (
+                    <div
+                      key={service.id}
+                      className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm transition-all hover:shadow-md text-left relative flex flex-col gap-3 group`}
+                      style={{ borderColor: `${accentColor}44` }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
+                            style={{ backgroundColor: `${accentColor}25`, color: accentColor }}
+                          >
+                            {isCalendarService ? (
+                              <Calendar className="w-5 h-5" />
+                            ) : (
+                              <Zap className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-extrabold text-sm leading-tight" style={{ color: theme.text_color }}>
+                              {service.title}
+                            </h4>
+                            {service.category && (
+                              <span
+                                className="inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
+                                style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
+                              >
+                                {service.category}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
                         {service.price && (
                           <span
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-black border"
+                            className="px-2.5 py-1 rounded-full text-xs font-black shrink-0 border"
                             style={{
                               backgroundColor: `${accentColor}20`,
                               borderColor: `${accentColor}44`,
@@ -273,44 +318,45 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                             {service.price}
                           </span>
                         )}
-                        {isOpen ? <ChevronUp className="w-4 h-4 opacity-60" /> : <ChevronDown className="w-4 h-4 opacity-60" />}
                       </div>
-                    </button>
 
-                    {isOpen && (
-                      <div className="px-4 pb-4 pt-1 flex flex-col gap-2 border-t border-black/5 dark:border-white/5">
-                        <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-between text-left">
-                          <div>
-                            <div className="text-xs font-bold" style={{ color: theme.text_color }}>{service.title}</div>
-                            <div className="text-[10px] opacity-70" style={{ color: theme.text_color }}>{service.subtitle || 'Service personnalisé'}</div>
-                          </div>
-                          {service.url ? (
-                            <a
-                              href={service.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-1.5 rounded-lg text-white text-[10px] font-bold shadow"
-                              style={{ backgroundColor: accentColor }}
-                            >
-                              Réserver
-                            </a>
+                      {service.subtitle && (
+                        <p className="text-xs leading-relaxed opacity-85" style={{ color: theme.text_color }}>
+                          {service.subtitle}
+                        </p>
+                      )}
+
+                      {/* Action Redirection Button */}
+                      {targetUrl ? (
+                        <a
+                          href={targetUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full mt-1 py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 text-white shadow-sm transition-all active:scale-[0.98] hover:opacity-95"
+                          style={{ backgroundColor: accentColor }}
+                        >
+                          {isCalendarService ? (
+                            <Calendar className="w-4 h-4" />
                           ) : (
-                            <span
-                              className="px-3 py-1 rounded-lg text-white text-[10px] font-bold"
-                              style={{ backgroundColor: accentColor }}
-                            >
-                              Disponible
-                            </span>
+                            <ExternalLink className="w-4 h-4" />
                           )}
+                          <span>{buttonLabel}</span>
+                          <ArrowRight className="w-3.5 h-3.5 ml-0.5 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                      ) : (
+                        <div
+                          className="w-full mt-1 py-2 px-3 rounded-xl font-semibold text-xs text-center border opacity-80"
+                          style={{ borderColor: `${accentColor}33`, color: theme.text_color }}
+                        >
+                          Prestation disponible sur demande
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
 
           {/* Tab 3: SHOP */}
           {activeTab === 'shop' && (

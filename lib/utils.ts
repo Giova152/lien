@@ -119,3 +119,13 @@ export function sanitizeUsername(input: string): string {
     .replace(/[^a-z0-9_-]/g, '')
     .slice(0, 30);
 }
+
+export function formatExternalUrl(url?: string): string {
+  if (!url || !url.trim()) return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed) || /^mailto:/i.test(trimmed) || /^tel:/i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+

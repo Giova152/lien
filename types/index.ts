@@ -14,6 +14,7 @@ export interface ServiceItem {
   subtitle?: string;
   price?: string; // e.g. "Gratuit" or "49 €"
   url?: string;
+  button_text?: string; // e.g. "Prendre RDV", "Réserver", "Planifier"
 }
 
 export interface ShopProduct {
