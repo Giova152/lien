@@ -37,7 +37,8 @@ export interface ThemeConfig {
   accent_color: string;
   card_glass?: boolean;
 
-  // Custom luxury profile sections (100% editable from Dashboard!)
+  // Custom profile sections (100% editable from Dashboard!)
+  location?: string | null;
   stats?: StatItem[];
   expertise_tags?: string[];
   services?: ServiceItem[];

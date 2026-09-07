@@ -13,6 +13,10 @@ import {
   CheckCircle2,
   ShieldAlert,
   Camera,
+  MapPin,
+  Plus,
+  Trash2,
+  X,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 import { useDashboard } from '@/lib/context/DashboardContext';
@@ -25,7 +29,10 @@ export default function ProfilePage() {
   const [username, setUsername] = useState(profile?.username || '');
   const [title, setTitle] = useState(profile?.title || '');
   const [company, setCompany] = useState(profile?.company || '');
+  const [location, setLocation] = useState(profile?.theme?.location || '');
   const [bio, setBio] = useState(profile?.bio || '');
+  const [expertiseTags, setExpertiseTags] = useState<string[]>(profile?.theme?.expertise_tags || []);
+  const [newTagInput, setNewTagInput] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Avatar / Cover Cropper Modals
@@ -42,7 +49,9 @@ export default function ProfilePage() {
       setUsername(profile.username || '');
       setTitle(profile.title || '');
       setCompany(profile.company || '');
+      setLocation(profile.theme?.location || '');
       setBio(profile.bio || '');
+      setExpertiseTags(profile.theme?.expertise_tags || []);
     }
   }, [profile]);
 
@@ -107,6 +116,30 @@ export default function ProfilePage() {
     }
   };
 
+  const handleAddTag = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = newTagInput.trim();
+    if (!trimmed) return;
+    if (expertiseTags.includes(trimmed)) {
+      toast.error('Ce domaine a déjà été ajouté');
+      return;
+    }
+    const next = [...expertiseTags, trimmed];
+    setExpertiseTags(next);
+    setNewTagInput('');
+    if (setProfile) {
+      setProfile((prev) => (prev ? { ...prev, theme: { ...(prev.theme || {}), expertise_tags: next } } : prev));
+    }
+  };
+
+  const handleRemoveTag = (index: number) => {
+    const next = expertiseTags.filter((_, i) => i !== index);
+    setExpertiseTags(next);
+    if (setProfile) {
+      setProfile((prev) => (prev ? { ...prev, theme: { ...(prev.theme || {}), expertise_tags: next } } : prev));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile) return;
@@ -124,12 +157,19 @@ export default function ProfilePage() {
 
     try {
       setSaving(true);
+      const updatedTheme = {
+        ...(profile.theme || {}),
+        location: location.trim() || null,
+        expertise_tags: expertiseTags,
+      };
+
       const updatedData = {
         display_name: displayName.trim(),
         username: cleanedUsername,
         title: title.trim() || null,
         company: company.trim() || null,
         bio: bio.trim() || null,
+        theme: updatedTheme,
       };
 
       const { error } = await supabase
@@ -313,10 +353,32 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Location / City */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
+            Localisation / Ville <span className="text-neutral-400 font-normal lowercase">(facultatif)</span>
+          </label>
+          <div className="relative flex items-center">
+            <MapPin className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Ex: Paris, France ou Abidjan, Côte d'Ivoire"
+              value={location}
+              onChange={(e) => {
+                setLocation(e.target.value);
+                if (setProfile) {
+                  setProfile((prev) => (prev ? { ...prev, theme: { ...(prev.theme || {}), location: e.target.value } } : prev));
+                }
+              }}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+            />
+          </div>
+        </div>
+
         {/* Bio */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-            Biographie / Description courte
+            Biographie / Description courte <span className="text-neutral-400 font-normal lowercase">(facultatif)</span>
           </label>
           <textarea
             rows={3}
@@ -328,6 +390,71 @@ export default function ProfilePage() {
             }}
             className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white resize-none transition"
           />
+        </div>
+
+        {/* Domaines d'expertise (Tags) */}
+        <div className="pt-2 border-t border-neutral-200/70 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700">
+                Domaines d'expertise / Spécialités <span className="text-neutral-400 font-normal lowercase">(facultatif)</span>
+              </label>
+              <p className="text-[11px] text-neutral-400">
+                Ajoutez des mots-clés qui s'afficheront sur votre carte publique sous forme de badges.
+              </p>
+            </div>
+          </div>
+
+          {/* Tag Input */}
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Ex: Marketing digital, Photographie, Coaching..."
+              value={newTagInput}
+              onChange={(e) => setNewTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddTag();
+                }
+              }}
+              className="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+            />
+            <button
+              type="button"
+              onClick={handleAddTag}
+              className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Ajouter</span>
+            </button>
+          </div>
+
+          {/* Tags list */}
+          <div className="flex flex-wrap gap-2 min-h-[32px]">
+            {expertiseTags.length === 0 ? (
+              <p className="text-xs text-neutral-400 italic py-1">
+                Aucun domaine ajouté. (La section n'apparaîtra pas sur votre carte si vide).
+              </p>
+            ) : (
+              expertiseTags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold shadow-2xs animate-in fade-in"
+                >
+                  <span>✦ {tag}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(idx)}
+                    className="w-4 h-4 rounded-full hover:bg-indigo-200/70 text-indigo-600 flex items-center justify-center transition"
+                    title="Supprimer ce tag"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Submit */}

@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Profile, ThemeConfig, ContactInfo } from '@/types';
-import { Facebook, Whatsapp, Tiktok, Mail, PhoneCall } from '@/components/ui/Icons';
+import { Facebook, Whatsapp, Tiktok, Mail, PhoneCall, MapPin } from '@/components/ui/Icons';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -103,10 +103,18 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
 
       {/* Title & Company (Subtitle) */}
       {(profile.title || profile.company) && (
-        <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-80 mb-3" style={{ color: theme.text_color }}>
+        <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest opacity-80 mb-2" style={{ color: theme.text_color }}>
           {profile.title && <span>{profile.title}</span>}
           {profile.title && profile.company && <span>·</span>}
           {profile.company && <span>{profile.company}</span>}
+        </div>
+      )}
+
+      {/* Location / City */}
+      {(theme.location || contact?.address) && (
+        <div className="flex items-center justify-center gap-1.5 text-xs font-medium opacity-75 mb-3" style={{ color: theme.text_color }}>
+          <MapPin className="w-3.5 h-3.5 opacity-70" />
+          <span>{theme.location || contact?.address}</span>
         </div>
       )}
 
