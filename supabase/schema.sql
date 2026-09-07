@@ -266,3 +266,29 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.increment_link_click(UUID) TO anon, authenticated;
 
+-- ========================================================
+-- FONCTION RPC : Suppression sécurisée de son propre compte
+-- ========================================================
+
+CREATE OR REPLACE FUNCTION public.delete_user_account()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  current_user_id UUID;
+BEGIN
+  current_user_id := auth.uid();
+  IF current_user_id IS NULL THEN
+    RAISE EXCEPTION 'Non autorisé : aucun utilisateur connecté';
+  END IF;
+
+  -- Supprimer l'utilisateur dans auth.users (la cascade supprime profiles, links, etc.)
+  DELETE FROM auth.users WHERE id = current_user_id;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.delete_user_account() TO authenticated;
+
+
