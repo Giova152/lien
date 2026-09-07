@@ -4,8 +4,10 @@ import React, { useState, useContext } from 'react';
 import Link from 'next/link';
 import { ThemeConfig, ButtonStyle, BackgroundType, StatItem, ServiceItem, ShopProduct } from '@/types';
 import { THEME_PRESETS } from '@/lib/utils';
-import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers, Zap } from '@/components/ui/Icons';
+import { Palette, Check, Sparkles, Plus, Trash2, BookOpen, Layers, Zap, Upload, Loader2, Camera } from '@/components/ui/Icons';
 import { DashboardContext } from '@/lib/context/DashboardContext';
+import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 interface ThemeEditorProps {
   theme: ThemeConfig;
@@ -42,10 +44,47 @@ const GRADIENT_PRESETS = [
 
 export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProps) {
   const { profile } = useContext(DashboardContext);
+  const supabase = createClient();
+  const [uploadingBg, setUploadingBg] = useState(false);
   const [activeTabSection, setActiveTabSection] = useState<'style' | 'content'>('style');
 
   const updateField = <K extends keyof ThemeConfig>(field: K, value: ThemeConfig[K]) => {
     onChange({ ...theme, [field]: value });
+  };
+
+  const handleUploadBg = async (file: File) => {
+    if (!profile) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Veuillez choisir un fichier image (JPG, PNG, WebP)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5 Mo");
+      return;
+    }
+
+    try {
+      setUploadingBg(true);
+      const fileExt = file.name.split('.').pop() || 'webp';
+      const fileName = `${profile.id}-bg-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('covers')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('covers')
+        .getPublicUrl(fileName);
+
+      updateField('background_value', publicUrlData.publicUrl);
+      toast.success('Image de fond importée avec succès !');
+    } catch (err: any) {
+      toast.error(err?.message || "Erreur lors de l'importation de l'image");
+    } finally {
+      setUploadingBg(false);
+    }
   };
 
   const applyPreset = (presetTheme: ThemeConfig) => {
@@ -275,16 +314,71 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             )}
 
             {theme.background_type === 'image' && (
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                  URL de l'image de fond
+              <div className="flex flex-col gap-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600">
+                  Image de fond d'écran
                 </label>
+
+                {theme.background_value && theme.background_value.startsWith('http') ? (
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 border border-neutral-200 rounded-xl">
+                    <img
+                      src={theme.background_value}
+                      alt="Fond d'écran"
+                      className="w-16 h-12 object-cover rounded-lg border border-neutral-200 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-neutral-800 truncate">Image de fond active</p>
+                      <p className="text-[10px] text-neutral-400 truncate">{theme.background_value}</p>
+                    </div>
+                    <label className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-200 rounded-lg text-xs font-semibold text-neutral-700 cursor-pointer flex items-center gap-1 transition">
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Changer</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingBg}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadBg(file);
+                        }}
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 w-full px-4 py-4 rounded-xl border-2 border-dashed border-neutral-300 hover:border-indigo-500 bg-slate-50/70 hover:bg-indigo-50/20 text-neutral-600 hover:text-indigo-600 cursor-pointer transition">
+                    {uploadingBg ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                        <span className="text-xs font-semibold text-indigo-600">Importation de l'image en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 text-neutral-400" />
+                        <span className="text-xs font-bold">Cliquer pour importer une image de fond</span>
+                        <span className="text-[10px] text-neutral-400">(JPG, PNG, WebP)</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploadingBg}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUploadBg(file);
+                      }}
+                    />
+                  </label>
+                )}
+
+                {/* Optionnel : Saisie URL manuelle */}
                 <input
                   type="url"
-                  placeholder="https://images.unsplash.com/photo-..."
+                  placeholder="Ou coller une URL d'image (ex: https://images.unsplash.com/...)"
                   value={theme.background_value}
                   onChange={(e) => updateField('background_value', e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm"
+                  className="w-full px-3.5 py-1.5 rounded-lg bg-slate-50 border border-neutral-200 text-neutral-700 font-mono text-[11px]"
                 />
               </div>
             )}
