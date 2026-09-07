@@ -23,7 +23,7 @@ export function ThemeWrapper({ theme = DEFAULT_THEME, children, className = '' }
         backgroundRepeat: 'no-repeat',
       };
     }
-    return { backgroundColor: theme.background_value || '#0f172a' };
+    return { backgroundColor: theme.background_value || '#F7F3EC' };
   };
 
   return (
@@ -31,8 +31,8 @@ export function ThemeWrapper({ theme = DEFAULT_THEME, children, className = '' }
       className={`min-h-screen w-full transition-colors duration-300 ${className}`}
       style={{
         ...getBackgroundStyle(),
-        color: theme.text_color || '#ffffff',
-        fontFamily: theme.font_family || 'Inter, sans-serif',
+        color: theme.text_color || '#1C1A17',
+        fontFamily: theme.font_family || 'Outfit, sans-serif',
       }}
     >
       {children}

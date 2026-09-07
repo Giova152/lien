@@ -158,23 +158,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-4">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mb-4">
+      <div className="min-h-screen bg-slate-50 text-neutral-900 flex flex-col items-center justify-center p-4 font-sans">
+        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-4 shadow-xs">
           <Sparkles className="w-6 h-6 animate-spin" />
         </div>
-        <p className="text-sm font-semibold text-neutral-300">Chargement de votre espace admin...</p>
+        <p className="text-xs font-bold text-neutral-600">Chargement de votre espace admin...</p>
       </div>
     );
   }
 
   if (errorMessage) {
     return (
-      <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mb-4 shadow-lg shadow-rose-500/10">
-          <ShieldAlert className="w-8 h-8" />
+      <div className="min-h-screen bg-slate-50 text-neutral-900 flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 border border-rose-200/80 flex items-center justify-center mb-4 shadow-sm">
+          <ShieldAlert className="w-7 h-7" />
         </div>
-        <h1 className="text-xl font-bold mb-2">Erreur de Connexion Supabase</h1>
-        <p className="text-xs text-neutral-400 max-w-md mb-6 leading-relaxed">
+        <h1 className="text-lg font-extrabold text-neutral-900 mb-1.5">Erreur de Connexion Supabase</h1>
+        <p className="text-xs text-neutral-500 max-w-md mb-6 leading-relaxed">
           {errorMessage}
         </p>
         <button
@@ -182,7 +182,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             setLoading(true);
             fetchDashboardData();
           }}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl transition shadow-lg shadow-indigo-600/25"
+          className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md"
         >
           Réessayer
         </button>
@@ -203,23 +203,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setContact,
       }}
     >
-      <div className="min-h-screen bg-slate-50 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
+      <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
         {/* Top Header */}
-        <header className="w-full border-b border-neutral-200 bg-white/90 backdrop-blur-xl sticky top-0 z-40">
+        <header className="w-full border-b border-neutral-200/70 bg-white/80 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/70">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             {/* Left: Brand Logo & Status */}
             <div className="flex items-center gap-3 sm:gap-4">
-              <Link href="/" className="font-black text-xl tracking-tight text-neutral-900 flex items-center gap-2 group">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+              <Link href="/" className="font-black text-xl tracking-tight text-neutral-900 flex items-center gap-2.5 group">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <span>Lien<span className="text-indigo-600">.me</span></span>
+                <span className="font-sans">Lien<span className="text-indigo-600">.me</span></span>
               </Link>
 
               {/* Status & PRO Badge Indicator */}
               {profile && (
                 <div className="hidden md:flex items-center gap-2">
-                  <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-[11px] font-medium">
+                  <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-100/90 border border-neutral-200/80 text-[11px] font-medium">
                     <span className={`w-2 h-2 rounded-full ${profile.is_published ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
                     <span className={profile.is_published ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
                       {profile.is_published ? 'Carte Publique' : 'Carte Masquée'}
@@ -227,14 +227,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </div>
 
                   {profile.is_pro ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-xs font-black uppercase tracking-wider shadow-sm">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-xs font-black uppercase tracking-wider shadow-xs">
                       <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                       <span>PRO À VIE</span>
                     </div>
                   ) : (
                     <button
                       onClick={() => setIsUpgradeModalOpen(true)}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-md hover:scale-105 transition-all"
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-xs hover:scale-105 transition-all"
                     >
                       <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
                       <span>Passer PRO (186 $)</span>
@@ -250,7 +250,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {profile && !profile.is_pro && (
                 <button
                   onClick={() => setIsUpgradeModalOpen(true)}
-                  className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950 text-[11px] font-black uppercase shadow-sm"
+                  className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950 text-[11px] font-black uppercase shadow-xs"
                 >
                   <Sparkles className="w-3 h-3 fill-neutral-950" />
                   <span>PRO 186$</span>
@@ -262,7 +262,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {/* Copy Link Button */}
                   <button
                     onClick={handleCopyPublicLink}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-neutral-100 border border-neutral-200 text-xs font-medium text-neutral-700 transition shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs"
                     title="Copier le lien public"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-indigo-600" />}
@@ -274,7 +274,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={`/${profile.username}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-xs font-bold text-indigo-700 transition"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 transition"
                   >
                     <Eye className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Aperçu Web</span>
@@ -284,19 +284,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               )}
 
               {/* Mobile View Switcher */}
-              <div className="flex lg:hidden bg-neutral-100 p-1 rounded-xl border border-neutral-200">
+              <div className="flex lg:hidden bg-neutral-100 p-1 rounded-xl border border-neutral-200/80">
                 <button
                   onClick={() => setMobileTab('editor')}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                    mobileTab === 'editor' ? 'bg-indigo-600 text-white shadow' : 'text-neutral-600'
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                    mobileTab === 'editor' ? 'bg-indigo-600 text-white shadow-xs' : 'text-neutral-600'
                   }`}
                 >
                   Éditeur
                 </button>
                 <button
                   onClick={() => setMobileTab('preview')}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                    mobileTab === 'preview' ? 'bg-indigo-600 text-white shadow' : 'text-neutral-600'
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                    mobileTab === 'preview' ? 'bg-indigo-600 text-white shadow-xs' : 'text-neutral-600'
                   }`}
                 >
                   Aperçu
@@ -306,7 +306,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {/* Sign Out */}
               <button
                 onClick={handleSignOut}
-                className="p-2 text-neutral-500 hover:text-rose-600 hover:bg-neutral-100 border border-transparent rounded-xl transition"
+                className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
                 title="Déconnexion"
               >
                 <LogOut className="w-4 h-4" />
@@ -315,9 +315,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Navigation Sub-bar */}
-        <nav className="w-full border-b border-neutral-200 bg-white shadow-xs overflow-x-auto no-scrollbar">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1">
+        {/* Navigation Sub-bar (Modern Underline / Pill Tabs) */}
+        <nav className="w-full border-b border-neutral-200/70 bg-white sticky top-16 z-30 shadow-2xs overflow-x-auto no-scrollbar">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 py-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
@@ -325,13 +325,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-4 py-3 text-xs font-bold flex items-center gap-2 border-b-2 whitespace-nowrap transition-all duration-200 ${
+                  className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 rounded-xl whitespace-nowrap transition-all duration-200 ${
                     isActive
-                      ? 'border-indigo-600 text-indigo-600 bg-indigo-50/60'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/60'
+                      ? 'bg-indigo-50 text-indigo-700 shadow-2xs'
+                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/70'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-indigo-600' : 'text-neutral-400'}`} />
                   <span>{item.label}</span>
                 </Link>
               );

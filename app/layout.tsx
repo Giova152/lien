@@ -27,11 +27,11 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${outfit.variable} ${playfair.variable} ${spaceGrotesk.variable} dark`}
+      className={`${inter.variable} ${outfit.variable} ${playfair.variable} ${spaceGrotesk.variable}`}
     >
-      <body className="bg-neutral-950 text-neutral-100 antialiased min-h-screen flex flex-col font-sans">
+      <body className="bg-white text-neutral-900 antialiased min-h-screen flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
         {children}
-        <Toaster position="top-right" theme="dark" richColors />
+        <Toaster position="top-right" theme="light" richColors closeButton />
       </body>
     </html>
   );

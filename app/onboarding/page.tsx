@@ -134,27 +134,31 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-neutral-950 text-white relative overflow-hidden">
-      <div className="max-w-md w-full bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-2xl relative z-10">
-        <div className="flex justify-center mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 via-white to-slate-50 text-neutral-900 relative overflow-hidden font-sans">
+      {/* Soft Ambient Background Glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="max-w-md w-full bg-white/95 backdrop-blur-xl border border-neutral-200/80 rounded-3xl p-8 sm:p-9 shadow-2xl shadow-neutral-300/30 relative z-10">
+        <div className="flex justify-center mb-5">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shadow-xs">
             <Sparkles className="w-6 h-6" />
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-center mb-1">Bienvenue !</h1>
-        <p className="text-sm text-neutral-400 text-center mb-6">
-          Choisissez l'URL personnalisée de votre carte de visite
+        <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Bienvenue sur Lien.me</h1>
+        <p className="text-xs text-neutral-500 text-center mb-7">
+          Configurez votre lien unique et votre profil en quelques instants
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Username Input with Live Availability Check */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
-              URL Personnalisée *
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5">
+              Votre lien personnalisé *
             </label>
             <div className="relative flex items-center">
-              <span className="absolute left-3 text-sm text-neutral-500 font-mono select-none">
+              <span className="absolute left-3.5 text-xs text-neutral-400 font-mono select-none">
                 lien.me/
               </span>
               <input
@@ -163,60 +167,61 @@ export default function OnboardingPage() {
                 placeholder="votre_pseudo"
                 value={username}
                 onChange={(e) => setUsername(sanitizeUsername(e.target.value))}
-                className="w-full pl-20 pr-10 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 text-sm font-mono"
+                className="w-full pl-[76px] pr-10 py-2.5 rounded-xl bg-slate-50/80 border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-xs font-mono font-medium focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all"
               />
               <div className="absolute right-3">
                 {checkingUsername && <Loader2 className="w-4 h-4 text-neutral-400 animate-spin" />}
                 {!checkingUsername && usernameAvailable === true && (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 )}
                 {!checkingUsername && usernameAvailable === false && (
-                  <ShieldAlert className="w-5 h-5 text-rose-400" />
+                  <ShieldAlert className="w-4 h-4 text-rose-500" />
                 )}
               </div>
             </div>
 
             {usernameError && (
-              <p className="text-xs text-rose-400 mt-1 font-medium">{usernameError}</p>
+              <p className="text-[11px] text-rose-500 mt-1.5 font-medium">{usernameError}</p>
             )}
             {usernameAvailable === true && (
-              <p className="text-xs text-emerald-400 mt-1 font-medium">
-                https://lien.me/{sanitizeUsername(username)} est disponible !
+              <p className="text-[11px] text-emerald-600 mt-1.5 font-semibold flex items-center gap-1">
+                <span>✓</span>
+                <span>https://lien.me/{sanitizeUsername(username)} est disponible !</span>
               </p>
             )}
           </div>
 
           {/* Display Name Input */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5">
               Nom complet / Marque *
             </label>
             <div className="relative">
-              <User className="w-5 h-5 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <User className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 required
-                placeholder="Ex: Jean Dupont"
+                placeholder="Ex: Sophie Martin"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 text-sm"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50/80 border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all"
               />
             </div>
           </div>
 
           {/* Title / Profession Input */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
-              Titre / Post (Optionnel)
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5">
+              Titre / Profession (Optionnel)
             </label>
             <div className="relative">
-              <Briefcase className="w-5 h-5 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Briefcase className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Ex: Développeur Web, Consultant..."
+                placeholder="Ex: Fondatrice, Designer, Consultante..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 text-sm"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50/80 border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all"
               />
             </div>
           </div>
@@ -224,10 +229,10 @@ export default function OnboardingPage() {
           <button
             type="submit"
             disabled={submitting || usernameAvailable !== true}
-            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
+            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 hover:shadow-indigo-600/30 mt-3 disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-            {submitting ? 'Création de votre page...' : 'Accéder à mon tableau de bord'}
+            {submitting ? 'Création en cours...' : 'Accéder à mon tableau de bord'}
           </button>
         </form>
       </div>

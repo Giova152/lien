@@ -17,14 +17,44 @@ interface PublicProfileViewProps {
   isOwner?: boolean;
 }
 
+function isDarkColor(colorHex?: string): boolean {
+  if (!colorHex) return false;
+  if (colorHex.startsWith('rgba') || colorHex.startsWith('linear-gradient')) return false;
+  const hex = colorHex.replace('#', '').trim();
+  if (hex.length === 3) {
+    const r = parseInt(hex[0] + hex[0], 16);
+    const g = parseInt(hex[1] + hex[1], 16);
+    const b = parseInt(hex[2] + hex[2], 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 140;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 140;
+  }
+  return false;
+}
+
 export function PublicProfileView({ profile, links, contact, isOwner }: PublicProfileViewProps) {
   const [activeTab, setActiveTab] = useState<'profil' | 'services' | 'shop'>('profil');
   const [openServiceAccordion, setOpenServiceAccordion] = useState<string | null>(null);
   const [shopFilter, setShopFilter] = useState<'all' | 'free' | 'paid'>('all');
 
   const theme = profile.theme;
-  const isLuxuryTheme = theme.font_family === 'Playfair Display' || theme.background_value === '#FBF9F4';
+  const isDarkText = isDarkColor(theme.text_color);
+  const isDarkBg = isDarkColor(theme.background_value);
+  const isDarkCard = isDarkBg || !isDarkText;
+  const isLuxuryTheme = theme.font_family === 'Playfair Display' || !isDarkCard;
   const accentColor = theme.accent_color || '#C5A059';
+
+  const cardBoxBg = isDarkCard
+    ? 'bg-neutral-900/90 text-white border-white/10 backdrop-blur-xl'
+    : 'bg-[#FAF8F4] text-[#1C1A17] border-[#E8E2D5] shadow-xl';
+
+  const sectionBoxBg = isDarkCard
+    ? 'bg-white/5 border-white/10'
+    : 'bg-white/80 border-[#E8E2D5]';
 
   // Dynamic user data or luxury fallbacks
   const stats: StatItem[] = theme.stats?.length
@@ -91,11 +121,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
       <div className="min-h-screen w-full flex flex-col items-center justify-start px-3 sm:px-6 py-6 sm:py-12">
         {/* Floating Card Container (Exact 2-Tone Contrast & Subtle Golden Rim Shadow) */}
         <div
-          className={`w-full max-w-md rounded-[36px] sm:rounded-[44px] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.15)] border transition-all overflow-hidden flex flex-col items-center px-4 sm:px-6 pb-8 pt-2 relative ${
-            isLuxuryTheme
-              ? 'bg-[#FFFFFF] text-[#1C1917] border-[#E8E2D5]'
-              : 'bg-neutral-900/90 text-white border-white/10 backdrop-blur-xl'
-          }`}
+          className={`w-full max-w-md rounded-[36px] sm:rounded-[44px] border transition-all overflow-hidden flex flex-col items-center px-4 sm:px-6 pb-8 pt-2 relative ${cardBoxBg}`}
         >
           {/* Top Gold Rim Accent Line */}
           <div
@@ -122,7 +148,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                 {stats.map((st) => (
                   <div
                     key={st.id}
-                    className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-3 text-center shadow-sm"
+                    className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-3 text-center shadow-sm`}
                     style={{ borderColor: `${accentColor}33` }}
                   >
                     <div
@@ -144,7 +170,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Section À propos */}
               {profile.bio && (
                 <div
-                  className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left"
+                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left`}
                   style={{ borderColor: `${accentColor}33` }}
                 >
                   <h3 className={`text-base font-extrabold mb-2 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
@@ -159,7 +185,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Section Domaines d'expertise */}
               {tags.length > 0 && (
                 <div
-                  className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left"
+                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left`}
                   style={{ borderColor: `${accentColor}33` }}
                 >
                   <h3 className={`text-base font-extrabold mb-3 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
@@ -186,7 +212,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Section Coordonnées & Contact */}
               {contact && (contact.phone || contact.whatsapp || contact.email || contact.address || contact.website) && (
                 <div
-                  className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left flex flex-col gap-2.5"
+                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left flex flex-col gap-2.5`}
                   style={{ borderColor: `${accentColor}33` }}
                 >
                   <h3 className={`text-sm font-extrabold mb-1 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
@@ -249,7 +275,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                 return (
                   <div
                     key={service.id}
-                    className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm transition-all text-left"
+                    className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm transition-all text-left`}
                     style={{ borderColor: `${accentColor}33` }}
                   >
                     <button
@@ -328,7 +354,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
               {/* Header Badge */}
               <div
-                className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left"
+                className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 flex items-center gap-3 shadow-sm text-left`}
                 style={{ borderColor: `${accentColor}33` }}
               >
                 <div
@@ -391,7 +417,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     <CardWrapper
                       key={prod.id}
                       {...(prod.url ? { href: prod.url, target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      className="bg-neutral-50 dark:bg-black/40 backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group hover:scale-[1.03] hover:shadow-lg transition-all duration-300 cursor-pointer"
+                      className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl overflow-hidden shadow-sm flex flex-col text-left group hover:scale-[1.03] hover:shadow-lg transition-all duration-300 cursor-pointer`}
                       style={{ borderColor: `${accentColor}33` }}
                     >
                       <div className="w-full h-32 relative bg-neutral-800 overflow-hidden">

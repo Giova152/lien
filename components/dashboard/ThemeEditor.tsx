@@ -99,7 +99,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
     updateField('expertise_tags', [...tags, 'NOUVELLE EXPERTISE']);
   };
   const handleDeleteTag = (index: number) => {
-    updateField('expertise_tags', tags.filter((_, i) => i !== index));
+    updateField('expertise_tags', tags.filter((_, idx) => idx !== index));
   };
 
   // Service Handlers
@@ -140,32 +140,32 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
   };
 
   return (
-    <div className="w-full flex flex-col gap-6 text-white">
+    <div className="w-full flex flex-col gap-6 text-neutral-900 font-sans">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <Palette className="w-5 h-5 text-indigo-400" />
-          Thème & Contenu de la Carte
+        <h2 className="text-xl font-extrabold flex items-center gap-2 text-slate-900 dark:text-slate-100">
+          <Palette className="w-5 h-5 text-indigo-600 shrink-0" />
+          <span>Thème & Contenu de la Carte</span>
         </h2>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mt-0.5">
           Personnalisez les couleurs, la typographie et les contenus de vos 3 onglets (Profil, Services, Shop)
         </p>
       </div>
 
       {/* Lifetime PRO Promotion Banner */}
       {!profile?.is_pro && (
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex items-center justify-between gap-4 shadow-md">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-neutral-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/20">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 text-neutral-950 flex items-center justify-center font-black shrink-0 shadow-md">
               <Sparkles className="w-5 h-5 fill-neutral-950" />
             </div>
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-2">
-                <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider">OFFRE PROMO À VIE – 186 $</h4>
+                <h4 className="text-xs font-black text-amber-700 uppercase tracking-wider">OFFRE PROMO À VIE – 186 $</h4>
                 <span className="text-[10px] text-neutral-400 line-through font-semibold">350 $</span>
-                <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[9px] font-black uppercase">PROMO</span>
+                <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-600 text-[9px] font-black uppercase">PROMO</span>
               </div>
-              <p className="text-[11px] text-neutral-300">
+              <p className="text-[11px] text-neutral-700 font-medium">
                 Économisez dès aujourd'hui ! Débloquez tous les thèmes de luxe, l'onglet E-books, Services & Analytics pour toujours.
               </p>
             </div>
@@ -175,7 +175,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
               const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
               if (upgradeBtn) upgradeBtn.click();
             }}
-            className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black uppercase tracking-wider shrink-0 transition hover:scale-105 shadow-md"
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black uppercase tracking-wider shrink-0 transition hover:scale-105 shadow-md"
           >
             Offre Promo (186$)
           </button>
@@ -183,11 +183,11 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
       )}
 
       {/* Switcher Tab between Style & Custom Content */}
-      <div className="flex bg-neutral-900 border border-neutral-800 p-1 rounded-2xl">
+      <div className="flex bg-slate-100 border border-neutral-200 p-1.5 rounded-2xl">
         <button
           onClick={() => setActiveTabSection('style')}
           className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
-            activeTabSection === 'style' ? 'bg-indigo-600 text-white shadow' : 'text-neutral-400 hover:text-white'
+            activeTabSection === 'style' ? 'bg-indigo-600 text-white shadow-md' : 'text-neutral-600 hover:text-neutral-900 font-semibold'
           }`}
         >
           <Palette className="w-4 h-4" />
@@ -196,10 +196,10 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
         <button
           onClick={() => setActiveTabSection('content')}
           className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
-            activeTabSection === 'content' ? 'bg-indigo-600 text-white shadow' : 'text-neutral-400 hover:text-white'
+            activeTabSection === 'content' ? 'bg-indigo-600 text-white shadow-md' : 'text-neutral-600 hover:text-neutral-900 font-semibold'
           }`}
         >
-          <Layers className="w-4 h-4 text-amber-400" />
+          <Layers className="w-4 h-4 text-amber-500" />
           <span>Éditeur de Contenu (Stats, Services, Shop)</span>
         </button>
       </div>
@@ -207,13 +207,13 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
       {activeTabSection === 'style' ? (
         <>
           {/* Presets Grid (Ultra-Curated Designer Palettes) */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-3">
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-neutral-200 flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-500" />
                 Thèmes & Palettes de Couleur Pro (1-Clic)
               </h3>
-              <span className="text-[10px] text-neutral-400 font-medium">Harmonie Garantie</span>
+              <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">Harmonie Garantie</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -223,15 +223,15 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                   <button
                     key={preset.name}
                     onClick={() => applyPreset(preset.theme)}
-                    className={`p-4 rounded-2xl border transition-all text-left flex flex-col justify-between gap-3 relative overflow-hidden group shadow-md ${
+                    className={`p-4 rounded-2xl border transition-all text-left flex flex-col justify-between gap-3 relative overflow-hidden group shadow-xs ${
                       isSelected
-                        ? 'border-indigo-500 ring-2 ring-indigo-500/40 bg-neutral-850'
-                        : 'border-neutral-800 hover:border-neutral-700 bg-neutral-900/60'
+                        ? 'border-indigo-600 ring-2 ring-indigo-500/20 bg-indigo-50/40'
+                        : 'border-neutral-200 hover:border-neutral-300 bg-white hover:bg-slate-50/50'
                     }`}
                   >
                     {/* Header: Title & Active Indicator */}
                     <div className="flex items-center justify-between z-10">
-                      <span className="text-xs font-bold text-white truncate">{preset.name}</span>
+                      <span className="text-xs font-bold text-neutral-900 truncate">{preset.name}</span>
                       {isSelected && (
                         <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center">
                           <Check className="w-3 h-3" />
@@ -240,17 +240,17 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     </div>
 
                     {/* Color Swatch Preview Bar */}
-                    <div className="flex items-center gap-1.5 p-2 rounded-xl bg-neutral-950/40 border border-white/10 z-10">
-                      <div className="w-6 h-6 rounded-lg border border-white/20 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.background_value, color: preset.theme.text_color }} title="Fond">
+                    <div className="flex items-center gap-1.5 p-2 rounded-xl bg-slate-100/80 border border-neutral-200 z-10">
+                      <div className="w-6 h-6 rounded-lg border border-neutral-300 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.background_value, color: preset.theme.text_color }} title="Fond">
                         B
                       </div>
-                      <div className="w-6 h-6 rounded-lg border border-white/20 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.button_color, color: preset.theme.button_text_color }} title="Bouton">
+                      <div className="w-6 h-6 rounded-lg border border-neutral-300 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.button_color, color: preset.theme.button_text_color }} title="Bouton">
                         C
                       </div>
-                      <div className="w-6 h-6 rounded-lg border border-white/20 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.accent_color, color: '#ffffff' }} title="Accent">
+                      <div className="w-6 h-6 rounded-lg border border-neutral-300 shadow-inner flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: preset.theme.accent_color, color: '#ffffff' }} title="Accent">
                         A
                       </div>
-                      <div className="flex-1 text-right text-[10px] font-mono opacity-60 text-neutral-400">
+                      <div className="flex-1 text-right text-[10px] font-mono font-semibold text-neutral-500">
                         {preset.theme.font_family}
                       </div>
                     </div>
@@ -261,18 +261,18 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
           </div>
 
           {/* Arrière-plan */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-4">
-            <h3 className="text-sm font-semibold text-neutral-300">Style d'Arrière-plan</h3>
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
+            <h3 className="text-sm font-bold text-neutral-900">Style d'Arrière-plan</h3>
 
             <div className="grid grid-cols-3 gap-2">
               {(['color', 'gradient', 'image'] as BackgroundType[]).map((type) => (
                 <button
                   key={type}
                   onClick={() => updateField('background_type', type)}
-                  className={`py-2 px-3 rounded-xl border text-xs font-medium capitalize transition ${
+                  className={`py-2 px-3 rounded-xl border text-xs font-bold capitalize transition ${
                     theme.background_type === type
-                      ? 'bg-indigo-600 border-indigo-500 text-white'
-                      : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-white'
+                      ? 'bg-indigo-600 border-indigo-500 text-white shadow-sm'
+                      : 'bg-slate-50 border-neutral-200 text-neutral-700 hover:bg-slate-100'
                   }`}
                 >
                   {type === 'color' ? 'Couleur unie' : type === 'gradient' ? 'Dégradé' : 'Image URL'}
@@ -282,21 +282,21 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             {theme.background_type === 'color' && (
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   Couleur de fond
                 </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
-                    value={theme.background_value || '#0f172a'}
+                    value={theme.background_value || '#ffffff'}
                     onChange={(e) => updateField('background_value', e.target.value)}
                     className="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0"
                   />
                   <input
                     type="text"
-                    value={theme.background_value || '#0f172a'}
+                    value={theme.background_value || '#ffffff'}
                     onChange={(e) => updateField('background_value', e.target.value)}
-                    className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm font-mono"
+                    className="flex-1 px-4 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm font-mono"
                   />
                 </div>
               </div>
@@ -304,7 +304,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             {theme.background_type === 'gradient' && (
               <div className="flex flex-col gap-3">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600">
                   Dégradés recommandés
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -312,7 +312,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     <button
                       key={g.name}
                       onClick={() => updateField('background_value', g.value)}
-                      className="h-10 rounded-xl border border-white/20 flex items-center justify-center text-xs font-medium shadow"
+                      className="h-10 rounded-xl border border-neutral-300 text-white flex items-center justify-center text-xs font-bold shadow-xs"
                       style={{ background: g.value }}
                     >
                       {g.name}
@@ -324,14 +324,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                   placeholder="linear-gradient(...)"
                   value={theme.background_value}
                   onChange={(e) => updateField('background_value', e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-xs font-mono mt-1"
+                  className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-mono mt-1"
                 />
               </div>
             )}
 
             {theme.background_type === 'image' && (
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   URL de l'image de fond
                 </label>
                 <input
@@ -339,24 +339,24 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                   placeholder="https://images.unsplash.com/photo-..."
                   value={theme.background_value}
                   onChange={(e) => updateField('background_value', e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm"
                 />
               </div>
             )}
           </div>
 
           {/* Typographie & Style de Boutons */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-4">
-            <h3 className="text-sm font-semibold text-neutral-300">Typographie & Accentuation</h3>
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
+            <h3 className="text-sm font-bold text-neutral-900">Typographie & Accentuation</h3>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                 Police de caractères (Font)
               </label>
               <select
                 value={theme.font_family}
                 onChange={(e) => updateField('font_family', e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm focus:outline-none focus:border-indigo-600"
               >
                 {FONTS.map((font) => (
                   <option key={font} value={font}>
@@ -368,27 +368,27 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   Couleur du texte principal
                 </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
-                    value={theme.text_color || '#ffffff'}
+                    value={theme.text_color || '#09090b'}
                     onChange={(e) => updateField('text_color', e.target.value)}
                     className="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0"
                   />
                   <input
                     type="text"
-                    value={theme.text_color || '#ffffff'}
+                    value={theme.text_color || '#09090b'}
                     onChange={(e) => updateField('text_color', e.target.value)}
-                    className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm font-mono"
+                    className="flex-1 px-4 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   Couleur d'accentuation (Boutons VCard & QR)
                 </label>
                 <div className="flex items-center gap-3">
@@ -402,7 +402,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     type="text"
                     value={theme.accent_color || '#6366f1'}
                     onChange={(e) => updateField('accent_color', e.target.value)}
-                    className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm font-mono"
+                    className="flex-1 px-4 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm font-mono"
                   />
                 </div>
               </div>
@@ -413,15 +413,15 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
         /* CONTENT EDITORS (STATS, TAGS, SERVICES, SHOP) */
         <div className="flex flex-col gap-6">
           {/* 1. Éditeur des Stats KPI */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-4">
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
                 Statistiques KPI (Onglet PROFIL)
               </h3>
               <button
                 onClick={handleAddStat}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-indigo-600/30 transition"
+                className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 hover:bg-indigo-100 transition shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Ajouter un KPI</span>
@@ -430,24 +430,24 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="flex flex-col gap-2">
               {stats.map((s) => (
-                <div key={s.id} className="flex items-center gap-2 p-2 rounded-xl bg-neutral-800/60 border border-neutral-700/60">
+                <div key={s.id} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-neutral-200">
                   <input
                     type="text"
                     value={s.value}
                     onChange={(e) => handleUpdateStat(s.id, 'value', e.target.value)}
                     placeholder="Ex: 12+"
-                    className="w-24 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-amber-400 font-bold"
+                    className="w-24 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-amber-700 font-black"
                   />
                   <input
                     type="text"
                     value={s.label}
                     onChange={(e) => handleUpdateStat(s.id, 'label', e.target.value)}
                     placeholder="Ex: Ans d'expérience"
-                    className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-white"
+                    className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
                   />
                   <button
                     onClick={() => handleDeleteStat(s.id)}
-                    className="p-2 text-neutral-500 hover:text-rose-400 transition"
+                    className="p-2 text-neutral-400 hover:text-rose-600 transition"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -457,14 +457,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
           </div>
 
           {/* 2. Éditeur des Domaines d'Expertise */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-4">
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-neutral-300">
+              <h3 className="text-sm font-bold text-neutral-900">
                 Domaines d'expertise / Puces (Onglet PROFIL)
               </h3>
               <button
                 onClick={handleAddTag}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-indigo-600/30 transition"
+                className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 hover:bg-indigo-100 transition shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Ajouter un tag</span>
@@ -473,14 +473,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="flex flex-wrap gap-2">
               {tags.map((t, idx) => (
-                <div key={idx} className="flex items-center gap-1 bg-neutral-800 border border-neutral-700 rounded-xl px-2 py-1">
+                <div key={idx} className="flex items-center gap-1 bg-slate-50 border border-neutral-300 rounded-xl px-2 py-1">
                   <input
                     type="text"
                     value={t}
                     onChange={(e) => handleUpdateTag(idx, e.target.value)}
-                    className="bg-transparent text-xs text-amber-300 font-semibold focus:outline-none w-36"
+                    className="bg-transparent text-xs text-amber-800 font-bold focus:outline-none w-36"
                   />
-                  <button onClick={() => handleDeleteTag(idx)} className="text-neutral-500 hover:text-rose-400 p-1">
+                  <button onClick={() => handleDeleteTag(idx)} className="text-neutral-400 hover:text-rose-600 p-1">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
@@ -489,14 +489,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
           </div>
 
           {/* 3. Éditeur des Services */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-4">
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-neutral-300">
+              <h3 className="text-sm font-bold text-neutral-900">
                 Services & Prestations (Onglet SERVICES)
               </h3>
               <button
                 onClick={handleAddService}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-indigo-600/30 transition"
+                className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 hover:bg-indigo-100 transition shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Ajouter un service</span>
@@ -505,23 +505,23 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="flex flex-col gap-3">
               {services.map((srv) => (
-                <div key={srv.id} className="p-3.5 rounded-xl bg-neutral-800/60 border border-neutral-700/60 flex flex-col gap-2.5">
+                <div key={srv.id} className="p-3.5 rounded-xl bg-slate-50 border border-neutral-200 flex flex-col gap-2.5">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={srv.title}
                       onChange={(e) => handleUpdateService(srv.id, 'title', e.target.value)}
                       placeholder="Titre du service (ex: RÉSERVER UN RDV)"
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-white font-bold"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
                     />
                     <input
                       type="text"
                       value={srv.price || ''}
                       onChange={(e) => handleUpdateService(srv.id, 'price', e.target.value)}
                       placeholder="Prix (ex: Gratuit)"
-                      className="w-28 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-amber-400 font-bold"
+                      className="w-28 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-amber-700 font-extrabold"
                     />
-                    <button onClick={() => handleDeleteService(srv.id)} className="p-1.5 text-neutral-500 hover:text-rose-400">
+                    <button onClick={() => handleDeleteService(srv.id)} className="p-1.5 text-neutral-400 hover:text-rose-600">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -530,14 +530,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     value={srv.subtitle || ''}
                     onChange={(e) => handleUpdateService(srv.id, 'subtitle', e.target.value)}
                     placeholder="Description / Sous-titre"
-                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-300"
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-700"
                   />
                   <input
                     type="url"
                     value={srv.url || ''}
                     onChange={(e) => handleUpdateService(srv.id, 'url', e.target.value)}
                     placeholder="Lien de réservation / Calendly / WhatsApp (ex: https://...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-indigo-300 font-mono"
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-indigo-700 font-mono"
                   />
                 </div>
               ))}
@@ -545,15 +545,15 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
           </div>
 
           {/* 4. Éditeur du Shop / E-books */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-4">
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-indigo-400" />
+              <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-indigo-600" />
                 Produits Digitaux / E-books (Onglet SHOP)
               </h3>
               <button
                 onClick={handleAddProduct}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-indigo-600/30 transition"
+                className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 hover:bg-indigo-100 transition shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Ajouter un produit</span>
@@ -562,19 +562,19 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
 
             <div className="flex flex-col gap-3">
               {products.map((prod) => (
-                <div key={prod.id} className="p-3.5 rounded-xl bg-neutral-800/60 border border-neutral-700/60 flex flex-col gap-2.5">
+                <div key={prod.id} className="p-3.5 rounded-xl bg-slate-50 border border-neutral-200 flex flex-col gap-2.5">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={prod.title}
                       onChange={(e) => handleUpdateProduct(prod.id, 'title', e.target.value)}
                       placeholder="Nom du produit / E-book"
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-white font-bold"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 font-bold"
                     />
                     <select
                       value={prod.type}
                       onChange={(e) => handleUpdateProduct(prod.id, 'type', e.target.value)}
-                      className="px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-300"
+                      className="px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-800 font-bold"
                     >
                       <option value="free">Gratuit</option>
                       <option value="paid">Payant</option>
@@ -584,9 +584,9 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                       value={prod.price}
                       onChange={(e) => handleUpdateProduct(prod.id, 'price', e.target.value)}
                       placeholder="Prix (ex: 10 $)"
-                      className="w-24 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-emerald-400 font-bold"
+                      className="w-24 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-emerald-700 font-extrabold"
                     />
-                    <button onClick={() => handleDeleteProduct(prod.id)} className="p-1.5 text-neutral-500 hover:text-rose-400">
+                    <button onClick={() => handleDeleteProduct(prod.id)} className="p-1.5 text-neutral-400 hover:text-rose-600">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -595,14 +595,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                     value={prod.image_url || ''}
                     onChange={(e) => handleUpdateProduct(prod.id, 'image_url', e.target.value)}
                     placeholder="📷 URL de l'image de couverture (ex: https://images.unsplash.com/...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-300 font-mono"
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-700 font-mono"
                   />
                   <input
                     type="url"
                     value={prod.url || ''}
                     onChange={(e) => handleUpdateProduct(prod.id, 'url', e.target.value)}
                     placeholder="🔗 Lien de redirection au clic / Achat / Téléchargement (ex: https://...)"
-                    className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-indigo-300 font-mono"
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-neutral-300 text-xs text-indigo-700 font-mono"
                   />
                 </div>
               ))}
@@ -615,7 +615,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
       <button
         onClick={onSave}
         disabled={saving}
-        className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl flex items-center justify-center gap-2 shadow-lg transition disabled:opacity-50 mt-2"
+        className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-md transition disabled:opacity-50 mt-2 text-sm"
       >
         <Check className="w-5 h-5" />
         {saving ? 'Enregistrement en cours...' : 'Sauvegarder toutes les modifications'}

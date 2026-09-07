@@ -48,6 +48,8 @@ import {
   ChevronDown,
   ChevronUp,
   Zap,
+  ShieldCheck,
+  Star,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -215,4 +217,6 @@ export {
   ChevronUp,
   IconifyIcon,
   Zap,
+  ShieldCheck,
+  Star,
 };

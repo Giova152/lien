@@ -152,21 +152,21 @@ export function LinkEditor({
   };
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4 text-neutral-900 font-sans">
       {/* Top Header & Add Link Button */}
       <div className="flex items-center justify-between pb-2">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
             Gestion des Liens
           </h2>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-neutral-500">
             Glissez-déposez pour réorganiser vos liens publics
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl text-sm flex items-center gap-2 transition shadow-lg hover:shadow-indigo-500/25"
+          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center gap-2 transition shadow-md"
         >
           <Plus className="w-4 h-4" />
           <span>Ajouter un lien</span>
@@ -180,13 +180,13 @@ export function LinkEditor({
             const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
             if (upgradeBtn) upgradeBtn.click();
           }}
-          className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex items-center justify-between text-xs text-amber-300 cursor-pointer hover:border-amber-400/50 transition shadow-sm"
+          className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex items-center justify-between text-xs text-amber-800 cursor-pointer hover:border-amber-400/50 transition shadow-xs"
         >
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             <span>Offre Gratuite : <strong>{links.length} / 1 lien</strong> utilisé</span>
           </div>
-          <span className="text-[11px] font-black text-amber-400 uppercase tracking-wider underline">
+          <span className="text-[11px] font-black text-amber-700 uppercase tracking-wider underline">
             Passer aux Liens Illimités (PRO) →
           </span>
         </div>
@@ -202,10 +202,10 @@ export function LinkEditor({
               className="flex flex-col gap-3 min-h-[100px]"
             >
               {links.length === 0 ? (
-                <div className="p-8 text-center border-2 border-dashed border-neutral-800 rounded-2xl text-neutral-500">
-                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-indigo-400 opacity-60" />
-                  <p className="text-sm font-medium mb-1">Aucun lien enregistré</p>
-                  <p className="text-xs text-neutral-400">
+                <div className="p-8 text-center border-2 border-dashed border-neutral-200 rounded-2xl text-neutral-500 bg-white shadow-xs">
+                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-indigo-500 opacity-60" />
+                  <p className="text-sm font-bold text-neutral-800 mb-1">Aucun lien enregistré</p>
+                  <p className="text-xs text-neutral-500">
                     Cliquez sur "Ajouter un lien" pour créer votre premier bouton.
                   </p>
                 </div>
@@ -216,30 +216,30 @@ export function LinkEditor({
                       <div
                         ref={providedDraggable.innerRef}
                         {...providedDraggable.draggableProps}
-                        className={`bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex items-center justify-between transition-all ${
-                          snapshot.isDragging ? 'shadow-2xl ring-2 ring-indigo-500/50 scale-[1.02]' : 'hover:border-neutral-700'
-                        } ${!link.is_active ? 'opacity-50' : ''}`}
+                        className={`bg-white border border-neutral-200/80 rounded-2xl p-4 flex items-center justify-between transition-all shadow-xs ${
+                          snapshot.isDragging ? 'shadow-2xl ring-2 ring-indigo-500/40 scale-[1.02]' : 'hover:border-neutral-300'
+                        } ${!link.is_active ? 'opacity-50 bg-slate-50' : ''}`}
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           {/* Drag Handle */}
                           <div
                             {...providedDraggable.dragHandleProps}
-                            className="text-neutral-500 hover:text-neutral-300 p-1 cursor-grab active:cursor-grabbing shrink-0"
+                            className="text-neutral-400 hover:text-neutral-600 p-1 cursor-grab active:cursor-grabbing shrink-0"
                           >
                             <GripVertical className="w-5 h-5" />
                           </div>
 
                           {/* Icon */}
-                          <div className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center text-white shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-slate-100 border border-neutral-200 flex items-center justify-center text-neutral-800 shrink-0">
                             <PlatformIcon name={link.platform || 'website'} className="w-5 h-5" />
                           </div>
 
                           {/* Details */}
                           <div className="flex flex-col overflow-hidden">
-                            <span className="font-semibold text-white text-sm truncate">
+                            <span className="font-bold text-neutral-900 text-sm truncate">
                               {link.label}
                             </span>
-                            <span className="text-xs text-neutral-400 truncate flex items-center gap-1">
+                            <span className="text-xs text-neutral-500 truncate flex items-center gap-1">
                               {link.url}
                               <ExternalLink className="w-3 h-3 opacity-40 shrink-0" />
                             </span>
@@ -249,7 +249,7 @@ export function LinkEditor({
                         {/* Actions */}
                         <div className="flex items-center gap-3 shrink-0">
                           {/* Clicks Badge */}
-                          <span className="hidden sm:inline-flex text-xs px-2.5 py-1 rounded-full bg-neutral-800 text-neutral-300 font-mono">
+                          <span className="hidden sm:inline-flex text-xs px-2.5 py-1 rounded-full bg-slate-100 text-neutral-600 font-mono font-bold border border-neutral-200">
                             {link.click_count || 0} clics
                           </span>
 
@@ -258,7 +258,7 @@ export function LinkEditor({
                             type="button"
                             onClick={() => handleToggleActive(link)}
                             className={`w-11 h-6 rounded-full transition-colors relative p-1 ${
-                              link.is_active ? 'bg-indigo-600' : 'bg-neutral-700'
+                              link.is_active ? 'bg-indigo-600' : 'bg-neutral-300'
                             }`}
                             title={link.is_active ? 'Désactiver le lien' : 'Activer le lien'}
                           >
@@ -272,7 +272,7 @@ export function LinkEditor({
                           {/* Edit */}
                           <button
                             onClick={() => openEditModal(link)}
-                            className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition"
+                            className="p-2 text-neutral-500 hover:text-neutral-900 hover:bg-slate-100 rounded-lg transition"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
@@ -280,7 +280,7 @@ export function LinkEditor({
                           {/* Delete */}
                           <button
                             onClick={() => handleDelete(link.id)}
-                            className="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 rounded-lg transition"
+                            className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -298,15 +298,15 @@ export function LinkEditor({
 
       {/* Add / Edit Link Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-neutral-900 border border-neutral-800 text-white rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-800 mb-4">
-              <h3 className="text-lg font-bold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-neutral-200 text-neutral-900 rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 mb-4">
+              <h3 className="text-lg font-bold text-neutral-900">
                 {editingLink ? 'Modifier le lien' : 'Ajouter un nouveau lien'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-neutral-400 hover:text-white p-1 rounded-full hover:bg-neutral-800"
+                className="text-neutral-400 hover:text-neutral-800 p-1 rounded-full hover:bg-slate-100 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -314,7 +314,7 @@ export function LinkEditor({
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   URL du lien *
                 </label>
                 <input
@@ -323,12 +323,12 @@ export function LinkEditor({
                   placeholder="https://instagram.com/votre_profil"
                   value={url}
                   onChange={handleUrlChange}
-                  className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-sm transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   Intitulé du bouton *
                 </label>
                 <input
@@ -337,18 +337,18 @@ export function LinkEditor({
                   placeholder="Mon Instagram, Mon Portfolio..."
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-sm transition font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
                   Plateforme / Icône
                 </label>
                 <select
                   value={platform || 'website'}
                   onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:border-indigo-500 text-sm capitalize"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 focus:outline-none focus:border-indigo-600 text-sm capitalize font-bold"
                 >
                   {Object.values(PLATFORMS).map((p) => (
                     <option key={p.id} value={p.id}>
@@ -362,14 +362,14 @@ export function LinkEditor({
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 py-2.5 bg-neutral-800 hover:bg-neutral-700 font-medium rounded-xl text-sm transition"
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-neutral-700 font-bold rounded-xl text-sm transition border border-neutral-200"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
                   {saving ? 'Enregistrement...' : 'Enregistrer'}

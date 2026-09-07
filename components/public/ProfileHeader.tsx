@@ -146,7 +146,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
       </div>
 
       {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) */}
-      <div className="w-full max-w-sm p-1 rounded-full bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 flex items-center justify-between mb-4 backdrop-blur-md">
+      <div className="w-full max-w-sm p-1 rounded-full bg-black/10 border border-black/10 flex items-center justify-between mb-4 backdrop-blur-md">
         {(['profil', 'services', 'shop'] as const).map((tab) => {
           const isActive = activeTab === tab;
           return (

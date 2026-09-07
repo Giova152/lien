@@ -2,14 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Profile } from '@/types';
 import { createClient } from '@/lib/supabase/client';
 import { sanitizeUsername } from '@/lib/utils';
 import { ImageCropperModal } from '@/components/dashboard/ImageCropperModal';
 import {
   User,
-  Building2,
-  Briefcase,
   Upload,
   Check,
   Loader2,
@@ -18,7 +15,6 @@ import {
   Camera,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
-
 import { useDashboard } from '@/lib/context/DashboardContext';
 
 export default function ProfilePage() {
@@ -107,7 +103,7 @@ export default function ProfilePage() {
       toast.success(bucket === 'avatars' ? 'Photo de profil mise à jour !' : 'Bannière mise à jour !');
       if (refreshDashboard) refreshDashboard();
     } catch (err: any) {
-      toast.error(err?.message || "Erreur lors de l'envoi de l'image");
+      toast.error(err?.message || 'Erreur lors de l’envoi de l’image');
     }
   };
 
@@ -116,7 +112,12 @@ export default function ProfilePage() {
     if (!profile) return;
 
     const cleanedUsername = sanitizeUsername(username);
-    if (!cleanedUsername || usernameAvailable === false) {
+    if (!cleanedUsername) {
+      toast.error('Le nom d’utilisateur ne peut pas être vide');
+      return;
+    }
+
+    if (usernameAvailable === false) {
       toast.error('Veuillez spécifier un nom d’utilisateur valide et disponible');
       return;
     }
@@ -154,13 +155,13 @@ export default function ProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="w-full flex flex-col gap-6 text-white">
+    <div className="w-full flex flex-col gap-6 text-neutral-900 font-sans">
       <div>
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <User className="w-5 h-5 text-indigo-400" />
+        <h2 className="text-xl font-bold flex items-center gap-2 text-neutral-900">
+          <User className="w-5 h-5 text-indigo-600" />
           Éditer le Profil
         </h2>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs text-neutral-500 mt-0.5">
           Modifiez vos informations personnelles, photos et biographie
         </p>
       </div>
@@ -168,23 +169,23 @@ export default function ProfilePage() {
       {/* Image Upload Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Avatar Upload */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col items-center text-center">
-          <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm">
+          <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-3">
             Photo de profil (1:1)
           </label>
           <div className="relative mb-3 group">
             {profile.avatar_url ? (
-              <div className="w-24 h-24 rounded-full overflow-hidden relative border-2 border-indigo-500/50 shadow-lg">
+              <div className="w-24 h-24 rounded-full overflow-hidden relative border-2 border-indigo-500/50 shadow-md">
                 <Image src={profile.avatar_url} alt="Avatar" fill className="object-cover" />
               </div>
             ) : (
-              <div className="w-24 h-24 rounded-full bg-neutral-800 flex items-center justify-center text-2xl font-bold text-indigo-400 border-2 border-dashed border-neutral-700">
+              <div className="w-24 h-24 rounded-full bg-indigo-50 flex items-center justify-center text-2xl font-bold text-indigo-600 border-2 border-dashed border-indigo-200">
                 {profile.display_name?.slice(0, 2).toUpperCase() || 'P'}
               </div>
             )}
             <button
               onClick={() => setIsAvatarCropOpen(true)}
-              className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+              className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
             >
               <Camera className="w-6 h-6 text-white" />
             </button>
@@ -192,7 +193,7 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={() => setIsAvatarCropOpen(true)}
-            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-xs font-medium rounded-xl transition flex items-center gap-1.5"
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-neutral-800 text-xs font-bold rounded-xl transition flex items-center gap-1.5 border border-neutral-200 shadow-xs"
           >
             <Upload className="w-3.5 h-3.5" />
             Changer la photo
@@ -200,19 +201,19 @@ export default function ProfilePage() {
         </div>
 
         {/* Cover Upload */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col items-center text-center">
-          <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm">
+          <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-3">
             Bannière de couverture (3:1)
           </label>
-          <div className="relative w-full h-24 rounded-xl overflow-hidden mb-3 group border border-neutral-800 bg-neutral-950 flex items-center justify-center">
+          <div className="relative w-full h-24 rounded-xl overflow-hidden mb-3 group border border-neutral-200 bg-slate-100 flex items-center justify-center">
             {profile.cover_url ? (
               <Image src={profile.cover_url} alt="Cover" fill className="object-cover" />
             ) : (
-              <span className="text-xs text-neutral-500">Aucune bannière définie</span>
+              <span className="text-xs text-neutral-400 font-medium">Aucune bannière définie</span>
             )}
             <button
               onClick={() => setIsCoverCropOpen(true)}
-              className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+              className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
             >
               <Camera className="w-6 h-6 text-white" />
             </button>
@@ -220,7 +221,7 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={() => setIsCoverCropOpen(true)}
-            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-xs font-medium rounded-xl transition flex items-center gap-1.5"
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-neutral-800 text-xs font-bold rounded-xl transition flex items-center gap-1.5 border border-neutral-200 shadow-xs"
           >
             <Upload className="w-3.5 h-3.5" />
             Changer la bannière
@@ -229,14 +230,14 @@ export default function ProfilePage() {
       </div>
 
       {/* Main Profile Form */}
-      <form onSubmit={handleSubmit} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="bg-white border border-neutral-200/80 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
         {/* Username */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
             Nom d'utilisateur (URL Slug) *
           </label>
           <div className="relative flex items-center">
-            <span className="absolute left-3.5 text-xs text-neutral-500 font-mono">lien.me/</span>
+            <span className="absolute left-3.5 text-xs text-neutral-500 font-mono font-bold">lien.me/</span>
             <input
               type="text"
               required
@@ -246,15 +247,15 @@ export default function ProfilePage() {
                 setUsername(cleaned);
                 if (setProfile) setProfile((prev) => (prev ? { ...prev, username: cleaned } : prev));
               }}
-              className="w-full pl-20 pr-10 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+              className="w-full pl-20 pr-10 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-mono font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
             />
             <div className="absolute right-3">
               {checkingUsername && <Loader2 className="w-4 h-4 text-neutral-400 animate-spin" />}
               {!checkingUsername && usernameAvailable === true && username !== profile.username && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
               )}
               {!checkingUsername && usernameAvailable === false && (
-                <ShieldAlert className="w-5 h-5 text-rose-400" />
+                <ShieldAlert className="w-5 h-5 text-rose-600" />
               )}
             </div>
           </div>
@@ -262,7 +263,7 @@ export default function ProfilePage() {
 
         {/* Display Name */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
             Nom d'affichage *
           </label>
           <input
@@ -273,14 +274,14 @@ export default function ProfilePage() {
               setDisplayName(e.target.value);
               if (setProfile) setProfile((prev) => (prev ? { ...prev, display_name: e.target.value } : prev));
             }}
-            className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500"
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
           />
         </div>
 
         {/* Title & Company */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
               Poste / Titre
             </label>
             <input
@@ -291,12 +292,12 @@ export default function ProfilePage() {
                 setTitle(e.target.value);
                 if (setProfile) setProfile((prev) => (prev ? { ...prev, title: e.target.value } : prev));
               }}
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
               Entreprise / Organisation
             </label>
             <input
@@ -307,14 +308,14 @@ export default function ProfilePage() {
                 setCompany(e.target.value);
                 if (setProfile) setProfile((prev) => (prev ? { ...prev, company: e.target.value } : prev));
               }}
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition"
             />
           </div>
         </div>
 
         {/* Bio */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
             Biographie / Description courte
           </label>
           <textarea
@@ -325,7 +326,7 @@ export default function ProfilePage() {
               setBio(e.target.value);
               if (setProfile) setProfile((prev) => (prev ? { ...prev, bio: e.target.value } : prev));
             }}
-            className="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-white text-sm focus:outline-none focus:border-indigo-500 resize-none"
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white resize-none transition"
           />
         </div>
 
@@ -333,7 +334,7 @@ export default function ProfilePage() {
         <button
           type="submit"
           disabled={saving || usernameAvailable === false}
-          className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
+          className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-md mt-2 disabled:opacity-50"
         >
           <Check className="w-4 h-4" />
           {saving ? 'Enregistrement...' : 'Sauvegarder le profil'}
