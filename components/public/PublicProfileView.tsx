@@ -307,9 +307,10 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     )}
                   </div>
                 );
-              })}
-            </div>
-          )}
+              })
+            )}
+          </div>
+        )}
 
           {/* Tab 3: SHOP */}
           {activeTab === 'shop' && (
