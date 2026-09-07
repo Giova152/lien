@@ -53,7 +53,7 @@ export default function LoginPage() {
         <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md ring-1 ring-black/5 group-hover:scale-105 transition-transform">
           <Sparkles className="w-5 h-5" />
         </div>
-        <span>Lien<span className="text-indigo-600">.me</span></span>
+        <span>Lien <span className="text-indigo-600">Bio</span></span>
       </Link>
 
       <div className="w-full max-w-md bg-white/90 backdrop-blur-xl border border-neutral-200/80 rounded-3xl p-8 sm:p-9 shadow-2xl shadow-neutral-300/30 relative z-10">

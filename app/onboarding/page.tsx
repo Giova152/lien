@@ -146,7 +146,7 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Bienvenue sur Lien.me</h1>
+        <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Bienvenue sur Lien Bio</h1>
         <p className="text-xs text-neutral-500 text-center mb-7">
           Configurez votre lien unique et votre profil en quelques instants
         </p>
@@ -159,7 +159,7 @@ export default function OnboardingPage() {
             </label>
             <div className="relative flex items-center">
               <span className="absolute left-3.5 text-xs text-neutral-400 font-mono select-none">
-                lien.me/
+                lienbio/
               </span>
               <input
                 type="text"
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
             {usernameAvailable === true && (
               <p className="text-[11px] text-emerald-600 mt-1.5 font-semibold flex items-center gap-1">
                 <span>✓</span>
-                <span>https://lien.me/{sanitizeUsername(username)} est disponible !</span>
+                <span>lienbio/{sanitizeUsername(username)} est disponible !</span>
               </p>
             )}
           </div>

@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PublicProfileProps): Promise<
 
   if (!profile || !profile.is_published) {
     return {
-      title: 'Profil indisponible — Lien.me',
+      title: 'Profil indisponible — Lien Bio',
     };
   }
 

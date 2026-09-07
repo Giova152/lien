@@ -213,7 +213,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <span className="font-sans">Lien<span className="text-indigo-600">.me</span></span>
+                <span className="font-sans">Lien <span className="text-indigo-600">Bio</span></span>
               </Link>
 
               {/* Status & PRO Badge Indicator */}
