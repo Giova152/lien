@@ -246,15 +246,6 @@ export default async function HomePage() {
           </div>
 
           <p>© {new Date().getFullYear()} Lien-Bio. Tous droits réservés.</p>
-
-          <div className="flex items-center gap-4 text-neutral-600 font-medium">
-            <Link href="/login" className="hover:text-neutral-900 transition">
-              Connexion
-            </Link>
-            <Link href="/register" className="hover:text-neutral-900 transition">
-              Inscription
-            </Link>
-          </div>
         </div>
       </footer>
     </div>
