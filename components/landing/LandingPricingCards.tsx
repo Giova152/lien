@@ -21,10 +21,10 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
       return;
     }
 
-    // Si l'utilisateur est connecté, initier directement le checkout Maketou
+    // Si l'utilisateur est connecté, initier directement le paiement sécurisé
     try {
       setLoadingPlan(plan);
-      toast.loading('Connexion sécurisée à la passerelle Maketou...', { id: 'landing-checkout' });
+      toast.loading('Connexion sécurisée au paiement...', { id: 'landing-checkout' });
 
       const res = await fetch('/api/maketou/checkout', {
         method: 'POST',
@@ -42,15 +42,15 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
       const data = await res.json();
 
       if (data.url) {
-        toast.success('Paiement initié ! Ouverture de Maketou...', { id: 'landing-checkout' });
+        toast.success('Paiement initié ! Redirection en cours...', { id: 'landing-checkout' });
         window.location.href = data.url;
       } else {
-        toast.error(data.error || 'Erreur lors de l’ouverture de Maketou', { id: 'landing-checkout' });
+        toast.error(data.error || 'Erreur lors de l’initialisation du paiement', { id: 'landing-checkout' });
         setLoadingPlan(null);
       }
     } catch (err: any) {
       console.error(err);
-      toast.error('Erreur de connexion avec Maketou', { id: 'landing-checkout' });
+      toast.error('Erreur de connexion au service de paiement', { id: 'landing-checkout' });
       setLoadingPlan(null);
     }
   };
@@ -151,7 +151,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                     <span className="text-xs text-neutral-500">/ mois</span>
                   </div>
                   <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
-                    ≈ 21 000 FCFA / mois via Maketou
+                    ≈ 21 000 FCFA / mois
                   </span>
                 </div>
               ) : (
@@ -203,7 +203,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <span>Payer via Maketou ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
+                <span>Passer à PRO ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
@@ -278,7 +278,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
       </div>
 
 
-      {/* Modal d'Authentification / Inscription avant Maketou si l'utilisateur n'est pas encore connecté */}
+      {/* Modal d'Authentification / Inscription avant paiement si l'utilisateur n'est pas encore connecté */}
       {authPromptPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-neutral-200 flex flex-col gap-5 relative text-left">
@@ -305,7 +305,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
             </div>
 
             <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4 text-xs text-neutral-600 leading-relaxed">
-              Pour associer votre formule PRO à votre lien public et bénéficier de l'activation automatique après paiement Maketou, veuillez vous inscrire ou vous connecter :
+              Pour associer votre formule PRO à votre lien public et bénéficier de l'activation automatique dès validation de votre paiement, veuillez vous inscrire ou vous connecter :
             </div>
 
             <div className="flex flex-col gap-3">
@@ -313,7 +313,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                 href={`/register?plan=${authPromptPlan}&redirect=${encodeURIComponent(`/dashboard?upgrade=true&plan=${authPromptPlan}`)}`}
                 className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs text-center transition shadow-xs flex items-center justify-center gap-2"
               >
-                <span>Créer un compte et payer via Maketou</span>
+                <span>Créer un compte et continuer</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <Link
@@ -324,9 +324,9 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-400 pt-2 border-t border-neutral-100">
+            <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-500 pt-2 border-t border-neutral-100">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Redirection immédiate vers Maketou (Wave, Orange, MTN, Moov, Carte)</span>
+              <span>Paiement sécurisé par Mobile Money (Wave, Orange, MTN, Moov) ou Carte bancaire</span>
             </div>
           </div>
         </div>

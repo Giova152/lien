@@ -19,7 +19,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
   const handleCheckout = async (plan: 'monthly' | 'yearly' | 'lifetime') => {
     try {
       setLoadingPlan(plan);
-      toast.loading('Connexion sécurisée à la passerelle Maketou...', { id: 'maketou-checkout' });
+      toast.loading('Connexion sécurisée au paiement...', { id: 'checkout-action' });
       
       const res = await fetch('/api/maketou/checkout', {
         method: 'POST',
@@ -28,7 +28,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
       });
 
       if (res.status === 401) {
-        toast.error('Session expirée ou non connectée. Veuillez vous reconnecter.', { id: 'maketou-checkout' });
+        toast.error('Session expirée ou non connectée. Veuillez vous reconnecter.', { id: 'checkout-action' });
         window.location.href = `/login?redirect=/dashboard?upgrade=true`;
         return;
       }
@@ -36,15 +36,15 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
       const data = await res.json();
 
       if (data.url) {
-        toast.success('Panier sécurisé Maketou généré ! Redirection en cours...', { id: 'maketou-checkout' });
-        // Redirection directe vers la passerelle sécurisée Maketou / Moneroo
+        toast.success('Paiement initié ! Redirection en cours...', { id: 'checkout-action' });
+        // Redirection directe vers la page de paiement sécurisée
         window.location.href = data.url;
       } else {
-        toast.error(data.error || 'Erreur lors de l’initialisation du paiement Maketou', { id: 'maketou-checkout' });
+        toast.error(data.error || 'Erreur lors de l’initialisation du paiement', { id: 'checkout-action' });
         setLoadingPlan(null);
       }
     } catch (err: any) {
-      toast.error('Erreur de connexion au service de paiement Maketou', { id: 'maketou-checkout' });
+      toast.error('Erreur de connexion au service de paiement', { id: 'checkout-action' });
       setLoadingPlan(null);
     }
   };
@@ -182,7 +182,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>Payer via Maketou ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
+                  <span>Passer à PRO ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -268,7 +268,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           </div>
         </div>
 
-        {/* Maketou Payment Methods Bar */}
+        {/* Payment Methods Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-neutral-100 text-[11px] text-neutral-500">
           <div className="flex items-center gap-1.5 flex-wrap justify-center">
             <span className="font-bold text-neutral-700">Moyens acceptés :</span>
@@ -288,8 +288,8 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
               Carte Visa / Mastercard
             </span>
           </div>
-          <span className="text-neutral-400 font-medium">
-            🔒 Passerelle sécurisée Maketou
+          <span className="text-neutral-500 font-medium">
+            🔒 Paiement 100% sécurisé et chiffré
           </span>
         </div>
       </div>

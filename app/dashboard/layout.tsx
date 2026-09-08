@@ -147,8 +147,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // 2. Annulation ou échec de paiement
       if (searchParams.get('payment') === 'cancelled' || searchParams.get('payment') === 'failed') {
-        const isMaketou = searchParams.get('provider') === 'maketou';
-        toast.info(isMaketou ? 'Paiement Maketou non abouti ou annulé.' : 'Paiement annulé.');
+        toast.info('Paiement non abouti ou annulé.');
         searchParams.delete('payment');
         searchParams.delete('provider');
         searchParams.delete('reason');
@@ -159,7 +158,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // En attente de paiement (opérateur mobile money)
       if (searchParams.get('payment') === 'pending') {
-        toast.loading('Paiement Maketou en cours de validation par votre opérateur...', { duration: 6000 });
+        toast.loading('Paiement en cours de validation par votre opérateur...', { duration: 6000 });
         searchParams.delete('payment');
         searchParams.delete('provider');
         searchParams.delete('cart_id');
@@ -170,7 +169,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // 3. Instant payment success handling
       if (searchParams.get('payment') === 'success') {
-        const provider = searchParams.get('provider');
         const planParam = searchParams.get('plan');
         const planType = planParam === 'monthly' || planParam === 'yearly' ? 'pro_subscription' : 'pro_lifetime';
 
@@ -204,8 +202,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               .eq('id', user.id);
 
             fetchDashboardData();
-            const providerName = provider === 'maketou' ? 'Maketou' : provider === 'paydunya' ? 'PayDunya' : 'Paiement';
-            toast.success(`Félicitations ! Votre paiement ${providerName} est validé, votre compte PRO est actif 🎉`, {
+            toast.success('Félicitations ! Votre paiement est validé, votre compte PRO est actif 🎉', {
               duration: 6000,
             });
             // Clean URL parameter
