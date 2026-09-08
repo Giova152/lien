@@ -13,8 +13,6 @@
     h1 { font-size: 22px; color: #0f172a; margin: 0 0 12px; font-weight: 700; }
     p { font-size: 15px; line-height: 24px; color: #475569; margin: 0 0 20px; }
     .btn { display: inline-block; background: #4f46e5; color: #ffffff !important; font-weight: 600; font-size: 15px; padding: 13px 32px; border-radius: 9999px; text-decoration: none; }
-    .direct-link-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin: 20px 0; }
-    .direct-link-text { font-size: 12px; line-height: 18px; color: #4f46e5; word-break: break-all; margin: 0; font-family: monospace; }
     .invite-badge { display: inline-block; background-color: #fdf4ff; color: #a21caf; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; margin-bottom: 16px; }
     .footer { font-size: 13px; color: #94a3b8; line-height: 20px; border-top: 1px solid #f1f5f9; padding-top: 20px; margin-top: 28px; }
   </style>
@@ -51,11 +49,6 @@
 
     <div style="margin: 28px 0;">
       <a href="{{ .ConfirmationURL }}" class="btn">Accepter l'invitation</a>
-    </div>
-
-    <div class="direct-link-box">
-      <p style="font-size: 12px; color: #64748b; margin: 0 0 6px; font-weight: 500;">Si le bouton ne s'ouvre pas, copiez ce lien :</p>
-      <p class="direct-link-text"><a href="{{ .ConfirmationURL }}" style="color: #4f46e5; text-decoration: underline;">{{ .ConfirmationURL }}</a></p>
     </div>
 
     <div class="footer">
