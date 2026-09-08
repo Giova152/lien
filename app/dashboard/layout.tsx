@@ -9,7 +9,7 @@ import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
-import { Logo } from '@/components/ui/Logo';
+import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
   Sparkles,
   LinkIcon,
@@ -228,9 +228,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 text-neutral-900 flex flex-col items-center justify-center p-4 font-sans">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-4 shadow-xs">
-          <Sparkles className="w-6 h-6 animate-spin" />
-        </div>
+        <LogoIcon size="lg" className="animate-pulse mb-4 shadow-md" />
         <p className="text-xs font-bold text-neutral-600">Chargement de votre espace admin...</p>
       </div>
     );

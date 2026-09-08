@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   title: 'Lien-Bio — Votre Carte de Visite Digitale & Link in Bio',
   description:
     'Créez et personnalisez votre page de profil professionnelle, centralisez vos liens sociaux, coordonnées de contact vCard et QR code en une minute.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.svg', type: 'image/svg+xml' },
+    ],
+  },
   openGraph: {
     title: 'Lien-Bio — Carte de visite digitale & Link in bio',
     description: 'Partagez tous vos liens et coordonnées professionnelles en un seul endroit.',

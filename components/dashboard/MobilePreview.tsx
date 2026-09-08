@@ -4,6 +4,7 @@ import React from 'react';
 import { Profile, LinkItem, ContactInfo } from '@/types';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { Smartphone, Signal, Wifi, Battery } from '@/components/ui/Icons';
+import { LogoIcon } from '@/components/ui/Logo';
 
 interface MobilePreviewProps {
   profile: Profile | null;
@@ -15,7 +16,7 @@ export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
   if (!profile) {
     return (
       <div className="flex flex-col items-center justify-center p-8 bg-white border border-neutral-200/80 rounded-[48px] text-neutral-400 h-[680px] w-[340px] shadow-sm">
-        <Smartphone className="w-10 h-10 mb-3 animate-pulse text-indigo-500 opacity-60" />
+        <LogoIcon size="lg" className="mb-3 animate-pulse" />
         <p className="text-xs font-semibold text-neutral-500">Chargement de l'aperçu mobile...</p>
       </div>
     );

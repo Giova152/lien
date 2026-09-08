@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Sparkles, Check, X, BookOpen, BarChart3, Palette, UserCheck, Zap, Loader2, ArrowRight } from '@/components/ui/Icons';
+import { LogoIcon } from '@/components/ui/Logo';
 import { toast } from 'sonner';
 
 interface LifetimeUpgradeModalProps {
@@ -66,6 +67,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
 
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-2 relative z-10">
+          <LogoIcon size="md" className="mb-1 ring-2 ring-indigo-400/30" />
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-wide">
             <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
             <span>Formules Créateurs & Professionnels</span>
