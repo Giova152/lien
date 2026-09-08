@@ -241,7 +241,7 @@ export default function ShopPage() {
           <Sparkles className="w-4 h-4 text-indigo-600" />
           <span>Ajouts rapides :</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => handleAddProduct('free')}

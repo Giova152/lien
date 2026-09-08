@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Profile, LinkItem, ContactInfo } from '@/types';
 import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
+import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
 import {
   Sparkles,
@@ -24,6 +25,9 @@ import {
   Check,
   Zap,
   BookOpen,
+  Menu,
+  X,
+  MoreHorizontal,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -37,9 +41,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [contact, setContact] = useState<ContactInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [copied, setCopied] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
+
+  // Close mobile menus whenever the pathname changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsMobilePreviewOpen(false);
+  }, [pathname]);
 
   const fetchDashboardData = async () => {
     try {
@@ -196,7 +207,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const fullUrl = `${window.location.origin}/${profile.username}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
-    toast.success('Lien public copié dans le presse-papier !');
+    toast.success('Lien public copié !');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -210,6 +221,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/dashboard/analytics', label: 'Statistiques', icon: BarChart3 },
     { href: '/dashboard/settings', label: 'Paramètres', icon: Settings },
   ];
+
+  const isFullWidthPage = pathname === '/dashboard/analytics' || pathname === '/dashboard/settings';
 
   if (loading) {
     return (
@@ -261,18 +274,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     >
       <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
         {/* Top Header */}
-        <header className="w-full border-b border-neutral-200/70 bg-white/80 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/70">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <header className="w-full border-b border-neutral-200/70 bg-white/90 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/80">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
             {/* Left: Brand Logo & Status */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Link href="/" className="font-black text-xl tracking-tight text-neutral-900 flex items-center gap-2.5 group">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+              <Link href="/" className="font-black text-lg sm:text-xl tracking-tight text-neutral-900 flex items-center gap-2 shrink-0 group">
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <span className="font-sans">Lien<span className="text-indigo-600">-Bio</span></span>
               </Link>
 
-              {/* Status & PRO Badge Indicator */}
+              {/* Status & PRO Badge Indicator (Desktop) */}
               {profile && (
                 <div className="hidden md:flex items-center gap-2">
                   <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-100/90 border border-neutral-200/80 text-[11px] font-medium">
@@ -283,8 +296,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </div>
 
                   {profile.is_pro ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-xs font-black uppercase tracking-wider shadow-xs">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs font-black uppercase tracking-wider shadow-xs">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                       <span>PRO ACTIF</span>
                     </div>
                   ) : (
@@ -300,16 +313,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               )}
             </div>
 
-            {/* Right: Quick Actions */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            {/* Right: Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {/* Mobile PRO Upgrade Button */}
               {profile && !profile.is_pro && (
                 <button
                   onClick={() => setIsUpgradeModalOpen(true)}
-                  className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950 text-[11px] font-black uppercase shadow-xs"
+                  className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-neutral-950 text-xs font-black shadow-xs active:scale-95 transition"
                 >
-                  <Sparkles className="w-3 h-3 fill-neutral-950" />
-                  <span>PRO</span>
+                  <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
+                  <span className="hidden xs:inline">PRO</span>
                 </button>
               )}
 
@@ -318,11 +331,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {/* Copy Link Button */}
                   <button
                     onClick={handleCopyPublicLink}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs"
-                    title="Copier le lien public"
+                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5"
+                    title="Copier le lien de votre page"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-indigo-600" />}
-                    <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier le lien'}</span>
+                    {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-indigo-600" />}
+                    <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                   </button>
 
                   {/* View Public Page Button */}
@@ -330,39 +343,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={`/${profile.username}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 transition"
+                    className="p-2 sm:px-3.5 sm:py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 transition flex items-center gap-1.5"
+                    title="Voir ma page en ligne"
                   >
-                    <Eye className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Aperçu Web</span>
-                    <ExternalLink className="w-3 h-3 opacity-60" />
+                    <Eye className="w-4 h-4 text-indigo-600" />
+                    <span className="hidden sm:inline">Aperçu Web</span>
+                    <ExternalLink className="w-3 h-3 opacity-60 hidden sm:inline" />
                   </a>
                 </>
               )}
 
-              {/* Mobile View Switcher */}
-              <div className="flex lg:hidden bg-neutral-100 p-1 rounded-xl border border-neutral-200/80">
-                <button
-                  onClick={() => setMobileTab('editor')}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                    mobileTab === 'editor' ? 'bg-indigo-600 text-white shadow-xs' : 'text-neutral-600'
-                  }`}
-                >
-                  Éditeur
-                </button>
-                <button
-                  onClick={() => setMobileTab('preview')}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                    mobileTab === 'preview' ? 'bg-indigo-600 text-white shadow-xs' : 'text-neutral-600'
-                  }`}
-                >
-                  Aperçu
-                </button>
-              </div>
+              {/* Mobile Menu Toggle Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100 rounded-xl transition border border-neutral-200/80"
+                aria-label="Ouvrir le menu"
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
 
-              {/* Sign Out */}
+              {/* Desktop Sign Out Button */}
               <button
                 onClick={handleSignOut}
-                className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
+                className="hidden md:flex p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
                 title="Déconnexion"
               >
                 <LogOut className="w-4 h-4" />
@@ -371,8 +374,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Navigation Sub-bar (Modern Underline / Pill Tabs) */}
-        <nav className="w-full border-b border-neutral-200/70 bg-white sticky top-16 z-30 shadow-2xs overflow-x-auto no-scrollbar">
+        {/* Desktop Navigation Sub-bar (Horizontal Tabs) */}
+        <nav className="hidden md:block w-full border-b border-neutral-200/70 bg-white sticky top-16 z-30 shadow-2xs overflow-x-auto no-scrollbar">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 py-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -395,20 +398,241 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </nav>
 
-        {/* Main Content Area (Split view on Desktop) */}
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Form Editors */}
-            <div className={`lg:col-span-7 flex flex-col ${mobileTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+        {/* Main Content Area */}
+        <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 pb-24 md:pb-8">
+          {isFullWidthPage ? (
+            <div className="w-full max-w-5xl mx-auto">
               {children}
             </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Form Editors */}
+              <div className="lg:col-span-7 flex flex-col w-full">
+                {children}
+              </div>
 
-            {/* Right Column: Live Mobile Mockup Preview */}
-            <div className={`lg:col-span-5 lg:sticky lg:top-24 flex justify-center ${mobileTab === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
-              <MobilePreview profile={profile} links={links} contact={contact} />
+              {/* Right Column: Live Mobile Mockup Preview (Desktop only) */}
+              <div className="hidden lg:flex lg:col-span-5 lg:sticky lg:top-24 justify-center">
+                <MobilePreview profile={profile} links={links} contact={contact} />
+              </div>
+            </div>
+          )}
+        </main>
+
+        {/* Mobile Floating Action Button: Aperçu direct (Shown on mobile for editor pages) */}
+        {!isFullWidthPage && profile && (
+          <button
+            onClick={() => setIsMobilePreviewOpen(true)}
+            className="fixed bottom-20 right-4 z-20 md:hidden flex items-center gap-2 px-4 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 active:scale-95 transition-all"
+          >
+            <Eye className="w-4 h-4" />
+            <span>Aperçu direct</span>
+          </button>
+        )}
+
+        {/* Mobile Full-Screen Native Preview Modal */}
+        {isMobilePreviewOpen && profile && (
+          <div className="fixed inset-0 z-50 bg-neutral-900/95 backdrop-blur-md flex flex-col md:hidden animate-fade-in">
+            {/* Modal Header */}
+            <div className="h-14 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-white shrink-0">
+              <div className="flex items-center gap-2">
+                <Eye className="w-4 h-4 text-indigo-400" />
+                <span className="text-xs font-bold">Aperçu en direct de votre page</span>
+              </div>
+              <button
+                onClick={() => setIsMobilePreviewOpen(false)}
+                className="p-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto bg-neutral-950">
+              <div className="max-w-md mx-auto min-h-full">
+                <PublicProfileView profile={profile} links={links} contact={contact} />
+              </div>
             </div>
           </div>
-        </main>
+        )}
+
+        {/* Mobile Bottom Navigation Bar (5 core shortcuts) */}
+        <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-2 py-1.5 flex items-center justify-around md:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+          <Link
+            href="/dashboard/links"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+              pathname === '/dashboard/links' || pathname === '/dashboard'
+                ? 'text-indigo-600 font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-800 font-medium'
+            }`}
+          >
+            <LinkIcon className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px]">Liens</span>
+          </Link>
+
+          <Link
+            href="/dashboard/profile"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+              pathname === '/dashboard/profile'
+                ? 'text-indigo-600 font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-800 font-medium'
+            }`}
+          >
+            <User className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px]">Profil</span>
+          </Link>
+
+          <Link
+            href="/dashboard/services"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+              pathname === '/dashboard/services'
+                ? 'text-indigo-600 font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-800 font-medium'
+            }`}
+          >
+            <Zap className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px]">Services</span>
+          </Link>
+
+          <Link
+            href="/dashboard/analytics"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+              pathname === '/dashboard/analytics'
+                ? 'text-indigo-600 font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-800 font-medium'
+            }`}
+          >
+            <BarChart3 className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px]">Stats</span>
+          </Link>
+
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+              isMobileMenuOpen
+                ? 'text-indigo-600 font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-800 font-medium'
+            }`}
+          >
+            <MoreHorizontal className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px]">Menu</span>
+          </button>
+        </nav>
+
+        {/* Mobile Slide-Over Drawer Navigation */}
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-neutral-950/60 backdrop-blur-xs transition-opacity"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Drawer */}
+            <div className="fixed top-0 right-0 bottom-0 w-[300px] max-w-[85vw] bg-white z-50 shadow-2xl flex flex-col p-5 overflow-y-auto">
+              {/* Drawer Top Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-sm">
+                    {profile?.display_name ? profile.display_name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-extrabold text-neutral-900 truncate">
+                      {profile?.display_name || 'Mon Profil'}
+                    </span>
+                    <span className="text-[11px] text-neutral-400 truncate">
+                      @{profile?.username || 'user'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-1.5 rounded-xl bg-neutral-100 text-neutral-500 hover:text-neutral-900 transition"
+                  aria-label="Fermer le menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Status Badge */}
+              {profile && (
+                <div className="my-3 flex items-center justify-between px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-100 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${profile.is_published ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                    <span className="font-semibold text-neutral-700">
+                      {profile.is_published ? 'Carte en ligne' : 'Carte masquée'}
+                    </span>
+                  </div>
+                  {profile.is_pro ? (
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">
+                      PRO
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setIsUpgradeModalOpen(true);
+                      }}
+                      className="px-2 py-0.5 rounded-md bg-amber-400 text-neutral-950 text-[10px] font-black uppercase hover:bg-amber-500 transition"
+                    >
+                      Passer PRO
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Nav Items List */}
+              <div className="flex-1 py-2 flex flex-col gap-1">
+                <span className="text-[10px] font-bold uppercase text-neutral-400 px-3 pt-2 pb-1 tracking-wider">
+                  Menu Principal
+                </span>
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`px-3 py-2.5 text-xs font-bold flex items-center gap-3 rounded-xl transition ${
+                        isActive
+                          ? 'bg-indigo-50 text-indigo-700 font-extrabold shadow-2xs'
+                          : 'text-neutral-700 hover:text-neutral-950 hover:bg-neutral-50'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-neutral-400'}`} />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Drawer Bottom Actions */}
+              <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
+                {profile?.username && (
+                  <a
+                    href={`/${profile.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 flex items-center justify-center gap-2 transition"
+                  >
+                    <Eye className="w-4 h-4 text-indigo-600" />
+                    <span>Voir ma page publique</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+                  </a>
+                )}
+
+                <button
+                  onClick={handleSignOut}
+                  className="w-full py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-xs font-bold text-rose-600 flex items-center justify-center gap-2 transition"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Se déconnecter</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Lifetime Upgrade Modal (150$) */}
         <LifetimeUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
