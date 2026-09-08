@@ -9,7 +9,7 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://lien-bio.site'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.lien-bio.site'),
   title: 'Lien-Bio — Votre Carte de Visite Digitale & Link in Bio',
   description:
     'Créez et personnalisez votre page de profil professionnelle, centralisez vos liens sociaux, coordonnées de contact vCard et QR code en une minute.',

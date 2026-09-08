@@ -27,9 +27,15 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
     } else if (typeof window !== 'undefined') {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       setIsLocalhost(isLocal);
-      // Quand testé en local, le smartphone ne peut pas accéder à localhost:3000.
-      // On utilise donc le domaine public officiel pour que le scan fonctionne partout !
-      const effectiveOrigin = isLocal ? 'https://lien-bio.site' : window.location.origin;
+      // Utilisation du domaine public canonique officiel avec www pour éviter toute redirection 308
+      let effectiveOrigin = isLocal
+        ? (process.env.NEXT_PUBLIC_APP_URL || 'https://www.lien-bio.site')
+        : window.location.origin;
+
+      if (effectiveOrigin.includes('lien-bio.site') && !effectiveOrigin.includes('www.')) {
+        effectiveOrigin = effectiveOrigin.replace('lien-bio.site', 'www.lien-bio.site');
+      }
+
       setProfileUrl(`${effectiveOrigin}/${cleanUsername}`);
     }
   }, [url, cleanUsername]);
