@@ -26,7 +26,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
       setLoadingPlan(plan);
       toast.loading('Connexion sécurisée au paiement...', { id: 'landing-checkout' });
 
-      const res = await fetch('/api/maketou/checkout', {
+      const res = await fetch('/api/chariow/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),

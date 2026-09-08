@@ -130,7 +130,7 @@ export default function RegisterPage() {
                     {planParam === 'lifetime' ? '⭐ Pack PRO À Vie sélectionné (300 000 FCFA)' : '⭐ Formule PRO sélectionnée'}
                   </span>
                   <span className="text-amber-800 text-[11px] font-medium mt-0.5 block">
-                    Créez votre compte pour accéder immédiatement au paiement sécurisé PayDunya (Wave, Orange Money, Free, Carte).
+                    Créez votre compte pour accéder immédiatement au paiement sécurisé (Wave, Orange Money, Carte bancaire).
                   </span>
                 </div>
               </div>

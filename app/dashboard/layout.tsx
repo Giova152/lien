@@ -158,11 +158,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // En attente de paiement (opérateur mobile money)
       if (searchParams.get('payment') === 'pending') {
-        const pendingCartId = searchParams.get('cart_id') || searchParams.get('cartId');
+        const pendingRefId =
+          searchParams.get('sale_id') ||
+          searchParams.get('saleId') ||
+          searchParams.get('cart_id') ||
+          searchParams.get('cartId');
         const pendingPlan = searchParams.get('plan') || 'yearly';
 
         searchParams.delete('payment');
         searchParams.delete('provider');
+        searchParams.delete('sale_id');
+        searchParams.delete('saleId');
         searchParams.delete('cart_id');
         searchParams.delete('cartId');
         searchParams.delete('plan');
@@ -170,7 +176,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const newPath = window.location.pathname + (newSearch ? `?${newSearch}` : '');
         window.history.replaceState({}, document.title, newPath);
 
-        if (pendingCartId) {
+        if (pendingRefId) {
           toast.loading('Validation de votre paiement par votre opérateur...', { id: 'pending-payment-check', duration: 30000 });
 
           let attempts = 0;
@@ -178,7 +184,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           const interval = setInterval(async () => {
             attempts++;
             try {
-              const res = await fetch(`/api/maketou/verify?cart_id=${pendingCartId}&plan=${pendingPlan}`);
+              const res = await fetch(`/api/chariow/verify?sale_id=${pendingRefId}&plan=${pendingPlan}`);
               const data = await res.json();
               if (data.completed || data.status === 'completed') {
                 clearInterval(interval);

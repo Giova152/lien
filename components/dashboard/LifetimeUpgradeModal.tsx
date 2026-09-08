@@ -22,7 +22,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
       setLoadingPlan(plan);
       toast.loading('Connexion sécurisée au paiement...', { id: 'checkout-action' });
       
-      const res = await fetch('/api/maketou/checkout', {
+      const res = await fetch('/api/chariow/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
