@@ -211,58 +211,49 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
         </div>
 
         {/* Plan PRO À VIE */}
-        <div className="bg-slate-950 text-white border border-amber-500/30 ring-1 ring-amber-400/20 rounded-2xl sm:rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-2xl relative overflow-visible group">
-          {/* Subtle Luxury Ambient Top Glow */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-32 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Centered Luxury Badge */}
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] font-black uppercase tracking-wider shadow-lg shadow-amber-950/40 whitespace-nowrap flex items-center gap-1.5 border border-amber-300/30 z-10">
-            <Sparkles className="w-3 h-3 text-amber-200 fill-amber-200" />
-            <span>Le Plus Populaire • À Vie</span>
-          </div>
-
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-2 mt-1">
-              <span className="text-xs font-black uppercase tracking-wider text-amber-400">PRO À Vie</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-neutral-300 text-[10px] font-bold border border-white/10">
+        <div className="bg-white border-2 border-amber-500/70 rounded-2xl p-6 flex flex-col justify-between shadow-md relative">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-700">PRO À Vie</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold">
                 Paiement unique
               </span>
             </div>
 
-            <div className="mt-2 mb-2">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">500 $</span>
-                <span className="text-xs text-neutral-400 font-bold">/ accès à vie</span>
+            <div className="mb-4">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-black text-neutral-900">500 $</span>
+                <span className="text-xs text-neutral-500">/ accès à vie</span>
               </div>
-              <span className="inline-block mt-1 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/25 text-amber-300 font-bold text-[11px]">
-                ≈ 300 000 FCFA en paiement unique définitif
+              <span className="text-[11px] text-amber-700 font-bold block mt-0.5">
+                ≈ 300 000 FCFA (0 $ ensuite • Tout inclus)
               </span>
             </div>
 
-            <p className="text-xs text-neutral-400 mb-5 leading-relaxed">
-              Payez une seule fois, profitez de toutes les fonctionnalités pour toujours (0 $ ensuite).
+            <p className="text-xs text-neutral-600 mb-5">
+              Payez une seule fois, profitez de toutes les fonctionnalités pour toujours.
             </p>
 
-            <ul className="flex flex-col gap-2.5 text-xs text-neutral-200">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="font-semibold text-white">Tout le plan PRO inclus</span>
+            <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span className="font-semibold text-neutral-900">Tout le plan PRO inclus</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                <span className="text-amber-300 font-bold">Accès illimité À VIE (0 $ ensuite)</span>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
+                <span className="font-bold text-amber-900">Accès illimité À VIE (0 $ ensuite)</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-neutral-300">Badge officiel Créateur Vérifié</span>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Badge officiel Créateur Vérifié</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-neutral-300">Toutes les futures fonctionnalités incluses</span>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Toutes les futures fonctionnalités incluses</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-neutral-300">Support prioritaire VIP</span>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Support prioritaire VIP</span>
               </li>
             </ul>
           </div>
@@ -271,14 +262,15 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
             type="button"
             disabled={loadingPlan !== null}
             onClick={() => handlePlanClick('lifetime')}
-            className="w-full mt-7 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:brightness-105 active:scale-[0.99] disabled:opacity-50 text-neutral-950 text-xs font-black text-center transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 relative z-10"
+            className="w-full mt-7 py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 text-white text-xs font-bold text-center transition shadow-xs flex items-center justify-center gap-2"
           >
             {loadingPlan === 'lifetime' ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>Obtenir l&apos;accès à vie (300 000 FCFA)</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
           </button>
