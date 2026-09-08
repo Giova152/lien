@@ -271,98 +271,106 @@ export default function ServicesPage() {
             return (
               <div
                 key={srv.id}
-                className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs hover:border-neutral-300 transition"
+                className="bg-white border border-neutral-200/80 rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs hover:border-neutral-300/90 transition-all duration-200 group"
               >
-                {/* Header card */}
-                <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center text-xs font-bold">
+                {/* Header card : épuré et moderne */}
+                <div className="flex items-center justify-between pb-3.5 border-b border-neutral-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-700 shadow-2xs">
                       {index + 1}
-                    </span>
-                    <span className="text-xs font-bold text-neutral-700">Prestation & Redirection</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-neutral-900 block leading-tight">
+                        {srv.title?.trim() || `Prestation #${index + 1}`}
+                      </span>
+                      <span className="text-[11px] text-neutral-400 block mt-0.5">
+                        Configuration de la prestation et redirection
+                      </span>
+                    </div>
                   </div>
+
                   <button
                     type="button"
                     onClick={() => handleDeleteService(srv.id)}
-                    className="p-1.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                    className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
                     title="Supprimer cette prestation"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* Titre & Prix */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                      Titre de la prestation ou RDV *
+                {/* Ligne 1 : Titre & Tarif */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                  <div className="sm:col-span-8">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                      Titre de la prestation ou du RDV <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       required
                       value={srv.title}
                       onChange={(e) => handleUpdateService(srv.id, 'title', e.target.value)}
-                      placeholder="Ex: RDV sur Calendrier (30 min)"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      placeholder="Ex: Séance découverte (30 min), Audit, Consultation..."
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                      Tarif / Prix affiché
+                  <div className="sm:col-span-4">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                      Tarif affiché
                     </label>
                     <input
                       type="text"
                       value={srv.price || ''}
                       onChange={(e) => handleUpdateService(srv.id, 'price', e.target.value)}
-                      placeholder="Ex: Gratuit, 80 €, Sur devis"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      placeholder="Ex: Gratuit, 50 €, Sur devis"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
                 </div>
 
-                {/* Description & Catégorie */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                      Description courte / Détails
+                {/* Ligne 2 : Description & Catégorie */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                  <div className="sm:col-span-8">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                      Description courte <span className="text-[11px] font-normal text-neutral-400">(affichée sous le titre)</span>
                     </label>
                     <input
                       type="text"
                       value={srv.subtitle || ''}
                       onChange={(e) => handleUpdateService(srv.id, 'subtitle', e.target.value)}
-                      placeholder="Ex: Échange de 30 min en visio pour analyser vos besoins."
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-700 text-xs focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      placeholder="Ex: Échange de 30 min en visio pour analyser vos besoins et vous orienter."
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                      Badge Catégorie
+                  <div className="sm:col-span-4">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                      Badge catégorie
                     </label>
                     <input
                       type="text"
                       value={srv.category || ''}
                       onChange={(e) => handleUpdateService(srv.id, 'category', e.target.value)}
-                      placeholder="Ex: RDV, Consultation, Coaching"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-700 text-xs font-medium focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      placeholder="Ex: RDV, Prestation, Conseil"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
                 </div>
 
-                {/* Lien de Redirection & Bouton */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                  <div className="sm:col-span-2">
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-indigo-700">
-                        🔗 Lien de redirection (Calendly, Cal.com, WhatsApp, etc.) *
+                {/* Ligne 3 : Lien de Redirection & Libellé du bouton */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 pt-0.5">
+                  <div className="sm:col-span-8">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-neutral-700">
+                        Lien de redirection (Calendly, WhatsApp, etc.) <span className="text-rose-500">*</span>
                       </label>
                       {formattedTestUrl && (
                         <a
                           href={formattedTestUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                          className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:underline flex items-center gap-1"
                         >
                           <ExternalLink className="w-3 h-3" />
                           <span>Tester le lien</span>
@@ -375,25 +383,25 @@ export default function ServicesPage() {
                         type="text"
                         value={srv.url || ''}
                         onChange={(e) => handleUpdateService(srv.id, 'url', e.target.value)}
-                        placeholder="https://calendly.com/votre-compte ou https://wa.me/..."
-                        className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-indigo-50/40 border border-indigo-200 text-indigo-800 font-mono text-xs focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                        placeholder="https://calendly.com/... ou https://wa.me/..."
+                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-mono placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                       />
                     </div>
-                    <p className="text-[10px] text-neutral-400 mt-1">
-                      Dès qu'un visiteur clique sur votre service, il sera immédiatement redirigé vers ce lien.
+                    <p className="text-[11px] text-neutral-400 mt-1">
+                      Vos visiteurs seront redirigés vers cette page lors du clic sur le service.
                     </p>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                      Libellé du bouton (facultatif)
+                  <div className="sm:col-span-4">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                      Texte du bouton <span className="text-[11px] font-normal text-neutral-400">(facultatif)</span>
                     </label>
                     <input
                       type="text"
                       value={srv.button_text || ''}
                       onChange={(e) => handleUpdateService(srv.id, 'button_text', e.target.value)}
                       placeholder="Ex: Prendre RDV"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-700 text-xs font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
                 </div>

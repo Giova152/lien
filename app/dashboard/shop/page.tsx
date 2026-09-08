@@ -289,53 +289,61 @@ export default function ShopPage() {
             return (
               <div
                 key={prod.id}
-                className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs hover:border-neutral-300 transition"
+                className="bg-white border border-neutral-200/80 rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs hover:border-neutral-300/90 transition-all duration-200 group"
               >
-                {/* Header card */}
-                <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center text-xs font-bold">
+                {/* Header card : épuré et moderne */}
+                <div className="flex items-center justify-between pb-3.5 border-b border-neutral-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-700 shadow-2xs">
                       {index + 1}
-                    </span>
-                    <span className="text-xs font-bold text-neutral-700">Produit Digital</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-neutral-900 block leading-tight">
+                        {prod.title?.trim() || `Produit #${index + 1}`}
+                      </span>
+                      <span className="text-[11px] text-neutral-400 block mt-0.5">
+                        E-book, ressource ou produit digital
+                      </span>
+                    </div>
                     <span
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${
+                      className={`ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         prod.type === 'free'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-amber-50 text-amber-800 border border-amber-200'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
+                          : 'bg-amber-50 text-amber-800 border border-amber-200/80'
                       }`}
                     >
                       {prod.type === 'free' ? 'Gratuit' : 'Payant'}
                     </span>
                   </div>
+
                   <button
                     type="button"
                     onClick={() => handleDeleteProduct(prod.id)}
-                    className="p-1.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                    className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
                     title="Supprimer ce produit"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* Titre & Prix */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                      Titre du produit ou de l'e-book *
+                {/* Ligne 1 : Titre & Tarif */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                  <div className="sm:col-span-8">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                      Titre du produit ou de l'e-book <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       required
                       value={prod.title}
                       onChange={(e) => handleUpdateProduct(prod.id, 'title', e.target.value)}
-                      placeholder="Ex: Guide complet : Débuter son activité"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      placeholder="Ex: Guide complet : Débuter son activité en ligne"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
+                  <div className="sm:col-span-4">
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
                       Tarif affiché
                     </label>
                     <input
@@ -343,7 +351,7 @@ export default function ShopPage() {
                       value={prod.price}
                       onChange={(e) => handleUpdateProduct(prod.id, 'price', e.target.value)}
                       placeholder="Ex: Gratuit, 19 €, 25 $"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
                 </div>
@@ -484,17 +492,17 @@ export default function ShopPage() {
                 </div>
 
                 {/* Lien de destination / Drive / Gumroad */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-indigo-700">
-                      🔗 Lien de destination / Téléchargement / Page de vente (facultatif)
+                <div className="pt-0.5">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-neutral-700">
+                      Lien de destination ou de téléchargement <span className="text-[11px] font-normal text-neutral-400">(facultatif)</span>
                     </label>
                     {prod.url && (
                       <a
                         href={formatExternalUrl(prod.url)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                        className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:underline flex items-center gap-1"
                       >
                         <ExternalLink className="w-3 h-3" />
                         <span>Tester le lien</span>
@@ -507,12 +515,12 @@ export default function ShopPage() {
                       type="text"
                       value={prod.url || ''}
                       onChange={(e) => handleUpdateProduct(prod.id, 'url', e.target.value)}
-                      placeholder="https://drive.google.com/... ou https://votre-boutique.com/produit"
-                      className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-300 text-indigo-700 font-mono text-xs focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+                      placeholder="https://drive.google.com/... ou https://votre-site.com/produit"
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 font-mono text-xs placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
                   </div>
-                  <p className="text-[10px] text-neutral-400 mt-1">
-                    Lien direct vers votre fichier Google Drive, Dropbox, page Gumroad ou boutique en ligne.
+                  <p className="text-[11px] text-neutral-400 mt-1">
+                    Lien direct vers votre fichier Google Drive, Dropbox, page Gumroad ou boutique externe.
                   </p>
                 </div>
               </div>
