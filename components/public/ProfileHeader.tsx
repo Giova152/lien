@@ -89,7 +89,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         <span>{profile.display_name}</span>
         {isPro && (
           <span
-            className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-md shrink-0"
+            className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm shrink-0"
             title="Créateur Vérifié PRO"
           >
             <svg className="w-3 h-3 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor">

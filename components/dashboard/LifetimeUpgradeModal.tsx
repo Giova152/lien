@@ -239,7 +239,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Badge officiel Créateur Vérifié (Doré)</span>
+                  <span>Badge officiel Créateur Vérifié</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
