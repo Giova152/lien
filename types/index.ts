@@ -10,7 +10,7 @@ export interface StatItem {
 export interface ServiceItem {
   id: string;
   title: string;
-  category: string; // e.g. "COACHING", "RDV"
+  category?: string; // e.g. "COACHING", "RDV" (facultatif)
   subtitle?: string;
   price?: string; // e.g. "Gratuit" or "49 €"
   url?: string;
@@ -43,6 +43,7 @@ export interface ThemeConfig {
   stats?: StatItem[];
   expertise_tags?: string[];
   services?: ServiceItem[];
+  enable_service_categories?: boolean; // Facultatif : activer le filtrage par catégories
   products?: ShopProduct[];
 
   // PRO subscription details stored in JSONB theme

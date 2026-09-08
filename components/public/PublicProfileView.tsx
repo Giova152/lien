@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Profile, LinkItem, ContactInfo, StatItem, ServiceItem, ShopProduct } from '@/types';
@@ -51,7 +51,11 @@ function isDarkColor(colorHex?: string): boolean {
 export function PublicProfileView({ profile, links, contact, isOwner }: PublicProfileViewProps) {
   const [activeTab, setActiveTab] = useState<'profil' | 'services' | 'shop'>('profil');
   const [openServiceAccordion, setOpenServiceAccordion] = useState<string | null>(null);
+  // Tab 3 Filter: Boutique / Shop
   const [shopFilter, setShopFilter] = useState<'all' | 'free' | 'paid'>('all');
+
+  // Tab 2 Filter: Services Categories (Facultatif - au choix de l'utilisateur)
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState<string>('all');
 
   const theme = profile.theme;
   const isDarkText = isDarkColor(theme.text_color);
@@ -74,6 +78,30 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
   const tags: string[] = theme.expertise_tags || [];
   const services: ServiceItem[] = theme.services || [];
   const products: ShopProduct[] = theme.products || [];
+
+  // Extract unique non-empty trimmed categories from services
+  const availableServiceCategories = useMemo(() => {
+    const cats = new Set<string>();
+    services.forEach((s) => {
+      const c = s.category?.trim();
+      if (c) cats.add(c);
+    });
+    return Array.from(cats);
+  }, [services]);
+
+  // Check if categories are enabled in theme AND at least 1 category exists
+  const showServiceCategories =
+    theme.enable_service_categories !== false && availableServiceCategories.length > 0;
+
+  // Filtered services list according to selected category
+  const filteredServices = useMemo(() => {
+    if (!showServiceCategories || serviceCategoryFilter === 'all') {
+      return services;
+    }
+    return services.filter(
+      (s) => s.category?.trim().toLowerCase() === serviceCategoryFilter.toLowerCase()
+    );
+  }, [services, showServiceCategories, serviceCategoryFilter]);
 
   const filteredProducts = products.filter((p) => {
     if (shopFilter === 'free') return p.type === 'free';
@@ -224,6 +252,45 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           {/* Tab 2: SERVICES */}
           {activeTab === 'services' && (
             <div className="w-full flex flex-col gap-3.5 animate-in fade-in duration-300">
+              {/* Category Filter Pills (Facultatif : affiché uniquement si configuré et activé) */}
+              {showServiceCategories && (
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 -mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setServiceCategoryFilter('all')}
+                    className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${
+                      serviceCategoryFilter === 'all' ? 'text-white shadow-xs' : 'opacity-65 hover:opacity-90'
+                    }`}
+                    style={{
+                      backgroundColor: serviceCategoryFilter === 'all' ? accentColor : 'rgba(0,0,0,0.08)',
+                      color: serviceCategoryFilter === 'all' ? '#ffffff' : theme.text_color,
+                    }}
+                  >
+                    TOUS ({services.length})
+                  </button>
+                  {availableServiceCategories.map((cat) => {
+                    const count = services.filter((s) => s.category?.trim().toLowerCase() === cat.toLowerCase()).length;
+                    const isActive = serviceCategoryFilter.toLowerCase() === cat.toLowerCase();
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setServiceCategoryFilter(cat)}
+                        className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${
+                          isActive ? 'text-white shadow-xs' : 'opacity-65 hover:opacity-90'
+                        }`}
+                        style={{
+                          backgroundColor: isActive ? accentColor : 'rgba(0,0,0,0.08)',
+                          color: isActive ? '#ffffff' : theme.text_color,
+                        }}
+                      >
+                        {cat} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               {services.length === 0 ? (
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
                   <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
@@ -231,8 +298,15 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     Aucune prestation ajoutée pour le moment.
                   </p>
                 </div>
+              ) : filteredServices.length === 0 ? (
+                <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
+                  <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
+                  <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
+                    Aucune prestation dans cette catégorie.
+                  </p>
+                </div>
               ) : (
-                services.map((service) => {
+                filteredServices.map((service) => {
                   const targetUrl = service.url
                     ? formatExternalUrl(service.url)
                     : contact?.whatsapp

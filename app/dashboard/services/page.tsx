@@ -24,16 +24,19 @@ export default function ServicesPage() {
 
   const [saving, setSaving] = useState(false);
   const [services, setServices] = useState<ServiceItem[]>(profile?.theme?.services || []);
+  const [enableCategories, setEnableCategories] = useState<boolean>(
+    profile?.theme?.enable_service_categories ?? true
+  );
 
   const handleAddService = (template?: Partial<ServiceItem>) => {
     const newService: ServiceItem = {
       id: Date.now().toString(),
-      title: template?.title || 'RDV sur Calendrier',
-      category: template?.category || 'RDV',
-      subtitle: template?.subtitle || 'Séance de 30 min en visioconférence pour faire le point.',
-      price: template?.price || 'Gratuit',
+      title: template?.title || 'Prestation / Consultation',
+      category: template?.category || '',
+      subtitle: template?.subtitle || 'Description courte de votre prestation ou accompagnement.',
+      price: template?.price || 'Sur devis',
       url: template?.url || '',
-      button_text: template?.button_text || 'Prendre RDV',
+      button_text: template?.button_text || 'En savoir plus',
     };
     const updated = [newService, ...services];
     setServices(updated);
@@ -81,6 +84,7 @@ export default function ServicesPage() {
       const updatedTheme = {
         ...(profile.theme || {}),
         services: cleanedServices,
+        enable_service_categories: enableCategories,
       };
 
       const { error } = await supabase
@@ -177,6 +181,61 @@ export default function ServicesPage() {
           >
             <Check className="w-4 h-4" />
             <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Category Organisation Banner (Facultatif - Choix de l'utilisateur) */}
+      <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 text-indigo-600">
+            <Sparkles className="w-4.5 h-4.5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-neutral-900">
+                Organisation par catégories
+              </span>
+              <span className="px-2 py-0.5 text-[10px] font-semibold bg-neutral-100 text-neutral-600 rounded-full">
+                Facultatif
+              </span>
+            </div>
+            <p className="text-xs text-neutral-500 mt-0.5 leading-relaxed max-w-xl">
+              Vous êtes libre de catégoriser vos services pour faire apparaître des filtres par onglets sur votre profil, ou de les laisser en liste simple continue.
+            </p>
+            {services.some((s) => Boolean(s.category?.trim())) && enableCategories && (
+              <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+                <span className="text-[11px] text-neutral-400 font-medium">Catégories actives :</span>
+                {Array.from(new Set(services.map((s) => s.category?.trim()).filter(Boolean) as string[])).map((c) => (
+                  <span
+                    key={c}
+                    className="px-2 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60 rounded-md uppercase tracking-wider"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+          <span className="text-xs font-semibold text-neutral-700">
+            {enableCategories ? 'Filtres activés' : 'Liste simple'}
+          </span>
+          <button
+            type="button"
+            onClick={() => setEnableCategories(!enableCategories)}
+            className={`w-11 h-6 rounded-full transition-colors relative p-0.5 flex items-center ${
+              enableCategories ? 'bg-indigo-600' : 'bg-neutral-300'
+            }`}
+            title="Activer ou désactiver les onglets de filtre par catégorie sur votre profil public"
+          >
+            <div
+              className={`w-5 h-5 rounded-full bg-white transition-transform shadow-xs ${
+                enableCategories ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
           </button>
         </div>
       </div>
@@ -345,16 +404,48 @@ export default function ServicesPage() {
                   </div>
 
                   <div className="sm:col-span-4">
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                      Badge catégorie
-                    </label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-neutral-700">
+                        Catégorie <span className="text-[11px] font-normal text-neutral-400">(facultatif)</span>
+                      </label>
+                      {srv.category && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateService(srv.id, 'category', '')}
+                          className="text-[10px] font-semibold text-neutral-400 hover:text-rose-600 transition"
+                          title="Effacer la catégorie pour laisser ce service sans catégorie"
+                        >
+                          Effacer
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="text"
                       value={srv.category || ''}
                       onChange={(e) => handleUpdateService(srv.id, 'category', e.target.value)}
-                      placeholder="Ex: RDV, Prestation, Conseil"
+                      placeholder="Ex: RDV, Coaching, Prestation..."
                       className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition shadow-2xs"
                     />
+                    {/* Quick Category Chips */}
+                    <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                      {['RDV', 'Coaching', 'Audit', 'Conseil', 'Formation'].map((chip) => {
+                        const isSelected = srv.category?.trim().toLowerCase() === chip.toLowerCase();
+                        return (
+                          <button
+                            key={chip}
+                            type="button"
+                            onClick={() => handleUpdateService(srv.id, 'category', isSelected ? '' : chip)}
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-medium border transition ${
+                              isSelected
+                                ? 'bg-indigo-50 border-indigo-300 text-indigo-700 font-bold'
+                                : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:bg-neutral-100'
+                            }`}
+                          >
+                            {isSelected ? `✓ ${chip}` : `+ ${chip}`}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 
