@@ -28,8 +28,8 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       setIsLocalhost(isLocal);
       // Quand testé en local, le smartphone ne peut pas accéder à localhost:3000.
-      // On utilise donc le domaine public officiel Vercel pour que le scan fonctionne partout !
-      const effectiveOrigin = isLocal ? 'https://lien-bio.vercel.app' : window.location.origin;
+      // On utilise donc le domaine public officiel pour que le scan fonctionne partout !
+      const effectiveOrigin = isLocal ? 'https://lien-bio.site' : window.location.origin;
       setProfileUrl(`${effectiveOrigin}/${cleanUsername}`);
     }
   }, [url, cleanUsername]);
