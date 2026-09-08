@@ -42,11 +42,12 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
+      const target = planParam ? `/onboarding?plan=${encodeURIComponent(planParam)}` : '/onboarding';
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(target)}`,
         },
       });
 
@@ -73,14 +74,6 @@ export default function RegisterPage() {
       }
 
       toast.success('Compte créé ! Configuration de votre profil...');
-      let target = '/onboarding';
-      if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        const planParam = params.get('plan');
-        if (planParam) {
-          target = `/onboarding?plan=${planParam}`;
-        }
-      }
       router.push(target);
       router.refresh();
     } catch (err: any) {
