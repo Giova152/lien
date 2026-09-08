@@ -350,11 +350,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </span>
                   </div>
 
-                  {profile.is_pro ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 text-xs font-black uppercase tracking-wider shadow-xs">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>PRO ACTIF</span>
+                  {profile.plan === 'pro_lifetime' ? (
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-2xs">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>PRO À Vie</span>
                     </div>
+                  ) : profile.is_pro ? (
+                    <button
+                      onClick={() => setIsUpgradeModalOpen(true)}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition shadow-2xs"
+                      title="Changer de formule ou passer à l'accès À Vie"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Changer / Passer À Vie</span>
+                    </button>
                   ) : (
                     <button
                       onClick={() => setIsUpgradeModalOpen(true)}
@@ -378,6 +387,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 >
                   <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
                   <span>PRO</span>
+                </button>
+              )}
+              {profile && profile.is_pro && profile.plan !== 'pro_lifetime' && (
+                <button
+                  onClick={() => setIsUpgradeModalOpen(true)}
+                  className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-xs active:scale-95 transition"
+                  title="Changer d'offre ou passer à l'offre À Vie"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>À Vie</span>
                 </button>
               )}
 
@@ -701,7 +720,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
 
         {/* Lifetime Upgrade Modal (150$) */}
-        <LifetimeUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
+        <LifetimeUpgradeModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+          currentPlan={profile?.plan}
+        />
 
         {/* Invite Friend Modal */}
         <InviteFriendModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} profile={profile} />

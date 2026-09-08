@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 interface LifetimeUpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  currentPlan?: string | null;
 }
 
-export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalProps) {
+export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeUpgradeModalProps) {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
@@ -70,10 +71,16 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900">
-            Choisissez votre formule <span className="text-indigo-600">PRO</span>
+            {currentPlan === 'pro_subscription' ? (
+              <>Faites évoluer votre formule <span className="text-indigo-600">PRO</span></>
+            ) : (
+              <>Choisissez votre formule <span className="text-indigo-600">PRO</span></>
+            )}
           </h2>
           <p className="text-xs text-neutral-500 max-w-md">
-            Débloquez toutes les fonctionnalités avancées pour booster votre image, vos ventes et vos réservations.
+            {currentPlan === 'pro_subscription'
+              ? 'Passez à l’annuel pour économiser 28% ou optez pour l’accès définitif À VIE (aucun paiement futur).'
+              : 'Débloquez toutes les fonctionnalités avancées pour booster votre image, vos ventes et vos réservations.'}
           </p>
         </div>
 
@@ -182,7 +189,14 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>Passer à PRO ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
+                  <span>
+                    {currentPlan === 'pro_subscription'
+                      ? billingCycle === 'yearly'
+                        ? "Passer à l'annuel (-28%)"
+                        : "Renouveler mensuel"
+                      : "Passer à PRO"}{' '}
+                    ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})
+                  </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -260,7 +274,11 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span>Obtenir l&apos;accès à vie (300 000 FCFA)</span>
+                  <span>
+                    {currentPlan === 'pro_subscription'
+                      ? "Passer à l'accès à vie (300 000 FCFA)"
+                      : "Obtenir l'accès à vie (300 000 FCFA)"}
+                  </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}

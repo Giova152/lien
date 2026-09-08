@@ -21,12 +21,13 @@ import {
   X,
   Globe,
   User,
+  ArrowRight,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 import { useDashboard } from '@/lib/context/DashboardContext';
 
 export default function SettingsPage() {
-  const { profile, setProfile, refreshDashboard } = useDashboard();
+  const { profile, setProfile, refreshDashboard, openUpgradeModal } = useDashboard();
   const router = useRouter();
   const supabase = createClient();
 
@@ -357,7 +358,56 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {/* 2. Statut de visibilité */}
+      {/* 2. Formule & Facturation */}
+      <div className="bg-white border border-neutral-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h3 className="text-sm sm:text-base font-bold text-neutral-900">
+                Formule & Facturation
+              </h3>
+              {profile.is_pro ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  {profile.plan === 'pro_lifetime' ? 'Pack PRO À Vie' : 'Abonnement PRO Actif'}
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-600 border border-neutral-200">
+                  Formule Gratuite
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-neutral-500 max-w-lg leading-relaxed">
+              {profile.plan === 'pro_lifetime'
+                ? 'Félicitations ! Vous bénéficiez de l’accès définitif à vie. Aucune reconduction ni paiement supplémentaire ne sera demandé.'
+                : profile.is_pro
+                ? 'Vous profitez de toutes les fonctionnalités PRO. Vous pouvez passer à l’offre annuelle (-28%) ou choisir l’accès définitif À VIE à tout moment.'
+                : 'Passez à la formule PRO pour débloquer tous les thèmes de luxe, les liens illimités, la boutique PDF et les statistiques complètes.'}
+            </p>
+          </div>
+
+          <div className="shrink-0">
+            {profile.plan === 'pro_lifetime' ? (
+              <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span>Accès À Vie Garanti</span>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={openUpgradeModal}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs hover:scale-[1.01] active:scale-[0.99]"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>{profile.is_pro ? "Changer de formule / Passer à Vie" : "Passer à la formule PRO"}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Statut de visibilité */}
       <div className="bg-white border border-neutral-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex-1 space-y-1">
