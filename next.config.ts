@@ -13,6 +13,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'checkout.lien-bio.site',
+          },
+        ],
+        destination: 'https://lien-bio.mychariow.com/:path*',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
