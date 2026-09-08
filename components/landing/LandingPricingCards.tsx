@@ -323,11 +323,6 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                 J'ai déjà un compte : Se connecter
               </Link>
             </div>
-
-            <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-500 pt-2 border-t border-neutral-100">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Paiement sécurisé par Mobile Money (Wave, Orange, MTN, Moov) ou Carte bancaire</span>
-            </div>
           </div>
         </div>
       )}

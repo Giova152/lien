@@ -285,31 +285,6 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
             </button>
           </div>
         </div>
-
-        {/* Payment Methods Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-neutral-100 text-[11px] text-neutral-500">
-          <div className="flex items-center gap-1.5 flex-wrap justify-center">
-            <span className="font-bold text-neutral-700">Moyens acceptés :</span>
-            <span className="px-2 py-0.5 rounded-lg bg-neutral-100 text-neutral-700 border border-neutral-200 font-medium">
-              Wave
-            </span>
-            <span className="px-2 py-0.5 rounded-lg bg-neutral-100 text-neutral-700 border border-neutral-200 font-medium">
-              Orange Money
-            </span>
-            <span className="px-2 py-0.5 rounded-lg bg-neutral-100 text-neutral-700 border border-neutral-200 font-medium">
-              MTN MoMo
-            </span>
-            <span className="px-2 py-0.5 rounded-lg bg-neutral-100 text-neutral-700 border border-neutral-200 font-medium">
-              Moov
-            </span>
-            <span className="px-2 py-0.5 rounded-lg bg-neutral-100 text-neutral-700 border border-neutral-200 font-medium">
-              Carte Visa / Mastercard
-            </span>
-          </div>
-          <span className="text-neutral-500 font-medium">
-            🔒 Paiement 100% sécurisé et chiffré
-          </span>
-        </div>
       </div>
     </div>
   );
