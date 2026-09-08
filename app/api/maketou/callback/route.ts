@@ -118,3 +118,4 @@ async function upgradeUserProfile(userId: string, plan: string, paymentRef: stri
 
   console.log(`[Maketou] Utilisateur ${userId} passé en PRO avec succès ! (Plan: ${planType})`);
 }
+

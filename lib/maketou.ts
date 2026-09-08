@@ -39,7 +39,8 @@ export const MAKETOU_PLANS: Record<MaketouPlanId, MaketouPlanDetails> = {
 
 export function getMaketouConfig() {
   const apiKey = process.env.MAKETOU_API_KEY || '';
-  const baseUrl = process.env.MAKETOU_BASE_URL || 'https://api.maketou.net';
+  const baseUrl =
+    process.env.MAKETOU_BASE_URL || process.env.MAKETOU_API_URL || 'https://api.maketou.net';
 
   const productIds: Record<MaketouPlanId, string> = {
     monthly: process.env.MAKETOU_PRODUCT_ID_MONTHLY || '',
@@ -108,10 +109,17 @@ export async function createMaketouCheckout(
 
   // Identifiant produit Maketou
   const productDocumentId = config.productIds[plan];
-  if (!productDocumentId) {
-    throw new Error(
-      `Identifiant de produit Maketou introuvable pour l'offre "${plan}". Veuillez configurer MAKETOU_PRODUCT_ID_${plan.toUpperCase()}.`
+  if (!productDocumentId || !productDocumentId.trim()) {
+    console.warn(
+      `[Maketou API] MAKETOU_PRODUCT_ID_${plan.toUpperCase()} n'est pas encore défini. Passage en mode simulation pour le test.`
     );
+    const demoCartId = `demo_cart_${Date.now()}`;
+    const redirectCallback = `${origin}/api/maketou/callback?cart_id=${demoCartId}&plan=${plan}&userId=${userId}&demo=true`;
+    return {
+      url: redirectCallback,
+      cartId: demoCartId,
+      isDemo: true,
+    };
   }
 
   const returnUrl = `${origin}/api/maketou/callback?plan=${plan}&userId=${userId}`;
@@ -152,10 +160,22 @@ export async function createMaketouCheckout(
 
   if (!response.ok) {
     console.error('[Maketou API Error]', response.status, result);
-    const errorMessage =
-      result?.message ||
-      result?.error ||
-      `Erreur Maketou (${response.status}) lors de l'initialisation du paiement.`;
+    let errorMessage = `Erreur Maketou (${response.status})`;
+    if (Array.isArray(result?.message)) {
+      errorMessage = result.message
+        .map((m: any) =>
+          typeof m === 'string'
+            ? m
+            : m?.constraints
+            ? Object.values(m.constraints).join(', ')
+            : m?.message || JSON.stringify(m)
+        )
+        .join(' ; ');
+    } else if (typeof result?.message === 'string') {
+      errorMessage = result.message;
+    } else if (result?.error) {
+      errorMessage = typeof result.error === 'string' ? result.error : JSON.stringify(result.error);
+    }
     throw new Error(errorMessage);
   }
 
@@ -225,3 +245,4 @@ export async function verifyMaketouCart(cartId: string): Promise<VerifyCartResul
     cart: data,
   };
 }
+
