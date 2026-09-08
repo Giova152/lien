@@ -118,6 +118,7 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
 
   const normalizedProfile = {
     ...profile,
+    is_pro: Boolean(profile.is_pro || profile.theme?.is_pro),
     theme: {
       ...profile.theme,
       font_family:

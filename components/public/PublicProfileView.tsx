@@ -67,6 +67,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
   const isDarkCard = isDarkBg || !isDarkText;
   const isLuxuryTheme = theme.font_family === 'Playfair Display';
   const accentColor = theme.accent_color || '#C5A059';
+  const isPro = Boolean(profile.is_pro || theme.is_pro);
 
   const cardBoxBg = isDarkCard
     ? 'bg-neutral-900/90 text-white border-white/10 backdrop-blur-xl'
@@ -614,7 +615,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           <QrCodeModal profile={profile} />
 
           {/* Branding Watermark (Only visible for free accounts; removed for PRO) */}
-          {!profile.is_pro && (
+          {!isPro && (
             <Link
               href="/"
               target="_blank"

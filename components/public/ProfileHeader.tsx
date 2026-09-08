@@ -35,6 +35,11 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
 
   const isLuxuryTheme = theme.font_family === 'Playfair Display';
   const accentColor = theme.accent_color || '#C5A059';
+  const isPro = Boolean(profile.is_pro || theme.is_pro);
+  const hasServicesOrProducts = Boolean(
+    (theme.services && theme.services.length > 0) || (theme.products && theme.products.length > 0)
+  );
+  const showTabs = isPro || hasServicesOrProducts;
 
   const whatsappUrl = contact?.whatsapp
     ? `https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`
@@ -92,7 +97,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         style={{ color: theme.text_color }}
       >
         <span>{profile.display_name}</span>
-        {profile.is_pro && (
+        {isPro && (
           <span
             className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-md shrink-0"
             title="Créateur Vérifié PRO"
@@ -163,26 +168,33 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         )}
       </div>
 
-      {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ SHOP ]) - Unlocked for PRO members */}
-      {profile.is_pro && ((theme.services && theme.services.length > 0) || (theme.products && theme.products.length > 0)) && (
-        <div className="w-full max-w-sm p-1 rounded-full bg-black/10 border border-black/10 flex items-center justify-between mb-4 backdrop-blur-md">
+      {/* Navigation Pill Switcher ([ PROFIL ] [ SERVICES ] [ BOUTIQUE ]) */}
+      {showTabs && (
+        <div
+          className="w-full max-w-xs sm:max-w-sm p-1 rounded-2xl border flex items-center justify-between mb-4 shadow-2xs backdrop-blur-md"
+          style={{
+            backgroundColor: `${accentColor}12`,
+            borderColor: `${accentColor}25`,
+          }}
+        >
           {(['profil', 'services', 'shop'] as const).map((tab) => {
             const isActive = activeTab === tab;
+            const tabLabel = tab === 'profil' ? 'Profil' : tab === 'services' ? 'Services' : 'Boutique';
             return (
               <button
                 key={tab}
                 onClick={() => onTabChange && onTabChange(tab)}
-                className={`flex-1 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   isActive
-                    ? 'shadow-md scale-[1.02]'
-                    : 'opacity-60 hover:opacity-100'
+                    ? 'shadow-xs scale-[1.02]'
+                    : 'opacity-65 hover:opacity-100'
                 }`}
                 style={{
                   backgroundColor: isActive ? accentColor : 'transparent',
                   color: isActive ? '#ffffff' : theme.text_color,
                 }}
               >
-                {tab}
+                <span>{tabLabel}</span>
               </button>
             );
           })}
