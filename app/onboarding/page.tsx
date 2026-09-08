@@ -166,7 +166,7 @@ export default function OnboardingPage() {
             </label>
             <div className="relative flex items-center">
               <span className="absolute left-3.5 text-xs text-neutral-400 font-mono select-none">
-                lien-bio/
+                lien-bio.site/
               </span>
               <input
                 type="text"
@@ -174,7 +174,7 @@ export default function OnboardingPage() {
                 placeholder="votre_pseudo"
                 value={username}
                 onChange={(e) => setUsername(sanitizeUsername(e.target.value))}
-                className="w-full pl-[76px] pr-10 py-2.5 rounded-xl bg-slate-50/80 border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-xs font-mono font-medium focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all"
+                className="w-full pl-[112px] pr-10 py-2.5 rounded-xl bg-slate-50/80 border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-xs font-mono font-medium focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all"
               />
               <div className="absolute right-3">
                 {checkingUsername && <Loader2 className="w-4 h-4 text-neutral-400 animate-spin" />}
@@ -193,7 +193,7 @@ export default function OnboardingPage() {
             {usernameAvailable === true && (
               <p className="text-[11px] text-emerald-600 mt-1.5 font-semibold flex items-center gap-1">
                 <span>✓</span>
-                <span>lien-bio/{sanitizeUsername(username)} est disponible !</span>
+                <span>lien-bio.site/{sanitizeUsername(username)} est disponible !</span>
               </p>
             )}
           </div>

@@ -277,7 +277,7 @@ export default function ProfilePage() {
             Nom d'utilisateur (URL Slug) *
           </label>
           <div className="relative flex items-center">
-            <span className="absolute left-3.5 text-xs text-neutral-500 font-mono font-bold">lien-bio/</span>
+            <span className="absolute left-3.5 text-xs text-neutral-500 font-mono font-bold">lien-bio.site/</span>
             <input
               type="text"
               required
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                 setUsername(cleaned);
                 if (setProfile) setProfile((prev) => (prev ? { ...prev, username: cleaned } : prev));
               }}
-              className="w-full pl-20 pr-10 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-mono font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
+              className="w-full pl-28 pr-10 py-2.5 rounded-xl bg-slate-50 border border-neutral-300 text-neutral-900 text-xs font-mono font-bold focus:outline-none focus:border-indigo-600 focus:bg-white transition"
             />
             <div className="absolute right-3">
               {checkingUsername && <Loader2 className="w-4 h-4 text-neutral-400 animate-spin" />}
