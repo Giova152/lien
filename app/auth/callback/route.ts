@@ -54,6 +54,11 @@ export async function GET(request: Request) {
 }
 
 async function handleSuccessfulAuth(supabase: any, siteOrigin: string, requestedNext: string) {
+  // If user requested a password reset, honor it directly
+  if (requestedNext.startsWith('/reset-password')) {
+    return NextResponse.redirect(`${siteOrigin}${requestedNext}`);
+  }
+
   try {
     const {
       data: { user },

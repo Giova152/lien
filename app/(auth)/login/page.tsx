@@ -94,6 +94,12 @@ export default function LoginPage() {
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600">
                 Mot de passe
               </label>
+              <Link
+                href="/forgot-password"
+                className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition"
+              >
+                Mot de passe oublié ?
+              </Link>
             </div>
             <div className="relative">
               <Lock className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
