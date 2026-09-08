@@ -106,9 +106,29 @@ export interface ProfileView {
   device?: string | null;
 }
 
+export interface DeviceStats {
+  mobile: number;
+  desktop: number;
+  tablet: number;
+  totalWithDevice: number;
+  mobilePercentage: number;
+  desktopPercentage: number;
+  tabletPercentage: number;
+}
+
+export interface CountryStat {
+  code: string;
+  name: string;
+  flag: string;
+  views: number;
+  percentage: number;
+}
+
 export interface AnalyticsSummary {
   totalViews: number;
   totalClicks: number;
   viewsByDate: { date: string; views: number }[];
   clicksByLink: { id: string; label: string; url: string; platform?: string | null; clicks: number }[];
+  deviceStats?: DeviceStats;
+  topCountries?: CountryStat[];
 }

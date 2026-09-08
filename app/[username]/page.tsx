@@ -103,14 +103,23 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
     .eq('profile_id', profile.id)
     .maybeSingle();
 
-  // Client-side view tracker script
+  // Client-side view tracker script with device and timezone hints
   const trackViewScript = `
     (function() {
       try {
+        var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth < 768);
+        var deviceType = isMobile ? 'mobile' : 'desktop';
+        var tz = '';
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e){}
         fetch('/api/track-view', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: '${profile.id}' })
+          body: JSON.stringify({
+            profileId: '${profile.id}',
+            device: deviceType,
+            referrer: document.referrer || '',
+            timezone: tz
+          })
         }).catch(function(){});
       } catch(e){}
     })();
