@@ -27,9 +27,10 @@ export function ThemeWrapper({ theme = DEFAULT_THEME, children, className = '' }
   };
 
   const getFontFamily = (font?: string): string => {
-    if (!font || font.toLowerCase() === 'arial' || font === 'Outfit') {
+    if (!font || font.toLowerCase() === 'arial') {
       return 'Arial, "Helvetica Neue", Helvetica, sans-serif';
     }
+    if (font === 'Outfit') return 'var(--font-outfit), Outfit, sans-serif';
     if (font === 'Inter') return 'var(--font-inter), Inter, Arial, sans-serif';
     if (font === 'Playfair Display') return 'var(--font-playfair), "Playfair Display", Georgia, serif';
     if (font === 'Space Grotesk') return 'var(--font-space), "Space Grotesk", monospace';
