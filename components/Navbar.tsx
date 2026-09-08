@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Sparkles, LogOut, LayoutDashboard } from '@/components/ui/Icons';
 import { createClient } from '@/lib/supabase/client';
 
+import { Logo } from '@/components/ui/Logo';
+
 interface NavbarProps {
   user?: any;
   profile?: any;
@@ -25,12 +27,7 @@ export function Navbar({ user, profile }: NavbarProps) {
     <header className="w-full border-b border-neutral-200/70 bg-white/75 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/60 transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 font-extrabold text-xl tracking-tight text-neutral-900 group">
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-sm ring-1 ring-black/5 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <span className="font-sans">Lien<span className="text-indigo-600 font-black">-Bio</span></span>
-        </Link>
+        <Logo href="/" size="md" />
 
         {/* Center Nav Links (Desktop) */}
         <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-neutral-600">

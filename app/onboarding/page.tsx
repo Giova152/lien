@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Briefcase,
 } from '@/components/ui/Icons';
+import { LogoIcon } from '@/components/ui/Logo';
 import { toast } from 'sonner';
 
 export default function OnboardingPage() {
@@ -149,9 +150,7 @@ export default function OnboardingPage() {
 
       <div className="max-w-md w-full bg-white/95 backdrop-blur-xl border border-neutral-200/80 rounded-3xl p-8 sm:p-9 shadow-2xl shadow-neutral-300/30 relative z-10">
         <div className="flex justify-center mb-5">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shadow-xs">
-            <Sparkles className="w-6 h-6" />
-          </div>
+          <LogoIcon size="xl" />
         </div>
 
         <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Bienvenue sur Lien-Bio</h1>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Sparkles, Mail, Lock, Loader2, ArrowRight } from '@/components/ui/Icons';
+import { Logo } from '@/components/ui/Logo';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
@@ -60,12 +61,9 @@ export default function LoginPage() {
       <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Brand Logo */}
-      <Link href="/" className="flex items-center gap-2.5 font-black text-2xl mb-8 group relative z-10">
-        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md ring-1 ring-black/5 group-hover:scale-105 transition-transform">
-          <Sparkles className="w-5 h-5" />
-        </div>
-        <span>Lien<span className="text-indigo-600">-Bio</span></span>
-      </Link>
+      <div className="mb-8 relative z-10">
+        <Logo href="/" size="lg" />
+      </div>
 
       <div className="w-full max-w-md bg-white/90 backdrop-blur-xl border border-neutral-200/80 rounded-3xl p-8 sm:p-9 shadow-2xl shadow-neutral-300/30 relative z-10">
         <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Bon retour</h1>

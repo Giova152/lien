@@ -9,6 +9,7 @@ import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
+import { Logo } from '@/components/ui/Logo';
 import {
   Sparkles,
   LinkIcon,
@@ -278,12 +279,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
             {/* Left: Brand Logo & Status */}
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-              <Link href="/" className="font-black text-lg sm:text-xl tracking-tight text-neutral-900 flex items-center gap-2 shrink-0 group">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <span className="font-sans">Lien<span className="text-indigo-600">-Bio</span></span>
-              </Link>
+              <Logo href="/" size="sm" />
 
               {/* Status & PRO Badge Indicator (Desktop) */}
               {profile && (

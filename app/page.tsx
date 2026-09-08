@@ -16,6 +16,7 @@ import {
   Smartphone,
   Check,
 } from '@/components/ui/Icons';
+import { Logo } from '@/components/ui/Logo';
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -238,9 +239,10 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="w-full py-8 border-t border-neutral-200 bg-white text-xs text-neutral-500">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-neutral-900">Lien-Bio</span>
-            <span>— Carte de visite digitale & profil pro</span>
+          <div className="flex items-center gap-3">
+            <Logo href="/" size="sm" showBadge={true} />
+            <span className="text-neutral-400 hidden sm:inline">|</span>
+            <span className="text-neutral-500 hidden sm:inline">Carte de visite digitale & profil pro</span>
           </div>
 
           <p>© {new Date().getFullYear()} Lien-Bio. Tous droits réservés.</p>

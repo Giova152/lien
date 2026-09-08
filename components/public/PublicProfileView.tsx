@@ -20,6 +20,7 @@ import {
   ExternalLink,
   User,
 } from '@/components/ui/Icons';
+import { LogoIcon } from '@/components/ui/Logo';
 import { formatExternalUrl } from '@/lib/utils';
 
 interface PublicProfileViewProps {
@@ -532,10 +533,10 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 text-[10px] tracking-wider uppercase font-extrabold opacity-40 hover:opacity-90 transition-all flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
+              className="mt-6 text-[11px] tracking-wide font-bold opacity-60 hover:opacity-100 transition-all flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
               style={{ color: theme.text_color }}
             >
-              <Sparkles className="w-3 h-3" style={{ color: accentColor }} />
+              <LogoIcon size="xs" />
               <span>Créé avec Lien-Bio</span>
             </Link>
           )}
