@@ -174,10 +174,7 @@ export function LinkEditor({
       {/* Freemium Links Usage Banner */}
       {!profile?.is_pro && (
         <div
-          onClick={() => {
-            const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
-            if (upgradeBtn) upgradeBtn.click();
-          }}
+          onClick={() => openUpgradeModal?.()}
           className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-amber-800 cursor-pointer hover:border-amber-400/50 transition shadow-xs"
         >
           <div className="flex items-center gap-2">
