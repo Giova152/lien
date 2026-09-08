@@ -21,12 +21,12 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
       return;
     }
 
-    // Si l'utilisateur est connecté, initier directement le checkout PayDunya Live
+    // Si l'utilisateur est connecté, initier directement le checkout Maketou
     try {
       setLoadingPlan(plan);
-      toast.loading('Connexion sécurisée à la passerelle PayDunya (Live)...', { id: 'landing-checkout' });
+      toast.loading('Connexion sécurisée à la passerelle Maketou...', { id: 'landing-checkout' });
 
-      const res = await fetch('/api/paydunya/checkout', {
+      const res = await fetch('/api/maketou/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
@@ -42,15 +42,15 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
       const data = await res.json();
 
       if (data.url) {
-        toast.success('Facture PayDunya créée ! Ouverture du paiement...', { id: 'landing-checkout' });
+        toast.success('Paiement initié ! Ouverture de Maketou...', { id: 'landing-checkout' });
         window.location.href = data.url;
       } else {
-        toast.error(data.error || 'Erreur lors de l’ouverture de PayDunya', { id: 'landing-checkout' });
+        toast.error(data.error || 'Erreur lors de l’ouverture de Maketou', { id: 'landing-checkout' });
         setLoadingPlan(null);
       }
     } catch (err: any) {
       console.error(err);
-      toast.error('Erreur de connexion avec PayDunya', { id: 'landing-checkout' });
+      toast.error('Erreur de connexion avec Maketou', { id: 'landing-checkout' });
       setLoadingPlan(null);
     }
   };
@@ -151,7 +151,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                     <span className="text-xs text-neutral-500">/ mois</span>
                   </div>
                   <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
-                    ≈ 21 000 FCFA / mois via PayDunya
+                    ≈ 21 000 FCFA / mois via Maketou
                   </span>
                 </div>
               ) : (
@@ -203,7 +203,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <span>Payer via PayDunya ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
+                <span>Payer via Maketou ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
@@ -285,29 +285,32 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
         </div>
       </div>
 
-      {/* PayDunya Payment Methods Showcase */}
+      {/* Maketou Payment Methods Showcase */}
       <div className="mt-8 p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-600 max-w-6xl mx-auto w-full">
         <div className="flex items-center gap-2 flex-wrap justify-center">
-          <span className="font-bold text-neutral-800">Passerelle PayDunya Live :</span>
+          <span className="font-bold text-neutral-800">Passerelle Maketou :</span>
           <span className="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 font-bold text-[11px]">
             Wave
           </span>
           <span className="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-200 font-bold text-[11px]">
             Orange Money
           </span>
-          <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-bold text-[11px]">
-            Free Money
+          <span className="px-2.5 py-1 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 font-bold text-[11px]">
+            MTN MoMo
+          </span>
+          <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[11px]">
+            Moov Money
           </span>
           <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[11px]">
             Carte Visa / Mastercard
           </span>
         </div>
         <span className="text-[11px] font-medium text-neutral-500">
-          🔒 Passerelle PayDunya officielle • Paiement 100% sécurisé
+          🔒 Passerelle Maketou officielle • Paiement 100% sécurisé
         </span>
       </div>
 
-      {/* Modal d'Authentification / Inscription avant PayDunya si l'utilisateur n'est pas encore connecté */}
+      {/* Modal d'Authentification / Inscription avant Maketou si l'utilisateur n'est pas encore connecté */}
       {authPromptPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-neutral-200 flex flex-col gap-5 relative text-left">
@@ -334,7 +337,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
             </div>
 
             <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4 text-xs text-neutral-600 leading-relaxed">
-              Pour associer votre formule PRO à votre lien public et bénéficier de l'activation automatique après paiement PayDunya, veuillez vous inscrire ou vous connecter :
+              Pour associer votre formule PRO à votre lien public et bénéficier de l'activation automatique après paiement Maketou, veuillez vous inscrire ou vous connecter :
             </div>
 
             <div className="flex flex-col gap-3">
@@ -342,7 +345,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                 href={`/register?plan=${authPromptPlan}&redirect=${encodeURIComponent(`/dashboard?upgrade=true&plan=${authPromptPlan}`)}`}
                 className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs text-center transition shadow-xs flex items-center justify-center gap-2"
               >
-                <span>Créer un compte et payer via PayDunya</span>
+                <span>Créer un compte et payer via Maketou</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <Link
@@ -355,7 +358,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
 
             <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-400 pt-2 border-t border-neutral-100">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Redirection immédiate vers PayDunya (Wave, Orange Money, Carte)</span>
+              <span>Redirection immédiate vers Maketou (Wave, Orange, MTN, Moov, Carte)</span>
             </div>
           </div>
         </div>

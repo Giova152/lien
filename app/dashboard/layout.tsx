@@ -145,10 +145,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         window.history.replaceState({}, document.title, newPath);
       }
 
-      // 2. Annulation de paiement PayDunya
-      if (searchParams.get('payment') === 'cancelled') {
-        toast.info('Paiement PayDunya annulé.');
+      // 2. Annulation ou échec de paiement
+      if (searchParams.get('payment') === 'cancelled' || searchParams.get('payment') === 'failed') {
+        const isMaketou = searchParams.get('provider') === 'maketou';
+        toast.info(isMaketou ? 'Paiement Maketou non abouti ou annulé.' : 'Paiement annulé.');
         searchParams.delete('payment');
+        searchParams.delete('provider');
+        searchParams.delete('reason');
+        const newSearch = searchParams.toString();
+        const newPath = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+        window.history.replaceState({}, document.title, newPath);
+      }
+
+      // En attente de paiement (opérateur mobile money)
+      if (searchParams.get('payment') === 'pending') {
+        toast.loading('Paiement Maketou en cours de validation par votre opérateur...', { duration: 6000 });
+        searchParams.delete('payment');
+        searchParams.delete('provider');
+        searchParams.delete('cart_id');
         const newSearch = searchParams.toString();
         const newPath = window.location.pathname + (newSearch ? `?${newSearch}` : '');
         window.history.replaceState({}, document.title, newPath);
@@ -156,6 +170,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // 3. Instant payment success handling
       if (searchParams.get('payment') === 'success') {
+        const provider = searchParams.get('provider');
+        const planParam = searchParams.get('plan');
+        const planType = planParam === 'monthly' || planParam === 'yearly' ? 'pro_subscription' : 'pro_lifetime';
+
         const upgradeAccount = async () => {
           const {
             data: { user },
@@ -171,7 +189,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const updatedTheme = {
               ...currentTheme,
               is_pro: true,
-              plan: 'pro_lifetime',
+              plan: planType,
               pro_since: new Date().toISOString(),
             };
 
@@ -179,12 +197,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               .from('profiles')
               .update({
                 theme: updatedTheme,
+                is_pro: true,
+                plan: planType,
                 updated_at: new Date().toISOString(),
               })
               .eq('id', user.id);
 
             fetchDashboardData();
-            toast.success('Félicitations ! Votre paiement PayDunya est validé, votre compte PRO est actif 🎉', {
+            const providerName = provider === 'maketou' ? 'Maketou' : provider === 'paydunya' ? 'PayDunya' : 'Paiement';
+            toast.success(`Félicitations ! Votre paiement ${providerName} est validé, votre compte PRO est actif 🎉`, {
               duration: 6000,
             });
             // Clean URL parameter

@@ -19,16 +19,16 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
   const handleCheckout = async (plan: 'monthly' | 'yearly' | 'lifetime') => {
     try {
       setLoadingPlan(plan);
-      toast.loading('Connexion sécurisée à la passerelle PayDunya...', { id: 'paydunya-checkout' });
+      toast.loading('Connexion sécurisée à la passerelle Maketou...', { id: 'maketou-checkout' });
       
-      const res = await fetch('/api/paydunya/checkout', {
+      const res = await fetch('/api/maketou/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       });
 
       if (res.status === 401) {
-        toast.error('Session expirée ou non connectée. Veuillez vous reconnecter.', { id: 'paydunya-checkout' });
+        toast.error('Session expirée ou non connectée. Veuillez vous reconnecter.', { id: 'maketou-checkout' });
         window.location.href = `/login?redirect=/dashboard?upgrade=true`;
         return;
       }
@@ -36,15 +36,15 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
       const data = await res.json();
 
       if (data.url) {
-        toast.success('Facture sécurisée PayDunya générée ! Redirection en cours...', { id: 'paydunya-checkout' });
-        // Redirection directe vers la passerelle sécurisée PayDunya Live
+        toast.success('Panier sécurisé Maketou généré ! Redirection en cours...', { id: 'maketou-checkout' });
+        // Redirection directe vers la passerelle sécurisée Maketou / Moneroo
         window.location.href = data.url;
       } else {
-        toast.error(data.error || 'Erreur lors de l’initialisation du paiement PayDunya', { id: 'paydunya-checkout' });
+        toast.error(data.error || 'Erreur lors de l’initialisation du paiement Maketou', { id: 'maketou-checkout' });
         setLoadingPlan(null);
       }
     } catch (err: any) {
-      toast.error('Erreur de connexion au service de paiement PayDunya', { id: 'paydunya-checkout' });
+      toast.error('Erreur de connexion au service de paiement Maketou', { id: 'maketou-checkout' });
       setLoadingPlan(null);
     }
   };
@@ -186,7 +186,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>Payer via PayDunya ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
+                  <span>Payer via Maketou ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -280,25 +280,28 @@ export function LifetimeUpgradeModal({ isOpen, onClose }: LifetimeUpgradeModalPr
           </div>
         </div>
 
-        {/* PayDunya Payment Methods Bar */}
+        {/* Maketou Payment Methods Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-neutral-800/80 relative z-10 text-[11px]">
           <div className="flex items-center gap-1.5 flex-wrap justify-center">
-            <span className="font-bold text-neutral-300">PayDunya :</span>
+            <span className="font-bold text-neutral-300">Maketou & Mobile Money :</span>
             <span className="px-2 py-0.5 rounded-lg bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold">
               Wave
             </span>
             <span className="px-2 py-0.5 rounded-lg bg-orange-500/10 text-orange-300 border border-orange-500/20 font-bold">
               Orange Money
             </span>
-            <span className="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/20 font-bold">
-              Free Money
+            <span className="px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold">
+              MTN MoMo
             </span>
             <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">
+              Moov
+            </span>
+            <span className="px-2 py-0.5 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-bold">
               Carte Visa / Mastercard
             </span>
           </div>
-          <span className="text-neutral-400 font-medium">
-            🔒 100% sécurisé • Activation instantanée
+          <span className="text-neutral-500 font-medium">
+            🔒 Passerelle Maketou sécurisée
           </span>
         </div>
       </div>
