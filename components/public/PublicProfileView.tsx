@@ -21,6 +21,9 @@ import {
   Calendar,
   Zap,
   ExternalLink,
+  User,
+  MapPin,
+  Globe,
 } from '@/components/ui/Icons';
 import { formatExternalUrl } from '@/lib/utils';
 
@@ -138,13 +141,27 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Section À propos */}
               {profile.bio && (
                 <div
-                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left`}
-                  style={{ borderColor: `${accentColor}33` }}
+                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-xs text-left transition-all`}
+                  style={{ borderColor: `${accentColor}25` }}
                 >
-                  <h3 className={`text-base font-extrabold mb-2 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
-                    <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> À propos
-                  </h3>
-                  <p className="text-sm font-normal leading-relaxed whitespace-pre-line opacity-95" style={{ color: theme.text_color }}>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs"
+                      style={{ backgroundColor: `${accentColor}18`, color: accentColor }}
+                    >
+                      <User className="w-3.5 h-3.5" />
+                    </div>
+                    <h3
+                      className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
+                      style={{ color: theme.text_color }}
+                    >
+                      À propos
+                    </h3>
+                  </div>
+                  <p
+                    className="text-xs sm:text-sm font-normal leading-relaxed whitespace-pre-line opacity-90 pl-0.5"
+                    style={{ color: theme.text_color }}
+                  >
                     {profile.bio}
                   </p>
                 </div>
@@ -153,26 +170,44 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Section Domaines d'expertise */}
               {tags.length > 0 && (
                 <div
-                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left`}
-                  style={{ borderColor: `${accentColor}33` }}
+                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-xs text-left transition-all`}
+                  style={{ borderColor: `${accentColor}25` }}
                 >
-                  <h3 className={`text-base font-extrabold mb-3 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
-                    <span className="font-bold text-lg" style={{ color: accentColor }}>|</span> Domaines d'expertise
-                  </h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs"
+                      style={{ backgroundColor: `${accentColor}18`, color: accentColor }}
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </div>
+                    <h3
+                      className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
+                      style={{ color: theme.text_color }}
+                    >
+                      Domaines d'expertise
+                    </h3>
+                  </div>
                   <div className="flex flex-wrap gap-2">
-                    {tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider shadow-sm"
-                        style={{
-                          backgroundColor: `${accentColor}15`,
-                          borderColor: `${accentColor}44`,
-                          color: accentColor,
-                        }}
-                      >
-                        {tag.startsWith('✦') ? tag : `✦ ${tag}`}
-                      </span>
-                    ))}
+                    {tags.map((tag, idx) => {
+                      const cleanTag = tag.replace(/^[✦•\-\*\s]+/, '').trim();
+                      return (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-semibold tracking-wide transition-all shadow-2xs"
+                          style={{
+                            backgroundColor: isDarkCard ? 'rgba(255,255,255,0.06)' : `${accentColor}10`,
+                            borderColor: `${accentColor}30`,
+                            color: isDarkCard ? '#FFFFFF' : theme.text_color,
+                          }}
+                        >
+                          <span
+                            className="w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{ backgroundColor: accentColor }}
+                          />
+                          {cleanTag}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -180,47 +215,156 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Section Coordonnées & Contact */}
               {contact && (contact.phone || contact.whatsapp || contact.email || contact.address || contact.website) && (
                 <div
-                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-sm text-left flex flex-col gap-2.5`}
-                  style={{ borderColor: `${accentColor}33` }}
+                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-xs text-left flex flex-col gap-3 transition-all`}
+                  style={{ borderColor: `${accentColor}25` }}
                 >
-                  <h3 className={`text-sm font-extrabold mb-1 flex items-center gap-2 ${isLuxuryTheme ? 'font-serif' : ''}`} style={{ color: theme.text_color }}>
-                    <span className="font-bold text-base" style={{ color: accentColor }}>|</span> Coordonnées & Contact
-                  </h3>
-                  
-                  {contact.phone && (
-                    <a href={`tel:${contact.phone}`} className="flex items-center gap-2.5 text-xs font-semibold hover:opacity-80 transition" style={{ color: theme.text_color }}>
-                      <PhoneCall className="w-4 h-4 text-indigo-500 shrink-0" />
-                      <span>{contact.phone}</span>
-                    </a>
-                  )}
-
-                  {contact.whatsapp && (
-                    <a href={`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-xs font-semibold hover:opacity-80 transition" style={{ color: theme.text_color }}>
-                      <Whatsapp className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span>WhatsApp : {contact.whatsapp}</span>
-                    </a>
-                  )}
-
-                  {contact.email && (
-                    <a href={`mailto:${contact.email}`} className="flex items-center gap-2.5 text-xs font-semibold hover:opacity-80 transition" style={{ color: theme.text_color }}>
-                      <Mail className="w-4 h-4 text-purple-500 shrink-0" />
-                      <span>{contact.email}</span>
-                    </a>
-                  )}
-
-                  {contact.address && (
-                    <div className="flex items-center gap-2.5 text-xs font-semibold opacity-90" style={{ color: theme.text_color }}>
-                      <span className="shrink-0">📍</span>
-                      <span>{contact.address}</span>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs"
+                      style={{ backgroundColor: `${accentColor}18`, color: accentColor }}
+                    >
+                      <PhoneCall className="w-3.5 h-3.5" />
                     </div>
-                  )}
+                    <h3
+                      className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
+                      style={{ color: theme.text_color }}
+                    >
+                      Coordonnées & Contact
+                    </h3>
+                  </div>
 
-                  {contact.website && (
-                    <a href={contact.website.startsWith('http') ? contact.website : `https://${contact.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-xs font-semibold text-indigo-600 hover:underline transition">
-                      <span className="shrink-0">🌐</span>
-                      <span>{contact.website}</span>
-                    </a>
-                  )}
+                  <div className="flex flex-col gap-2">
+                    {contact.phone && (
+                      <a
+                        href={`tel:${contact.phone}`}
+                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
+                        style={{
+                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          borderColor: `${accentColor}18`,
+                          color: theme.text_color,
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0">
+                            <PhoneCall className="w-4 h-4" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+                              Téléphone
+                            </span>
+                            <span className="text-xs font-semibold truncate">{contact.phone}</span>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
+                      </a>
+                    )}
+
+                    {contact.whatsapp && (
+                      <a
+                        href={`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
+                        style={{
+                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          borderColor: `${accentColor}18`,
+                          color: theme.text_color,
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                            <Whatsapp className="w-4 h-4" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+                              WhatsApp
+                            </span>
+                            <span className="text-xs font-semibold truncate">{contact.whatsapp}</span>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
+                      </a>
+                    )}
+
+                    {contact.email && (
+                      <a
+                        href={`mailto:${contact.email}`}
+                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
+                        style={{
+                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          borderColor: `${accentColor}18`,
+                          color: theme.text_color,
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
+                            <Mail className="w-4 h-4" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+                              Email
+                            </span>
+                            <span className="text-xs font-semibold truncate">{contact.email}</span>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
+                      </a>
+                    )}
+
+                    {contact.address && (
+                      <a
+                        href={`https://maps.google.com/?q=${encodeURIComponent(contact.address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
+                        style={{
+                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          borderColor: `${accentColor}18`,
+                          color: theme.text_color,
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
+                            <MapPin className="w-4 h-4" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+                              Adresse
+                            </span>
+                            <span className="text-xs font-semibold truncate">{contact.address}</span>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
+                      </a>
+                    )}
+
+                    {contact.website && (
+                      <a
+                        href={contact.website.startsWith('http') ? contact.website : `https://${contact.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
+                        style={{
+                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          borderColor: `${accentColor}18`,
+                          color: theme.text_color,
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center shrink-0">
+                            <Globe className="w-4 h-4" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+                              Site web
+                            </span>
+                            <span className="text-xs font-semibold truncate">{contact.website}</span>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
 
