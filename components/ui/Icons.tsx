@@ -116,6 +116,58 @@ export function LinkedinIcon({ className = 'w-5 h-5' }: { className?: string }) 
   );
 }
 
+// Authentic Full-Color Circular Badges for Quick Actions
+export function OfficialWhatsappIcon({ className = 'w-6 h-6' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="24" fill="#25D366" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M34.5 13.5C31.7 10.7 28 9.2 24 9.2C15.8 9.2 9.2 15.8 9.2 24C9.2 26.6 9.9 29.2 11.2 31.5L9 39.5L17.3 37.3C19.4 38.5 21.7 39.1 24 39.1C32.2 39.1 38.8 32.5 38.8 24.3C38.8 20.3 37.3 16.3 34.5 13.5ZM24 36.6C21.9 36.6 19.9 36 18.2 35L17.7 34.7L12.8 36L14.1 31.2L13.8 30.7C12.7 28.7 12.1 26.4 12.1 24C12.1 17.4 17.4 12.1 24 12.1C27.2 12.1 30.2 13.3 32.5 15.6C34.8 17.9 36 20.9 36 24.1C36 30.7 30.6 36.6 24 36.6ZM30.6 27.2C30.2 27 28.4 26.1 28.1 26C27.7 25.8 27.5 25.8 27.3 26.1C27.1 26.5 26.4 27.3 26.2 27.5C26 27.7 25.8 27.8 25.4 27.6C25 27.4 23.8 27 22.4 25.7C21.3 24.7 20.5 23.5 20.3 23.1C20.1 22.7 20.3 22.5 20.5 22.3C20.7 22.1 20.9 21.8 21.1 21.6C21.3 21.4 21.4 21.2 21.5 21C21.6 20.8 21.6 20.6 21.5 20.4C21.4 20.2 20.8 18.8 20.5 18.2C20.3 17.6 20.1 17.7 19.9 17.7C19.7 17.7 19.5 17.7 19.3 17.7C19.1 17.7 18.8 17.8 18.5 18.1C18.2 18.4 17.5 19.1 17.5 20.5C17.5 21.9 18.5 23.2 18.7 23.4C18.9 23.6 20.7 26.5 23.5 27.7C24.2 28 24.7 28.2 25.2 28.4C26 28.6 26.7 28.6 27.3 28.5C28 28.4 29.4 27.6 29.7 26.8C30 26 30 25.3 29.9 25.1C29.8 25 29.6 24.9 29.2 24.7H30.6V27.2Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
+export function OfficialPhoneIcon({ className = 'w-6 h-6' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="24" fill="#34C759" />
+      <path
+        d="M32.6 27.4C31.2 27.4 29.8 27.1 28.5 26.7C27.9 26.5 27.2 26.7 26.8 27.1L24.6 29.3C21.3 27.6 18.5 24.8 16.8 21.5L19 19.3C19.4 18.9 19.6 18.2 19.4 17.6C19 16.3 18.7 14.9 18.7 13.5C18.7 12.7 18 12 17.2 12H14.1C13.3 12 12.6 12.7 12.6 13.5C12.6 24.6 21.5 33.5 32.6 33.5C33.4 33.5 34.1 32.8 34.1 32V28.9C34.1 28.1 33.4 27.4 32.6 27.4Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
+export function OfficialMailIcon({ className = 'w-6 h-6' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="24" fill="#EA4335" />
+      <path
+        d="M13.5 16C12.4 16 11.5 16.9 11.5 18V30C11.5 31.1 12.4 32 13.5 32H34.5C35.6 32 36.5 31.1 36.5 30V18C36.5 16.9 35.6 16 34.5 16H13.5ZM14.3 18H33.7L24 24.1L14.3 18ZM13.5 20.3L23.4 26.5C23.8 26.7 24.2 26.7 24.6 26.5L34.5 20.3V30H13.5V20.3Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
+export function OfficialGmailIcon({ className = 'w-6 h-6' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" fill="none">
+      <rect width="48" height="48" rx="24" fill="#FFFFFF" />
+      <rect x="0.5" y="0.5" width="47" height="47" rx="23.5" stroke="#E2E8F0" />
+      <path d="M13 33V18.5L24 26.8L35 18.5V33C35 34.1 34.1 35 33 35H15C13.9 35 13 34.1 13 33Z" fill="#EA4335" />
+      <path d="M13 18.5V15C13 13.9 13.9 13 15 13H17L24 18.2L31 13H33C34.1 13 35 13.9 35 15V18.5L24 26.8L13 18.5Z" fill="#4285F4" />
+      <path d="M13 18.5L24 26.8L13 33V18.5Z" fill="#FBBC05" />
+      <path d="M35 18.5L24 26.8L35 33V18.5Z" fill="#34A853" />
+    </svg>
+  );
+}
+
 export function GithubIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">

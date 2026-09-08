@@ -3,7 +3,17 @@
 import React from 'react';
 import Image from 'next/image';
 import { Profile, ThemeConfig, ContactInfo } from '@/types';
-import { Facebook, Whatsapp, Tiktok, Mail, PhoneCall, MapPin } from '@/components/ui/Icons';
+import {
+  Facebook,
+  Whatsapp,
+  Tiktok,
+  Mail,
+  PhoneCall,
+  MapPin,
+  OfficialWhatsappIcon,
+  OfficialPhoneIcon,
+  OfficialMailIcon,
+} from '@/components/ui/Icons';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -119,36 +129,36 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
       )}
 
       {/* Quick Action Icons Row */}
-      <div className="flex items-center justify-center gap-2.5 mb-4">
+      <div className="flex items-center justify-center gap-3 mb-4">
         {whatsappUrl && (
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+            className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md flex items-center justify-center shrink-0 ring-2 ring-emerald-500/20 active:scale-95"
             title="WhatsApp"
           >
-            <Whatsapp className="w-4 h-4" />
+            <OfficialWhatsappIcon className="w-10 h-10" />
           </a>
         )}
 
         {phoneUrl && (
           <a
             href={phoneUrl}
-            className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+            className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md flex items-center justify-center shrink-0 ring-2 ring-emerald-600/20 active:scale-95"
             title="Téléphone"
           >
-            <PhoneCall className="w-4 h-4" />
+            <OfficialPhoneIcon className="w-10 h-10" />
           </a>
         )}
 
         {emailUrl && (
           <a
             href={emailUrl}
-            className="w-9 h-9 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
+            className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md flex items-center justify-center shrink-0 ring-2 ring-red-500/20 active:scale-95"
             title="Email"
           >
-            <Mail className="w-4 h-4" />
+            <OfficialMailIcon className="w-10 h-10" />
           </a>
         )}
       </div>

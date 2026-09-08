@@ -24,6 +24,9 @@ import {
   User,
   MapPin,
   Globe,
+  OfficialWhatsappIcon,
+  OfficialPhoneIcon,
+  OfficialMailIcon,
 } from '@/components/ui/Icons';
 import { formatExternalUrl } from '@/lib/utils';
 
@@ -245,8 +248,8 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                         }}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0">
-                            <PhoneCall className="w-4 h-4" />
+                          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-black/5">
+                            <OfficialPhoneIcon className="w-8 h-8" />
                           </div>
                           <div className="flex flex-col text-left min-w-0">
                             <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
@@ -272,8 +275,8 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                         }}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                            <Whatsapp className="w-4 h-4" />
+                          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-black/5">
+                            <OfficialWhatsappIcon className="w-8 h-8" />
                           </div>
                           <div className="flex flex-col text-left min-w-0">
                             <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
@@ -297,8 +300,8 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                         }}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
-                            <Mail className="w-4 h-4" />
+                          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-black/5">
+                            <OfficialMailIcon className="w-8 h-8" />
                           </div>
                           <div className="flex flex-col text-left min-w-0">
                             <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
