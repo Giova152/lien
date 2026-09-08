@@ -9,6 +9,7 @@ import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
+import { InviteFriendModal } from '@/components/dashboard/InviteFriendModal';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
   Sparkles,
@@ -29,6 +30,7 @@ import {
   Menu,
   X,
   MoreHorizontal,
+  UserPlus,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -44,6 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
 
@@ -269,6 +272,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setLinks,
         setContact,
         openUpgradeModal: () => setIsUpgradeModalOpen(true),
+        openInviteModal: () => setIsInviteModalOpen(true),
       }}
     >
       <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white w-full max-w-full overflow-x-hidden relative">
@@ -322,6 +326,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               {profile?.username && (
                 <>
+                  {/* Invite Friend Button */}
+                  <button
+                    onClick={() => setIsInviteModalOpen(true)}
+                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200/80 text-xs font-bold text-purple-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5"
+                    title="Inviter un ami sur Lien-Bio"
+                  >
+                    <UserPlus className="w-4 h-4 text-purple-600" />
+                    <span className="hidden sm:inline">Inviter</span>
+                  </button>
+
                   {/* Copy Link Button */}
                   <button
                     onClick={handleCopyPublicLink}
@@ -592,16 +606,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {/* Drawer Bottom Actions */}
               <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
                 {profile?.username && (
-                  <a
-                    href={`/${profile.username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 flex items-center justify-center gap-2 transition"
-                  >
-                    <Eye className="w-4 h-4 text-indigo-600" />
-                    <span>Voir ma page publique</span>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-60" />
-                  </a>
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setIsInviteModalOpen(true);
+                      }}
+                      className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200/80 text-xs font-bold text-purple-700 flex items-center justify-center gap-2 transition"
+                    >
+                      <UserPlus className="w-4 h-4 text-purple-600" />
+                      <span>Inviter un ami / Parrainer</span>
+                    </button>
+
+                    <a
+                      href={`/${profile.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 flex items-center justify-center gap-2 transition"
+                    >
+                      <Eye className="w-4 h-4 text-indigo-600" />
+                      <span>Voir ma page publique</span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+                    </a>
+                  </>
                 )}
 
                 <button
@@ -618,6 +645,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Lifetime Upgrade Modal (150$) */}
         <LifetimeUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
+
+        {/* Invite Friend Modal */}
+        <InviteFriendModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} profile={profile} />
       </div>
     </DashboardContext.Provider>
   );

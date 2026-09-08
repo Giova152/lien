@@ -57,6 +57,9 @@ import {
   Zap,
   ShieldCheck,
   Star,
+  UserPlus,
+  Gift,
+  Send,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -285,4 +288,7 @@ export {
   Zap,
   ShieldCheck,
   Star,
+  UserPlus,
+  Gift,
+  Send,
 };

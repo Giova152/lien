@@ -13,6 +13,7 @@ interface DashboardContextType {
   setLinks: React.Dispatch<React.SetStateAction<LinkItem[]>>;
   setContact: React.Dispatch<React.SetStateAction<ContactInfo | null>>;
   openUpgradeModal?: () => void;
+  openInviteModal?: () => void;
 }
 
 export const DashboardContext = createContext<DashboardContextType>({
@@ -25,6 +26,7 @@ export const DashboardContext = createContext<DashboardContextType>({
   setLinks: () => {},
   setContact: () => {},
   openUpgradeModal: () => {},
+  openInviteModal: () => {},
 });
 
 export const useDashboard = () => useContext(DashboardContext);
