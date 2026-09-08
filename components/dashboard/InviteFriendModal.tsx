@@ -13,6 +13,7 @@ import {
   Share2,
   Sparkles,
   WhatsappIcon,
+  LinkIcon,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -41,7 +42,7 @@ export function InviteFriendModal({ isOpen, onClose, profile }: InviteFriendModa
   const handleCopyLink = () => {
     navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
-    toast.success('Lien d’invitation copié !');
+    toast.success('Lien d’invitation copié dans le presse-papier !');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -63,11 +64,11 @@ export function InviteFriendModal({ isOpen, onClose, profile }: InviteFriendModa
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Salut ! Je te recommande Lien-Bio pour créer ta propre carte de visite digitale et regrouper tous tes liens pro en un seul endroit. Inscris-toi ici : ${inviteUrl}`
+    `Salut ! Je te recommande Lien-Bio pour créer ta propre carte de visite digitale professionnelle et regrouper tous tes liens au même endroit. Découvre la plateforme ici : ${inviteUrl}`
   );
   const whatsappUrl = `https://api.whatsapp.com/send?text=${whatsappMessage}`;
 
-  const emailSubject = encodeURIComponent('Rejoins-moi sur Lien-Bio (Carte de visite digitale)');
+  const emailSubject = encodeURIComponent('Invitation à créer ta carte de visite digitale sur Lien-Bio');
   const emailBody = encodeURIComponent(
     `Bonjour,\n\nJe t'invite à découvrir Lien-Bio pour créer ta propre carte de visite digitale professionnelle et regrouper tous tes liens, réseaux et coordonnées au même endroit :\n\n${inviteUrl}\n\nÀ très vite !`
   );
@@ -110,153 +111,172 @@ export function InviteFriendModal({ isOpen, onClose, profile }: InviteFriendModa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-neutral-950/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-neutral-200/80 overflow-hidden my-auto animate-scale-up">
-        {/* Header with gradient accent */}
-        <div className="relative bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white p-5 sm:p-6 pb-6">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition backdrop-blur-xs"
-            aria-label="Fermer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur-xs mb-2.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
-            <span>Parrainage & Invitation</span>
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-neutral-950/60 backdrop-blur-sm animate-fade-in overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-neutral-200/80 overflow-hidden my-auto animate-scale-up"
+      >
+        {/* Top bar with refined header */}
+        <div className="p-6 pb-4 border-b border-neutral-100 flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-neutral-950 text-white flex items-center justify-center shadow-xs shrink-0">
+              <UserPlus className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200/70">
+                  Parrainage
+                </span>
+                <span className="text-[10px] font-medium text-neutral-400">1-Clic</span>
+              </div>
+              <h2 className="text-lg font-black text-neutral-950 tracking-tight leading-snug">
+                Inviter un ami sur Lien-Bio
+              </h2>
+              <p className="text-xs text-neutral-500 mt-0.5 leading-relaxed">
+                Partagez votre lien de recommandation ou envoyez une invitation directe par e-mail.
+              </p>
+            </div>
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-            Inviter un ami sur Lien-Bio
-          </h2>
-          <p className="text-xs sm:text-sm text-indigo-100 mt-1 leading-relaxed max-w-sm">
-            Partagez Lien-Bio avec vos contacts pour qu&apos;ils créent leur propre carte de visite digitale en 1 minute.
-          </p>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-neutral-900 transition shrink-0"
+            aria-label="Fermer"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* Body content */}
-        <div className="p-5 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+        {/* Modal Body */}
+        <div className="p-6 space-y-5">
           {/* 1. Share Link Box */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1.5">
               Votre lien personnel d&apos;invitation
             </label>
-            <div className="flex items-center gap-2 p-1.5 pl-3 rounded-xl bg-slate-50 border border-neutral-200 focus-within:border-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600/10 transition">
-              <span className="text-xs text-neutral-600 font-mono truncate flex-1 select-all">
+            <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus-within:border-neutral-900 focus-within:bg-white transition shadow-2xs">
+              <LinkIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+              <span className="text-xs text-neutral-700 font-mono truncate flex-1 select-all">
                 {inviteUrl}
               </span>
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-xs"
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-2xs ${
+                  copied
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-neutral-950 hover:bg-neutral-900 text-white active:scale-95'
+                }`}
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copié !' : 'Copier'}</span>
               </button>
             </div>
           </div>
 
-          {/* 2. One-click Quick Share channels */}
+          {/* 2. One-click Quick Share channels (Cohesive Modern Cards) */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">
-              Partager en 1 clic
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-2">
+              Partager directement
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {/* WhatsApp */}
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/80 text-emerald-800 text-xs font-bold transition active:scale-95"
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold transition hover:border-neutral-300 shadow-2xs group active:scale-95"
               >
-                <WhatsappIcon className="w-4 h-4 text-emerald-600" />
-                <span>WhatsApp</span>
+                <WhatsappIcon className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition shrink-0" />
+                <span className="truncate">WhatsApp</span>
               </a>
 
               {/* Email Client */}
               <a
                 href={mailtoUrl}
-                className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200/80 text-sky-800 text-xs font-bold transition active:scale-95"
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold transition hover:border-neutral-300 shadow-2xs group active:scale-95"
               >
-                <Mail className="w-4 h-4 text-sky-600" />
-                <span>Email</span>
+                <Mail className="w-4 h-4 text-neutral-700 group-hover:scale-110 transition shrink-0" />
+                <span className="truncate">Email</span>
               </a>
 
               {/* Native Mobile Share */}
               <button
                 type="button"
                 onClick={handleNativeShare}
-                className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 p-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 text-neutral-800 text-xs font-bold transition active:scale-95"
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold transition hover:border-neutral-300 shadow-2xs group active:scale-95"
               >
-                <Share2 className="w-4 h-4 text-neutral-700" />
-                <span>Plus d&apos;options</span>
+                <Share2 className="w-4 h-4 text-neutral-700 group-hover:scale-110 transition shrink-0" />
+                <span className="truncate">Partager</span>
               </button>
             </div>
           </div>
 
           {/* 3. Direct Email Invitation Form */}
-          <div className="pt-4 border-t border-neutral-100">
-            <div className="flex items-center gap-2 mb-2">
-              <UserPlus className="w-4 h-4 text-indigo-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                Ou envoyer une invitation par e-mail directement
-              </h3>
+          <div className="pt-2">
+            <div className="relative flex items-center justify-center mb-4">
+              <div className="border-t border-neutral-100 w-full" />
+              <span className="bg-white px-3 text-[10px] text-neutral-400 font-bold uppercase tracking-wider whitespace-nowrap">
+                Ou envoyer par e-mail
+              </span>
+              <div className="border-t border-neutral-100 w-full" />
             </div>
 
             <form onSubmit={handleSendInviteEmail} className="space-y-3">
               <div>
-                <input
-                  type="email"
-                  required
-                  placeholder="Adresse e-mail de votre ami(e) (ex: ami@gmail.com)"
-                  value={friendEmail}
-                  onChange={(e) => setFriendEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-neutral-200 text-neutral-900 text-xs placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10 transition"
-                />
+                <div className="relative flex items-center">
+                  <Mail className="absolute left-3.5 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="Adresse e-mail de votre ami(e)"
+                    value={friendEmail}
+                    onChange={(e) => setFriendEmail(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-neutral-900 text-xs placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-neutral-900 shadow-2xs transition"
+                  />
+                </div>
               </div>
 
               <div>
                 <textarea
                   rows={2}
-                  placeholder="Message personnel (facultatif) : Ex: Viens voir ma carte Lien-Bio !"
+                  placeholder="Message personnalisé (optionnel) : Ex: Viens découvrir ma carte digitale !"
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-neutral-200 text-neutral-900 text-xs placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10 transition resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-neutral-900 text-xs placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-neutral-900 shadow-2xs transition resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={isSending || !friendEmail}
-                className="w-full py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm disabled:opacity-50 active:scale-[0.99]"
+                disabled={isSending || !friendEmail.trim()}
+                className={`w-full py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-2xs active:scale-[0.99] ${
+                  friendEmail.trim()
+                    ? 'bg-neutral-950 hover:bg-neutral-900 text-white cursor-pointer'
+                    : 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200/60'
+                }`}
               >
                 {isSending ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Envoi en cours...</span>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                    <span>Envoi de l&apos;invitation en cours...</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-3.5 h-3.5" />
-                    <span>Envoyer l&apos;invitation</span>
+                    <span>{friendEmail.trim() ? "Envoyer l'invitation" : "Renseigner un e-mail pour inviter"}</span>
                   </>
                 )}
               </button>
             </form>
-          </div>
-        </div>
 
-        {/* Footer note */}
-        <div className="bg-slate-50 px-6 py-3 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400">
-          <span>Lien-Bio • Partage & Recommandation</span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="font-bold text-neutral-600 hover:text-neutral-900 transition"
-          >
-            Fermer
-          </button>
+            <p className="text-[11px] text-center text-neutral-400 mt-3">
+              Un e-mail élégant aux couleurs de Lien-Bio sera envoyé avec votre lien.
+            </p>
+          </div>
         </div>
       </div>
     </div>
