@@ -3,17 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Profile, ThemeConfig, ContactInfo } from '@/types';
-import {
-  Facebook,
-  Whatsapp,
-  Tiktok,
-  Mail,
-  PhoneCall,
-  MapPin,
-  OfficialWhatsappIcon,
-  OfficialPhoneIcon,
-  OfficialMailIcon,
-} from '@/components/ui/Icons';
+import { MapPin } from '@/components/ui/Icons';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -133,37 +123,61 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         </div>
       )}
 
-      {/* Quick Action Icons Row */}
-      <div className="flex items-center justify-center gap-3 mb-4">
+      {/* Quick Action Icons Row (Realistic Icons8 3D) */}
+      <div className="flex items-center justify-center gap-3.5 mb-5">
         {whatsappUrl && (
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md flex items-center justify-center shrink-0 ring-2 ring-emerald-500/20 active:scale-95"
+            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
             title="WhatsApp"
           >
-            <OfficialWhatsappIcon className="w-10 h-10" />
+            <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(37,211,102,0.25)] group-hover:ring-2 group-hover:ring-emerald-500/30 transition-all">
+              <Image
+                src="/icons/icons8-wa-3d-fluency.png"
+                alt="WhatsApp"
+                width={38}
+                height={38}
+                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              />
+            </div>
           </a>
         )}
 
         {phoneUrl && (
           <a
             href={phoneUrl}
-            className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md flex items-center justify-center shrink-0 ring-2 ring-emerald-600/20 active:scale-95"
-            title="Téléphone"
+            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+            title="Appeler"
           >
-            <OfficialPhoneIcon className="w-10 h-10" />
+            <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(0,180,216,0.25)] group-hover:ring-2 group-hover:ring-sky-500/30 transition-all">
+              <Image
+                src="/icons/icons8-phone-3d-fluency.png"
+                alt="Téléphone"
+                width={38}
+                height={38}
+                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              />
+            </div>
           </a>
         )}
 
         {emailUrl && (
           <a
             href={emailUrl}
-            className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md flex items-center justify-center shrink-0 ring-2 ring-red-500/20 active:scale-95"
+            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
             title="Email"
           >
-            <OfficialMailIcon className="w-10 h-10" />
+            <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(234,67,53,0.25)] group-hover:ring-2 group-hover:ring-red-500/30 transition-all">
+              <Image
+                src="/icons/icons8-gmail-3d-fluency.png"
+                alt="Email"
+                width={38}
+                height={38}
+                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              />
+            </div>
           </a>
         )}
       </div>
