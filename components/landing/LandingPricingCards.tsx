@@ -285,30 +285,6 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
         </div>
       </div>
 
-      {/* Maketou Payment Methods Showcase */}
-      <div className="mt-8 p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-600 max-w-6xl mx-auto w-full">
-        <div className="flex items-center gap-2 flex-wrap justify-center">
-          <span className="font-bold text-neutral-800">Passerelle Maketou :</span>
-          <span className="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 font-bold text-[11px]">
-            Wave
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-200 font-bold text-[11px]">
-            Orange Money
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 font-bold text-[11px]">
-            MTN MoMo
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[11px]">
-            Moov Money
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[11px]">
-            Carte Visa / Mastercard
-          </span>
-        </div>
-        <span className="text-[11px] font-medium text-neutral-500">
-          🔒 Passerelle Maketou officielle • Paiement 100% sécurisé
-        </span>
-      </div>
 
       {/* Modal d'Authentification / Inscription avant Maketou si l'utilisateur n'est pas encore connecté */}
       {authPromptPlan && (
