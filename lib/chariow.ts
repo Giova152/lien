@@ -240,6 +240,18 @@ export async function createChariowCheckout(
         };
       }
 
+      if (
+        result?.message?.includes('Service and Coaching') ||
+        result?.message?.includes('not supported via the Public API')
+      ) {
+        console.info('[Chariow API] Produit de type service détecté, redirection directe vers la page produit.');
+        return {
+          url: `https://lien-bio.mychariow.com/${productId}`,
+          saleId: `direct_${productId}_${Date.now()}`,
+          isDemo: false,
+        };
+      }
+
       let errorDetail = result?.message || `Erreur Chariow (${response.status})`;
       if (result?.errors && typeof result.errors === 'object') {
         const errorList = Object.entries(result.errors)
