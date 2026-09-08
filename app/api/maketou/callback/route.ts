@@ -77,6 +77,52 @@ export async function GET(req: Request) {
  * Met à jour le profil de l'utilisateur vers le statut PRO
  */
 async function upgradeUserProfile(userId: string, plan: string, paymentRef: string) {
+  const isLifetime = plan === 'lifetime';
+  const planType = isLifetime ? 'pro_lifetime' : 'pro_subscription';
+
+  // 1. Priorité à la session connectée du client (utilise les cookies de session pour passer RLS)
+  try {
+    const { createClient: createServerClient } = await import('@/lib/supabase/server');
+    const sessionClient = await createServerClient();
+    const {
+      data: { user },
+    } = await sessionClient.auth.getUser();
+
+    if (user && user.id === userId) {
+      const { data: currentProf } = await sessionClient
+        .from('profiles')
+        .select('theme')
+        .eq('id', userId)
+        .maybeSingle();
+
+      const currentTheme = currentProf?.theme || {};
+      const updatedTheme = {
+        ...currentTheme,
+        is_pro: true,
+        plan: planType,
+        pro_since: new Date().toISOString(),
+      };
+
+      const { error: userErr } = await sessionClient
+        .from('profiles')
+        .update({
+          is_pro: true,
+          plan: planType,
+          theme: updatedTheme,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', userId);
+
+      if (!userErr) {
+        console.log(`[Maketou] Utilisateur ${userId} passé en PRO avec succès via session utilisateur !`);
+        return;
+      }
+    }
+  } catch (sessionError) {
+    console.warn('[Maketou] Session cookie non disponible, passage au client admin:', sessionError);
+  }
+
+  // 2. Fallback avec clé Admin / Service Role
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseServiceKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -90,8 +136,6 @@ async function upgradeUserProfile(userId: string, plan: string, paymentRef: stri
     .maybeSingle();
 
   const currentTheme = currentProfile?.theme || {};
-  const isLifetime = plan === 'lifetime';
-  const planType = isLifetime ? 'pro_lifetime' : 'pro_subscription';
 
   const updatedTheme = {
     ...currentTheme,

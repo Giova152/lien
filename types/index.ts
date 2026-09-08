@@ -64,7 +64,7 @@ export interface Profile {
   theme: ThemeConfig;
   is_published: boolean;
   is_pro?: boolean;
-  plan?: 'free' | 'pro_lifetime';
+  plan?: 'free' | 'pro_lifetime' | 'pro_subscription' | string;
   stripe_payment_id?: string | null;
   created_at: string;
   updated_at: string;

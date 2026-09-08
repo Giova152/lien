@@ -299,10 +299,14 @@ export default function SettingsPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Actif
                 </span>
-                {profile.is_pro && (
+                {profile.is_pro ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                     <Sparkles className="w-3 h-3 text-amber-600" />
-                    PRO
+                    {profile.plan === 'pro_lifetime' ? 'PRO À Vie' : 'PRO Abonnement'}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-100 text-neutral-600 border border-neutral-200">
+                    Formule Gratuite
                   </span>
                 )}
               </div>
