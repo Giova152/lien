@@ -29,7 +29,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
   const hasServicesOrProducts = Boolean(
     (theme.services && theme.services.length > 0) || (theme.products && theme.products.length > 0)
   );
-  const showTabs = isPro || hasServicesOrProducts;
+  const showTabs = isPro && hasServicesOrProducts;
 
   const whatsappUrl = contact?.whatsapp
     ? `https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`
