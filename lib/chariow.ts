@@ -16,19 +16,12 @@ export interface ChariowPlanDetails {
 }
 
 export const CHARIOW_PLANS: Record<ChariowPlanId, ChariowPlanDetails> = {
-  monthly: {
-    id: 'monthly',
-    name: 'Abonnement PRO Mensuel — Lien-Bio',
-    description: 'Accès sans engagement à toutes les fonctionnalités PRO (35 $/mois).',
-    amountUsd: 35,
-    amountXof: 21000, // ~21 000 FCFA
-  },
   yearly: {
     id: 'yearly',
-    name: 'Abonnement PRO Annuel — Lien-Bio',
-    description: 'Accès PRO 1 an avec 28% d’économie (300 $/an soit 25 $/mois).',
-    amountUsd: 300,
-    amountXof: 180000, // ~180 000 FCFA
+    name: 'Abonnement PRO 1 An — Lien-Bio',
+    description: 'Accès complet à toutes les fonctionnalités PRO pendant 1 an (185 $/an).',
+    amountUsd: 185,
+    amountXof: 110000, // ~110 000 FCFA
   },
   lifetime: {
     id: 'lifetime',
@@ -36,6 +29,13 @@ export const CHARIOW_PLANS: Record<ChariowPlanId, ChariowPlanDetails> = {
     description: 'Accès définitif à vie à toutes les fonctionnalités PRO en paiement unique (500 $).',
     amountUsd: 500,
     amountXof: 300000, // ~300 000 FCFA
+  },
+  monthly: {
+    id: 'monthly',
+    name: 'Abonnement PRO 1 An — Lien-Bio',
+    description: 'Accès complet à toutes les fonctionnalités PRO pendant 1 an (185 $/an).',
+    amountUsd: 185,
+    amountXof: 110000,
   },
 };
 

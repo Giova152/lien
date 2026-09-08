@@ -10,11 +10,10 @@ interface LandingPricingCardsProps {
 }
 
 export function LandingPricingCards({ user }: LandingPricingCardsProps) {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [authPromptPlan, setAuthPromptPlan] = useState<'monthly' | 'yearly' | 'lifetime' | null>(null);
+  const [authPromptPlan, setAuthPromptPlan] = useState<'yearly' | 'lifetime' | null>(null);
 
-  const handlePlanClick = async (plan: 'monthly' | 'yearly' | 'lifetime') => {
+  const handlePlanClick = async (plan: 'yearly' | 'lifetime') => {
     // Si l'utilisateur n'est pas connecté, afficher la modale d'inscription rapide
     if (!user) {
       setAuthPromptPlan(plan);
@@ -105,69 +104,28 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
           </Link>
         </div>
 
-        {/* Plan PRO Abonnement */}
+        {/* Plan PRO Abonnement 1 An */}
         <div className="bg-white border-2 border-indigo-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-sm relative">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">PRO Abonnement</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">PRO 1 An</span>
               <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold">
-                Sans engagement
+                Accès 12 mois
               </span>
-            </div>
-
-            {/* Toggle Mensuel / Annuel */}
-            <div className="flex bg-neutral-100 p-1 rounded-xl border border-neutral-200 mb-3">
-              <button
-                type="button"
-                onClick={() => setBillingCycle('monthly')}
-                className={`flex-1 py-1 text-[11px] font-bold rounded-lg transition ${
-                  billingCycle === 'monthly'
-                    ? 'bg-white text-neutral-900 shadow-xs'
-                    : 'text-neutral-500 hover:text-neutral-900'
-                }`}
-              >
-                Mensuel
-              </button>
-              <button
-                type="button"
-                onClick={() => setBillingCycle('yearly')}
-                className={`flex-1 py-1 text-[11px] font-bold rounded-lg transition flex items-center justify-center gap-1 ${
-                  billingCycle === 'yearly'
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'text-neutral-500 hover:text-neutral-900'
-                }`}
-              >
-                <span>Annuel</span>
-                <span className={`text-[9px] px-1 rounded font-black ${billingCycle === 'yearly' ? 'bg-emerald-400 text-neutral-950' : 'bg-emerald-100 text-emerald-700'}`}>-28%</span>
-              </button>
             </div>
 
             {/* Prix */}
             <div className="mb-4">
-              {billingCycle === 'monthly' ? (
-                <div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-neutral-900">35 $</span>
-                    <span className="text-xs text-neutral-500">/ mois</span>
-                  </div>
-                  <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
-                    ≈ 21 000 FCFA / mois
-                  </span>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-neutral-900">300 $</span>
-                    <span className="text-xs text-neutral-500">/ an</span>
-                  </div>
-                  <span className="text-[11px] text-emerald-600 font-bold block mt-0.5">
-                    ≈ 180 000 FCFA / an (Soit 25 $/m • -28%)
-                  </span>
-                </div>
-              )}
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-black text-neutral-900">185 $</span>
+                <span className="text-xs text-neutral-500">/ an</span>
+              </div>
+              <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
+                ≈ 110 000 FCFA / an (Soit ~15 $/mois)
+              </span>
             </div>
 
-            <p className="text-xs text-neutral-600 mb-5">Idéal pour les créateurs et indépendants avec flexibilité totale.</p>
+            <p className="text-xs text-neutral-600 mb-5">Idéal pour les créateurs et indépendants avec flexibilité totale pendant 1 an.</p>
 
             <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
               <li className="flex items-center gap-2">
@@ -196,14 +154,14 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
           <button
             type="button"
             disabled={loadingPlan !== null}
-            onClick={() => handlePlanClick(billingCycle)}
+            onClick={() => handlePlanClick('yearly')}
             className="w-full mt-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold text-center transition shadow-xs flex items-center justify-center gap-2"
           >
-            {loadingPlan === billingCycle ? (
+            {loadingPlan === 'yearly' ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <span>Passer à PRO ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})</span>
+                <span>Passer à PRO 1 An (110 000 FCFA)</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
@@ -296,10 +254,10 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               </div>
               <div>
                 <h3 className="text-base font-black text-neutral-900">
-                  {authPromptPlan === 'lifetime' ? 'Pack PRO À Vie' : 'Abonnement PRO'}
+                  {authPromptPlan === 'lifetime' ? 'Pack PRO À Vie' : 'Formule PRO 1 An'}
                 </h3>
                 <p className="text-xs text-neutral-500 font-medium">
-                  {authPromptPlan === 'lifetime' ? '300 000 FCFA (500 $) à vie' : authPromptPlan === 'yearly' ? '180 000 FCFA / an' : '21 000 FCFA / mois'}
+                  {authPromptPlan === 'lifetime' ? '300 000 FCFA (500 $) à vie' : '110 000 FCFA (185 $) / an'}
                 </p>
               </div>
             </div>

@@ -127,7 +127,7 @@ export default function RegisterPage() {
                 <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-amber-900 block">
-                    {planParam === 'lifetime' ? '⭐ Pack PRO À Vie sélectionné (300 000 FCFA)' : '⭐ Formule PRO sélectionnée'}
+                    {planParam === 'lifetime' ? '⭐ Pack PRO À Vie sélectionné (300 000 FCFA)' : '⭐ Formule PRO 1 An sélectionnée (110 000 FCFA)'}
                   </span>
                   <span className="text-amber-800 text-[11px] font-medium mt-0.5 block">
                     Créez votre compte pour accéder immédiatement au paiement sécurisé (Wave, Orange Money, Carte bancaire).

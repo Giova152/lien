@@ -12,12 +12,11 @@ interface LifetimeUpgradeModalProps {
 }
 
 export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeUpgradeModalProps) {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleCheckout = async (plan: 'monthly' | 'yearly' | 'lifetime') => {
+  const handleCheckout = async (plan: 'yearly' | 'lifetime') => {
     try {
       setLoadingPlan(plan);
       toast.loading('Connexion sécurisée au paiement...', { id: 'checkout-action' });
@@ -79,86 +78,51 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
           </h2>
           <p className="text-xs text-neutral-500 max-w-md">
             {currentPlan === 'pro_subscription'
-              ? 'Passez à l’annuel pour économiser 28% ou optez pour l’accès définitif À VIE (aucun paiement futur).'
-              : 'Débloquez toutes les fonctionnalités avancées pour booster votre image, vos ventes et vos réservations.'}
+              ? 'Optez pour l’accès définitif À VIE pour ne plus jamais payer d’abonnement futur.'
+              : 'Choisissez entre l’accès annuel ou l’accès définitif à vie pour débloquer toutes les fonctionnalités.'}
           </p>
         </div>
 
         {/* The 2 PRO Offers Side-by-Side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-          {/* OFFRE 1 : ABONNEMENT PRO */}
-          <div className="bg-white border border-neutral-200 hover:border-neutral-300 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-xs">
+          {/* OFFRE 1 : ABONNEMENT PRO 1 AN */}
+          <div className="bg-white border-2 border-indigo-500/50 hover:border-indigo-600 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-xs">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-600">
-                  Offre 1 : Abonnement
+                <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">
+                  Offre 1 : Abonnement 1 An
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-neutral-100 text-[10px] font-semibold text-neutral-600 border border-neutral-200">
-                  Flexible
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[10px] font-bold text-indigo-700 border border-indigo-200">
+                  Accès 12 mois
                 </span>
               </div>
 
-              {/* Toggle Mensuel / Annuel */}
-              <div className="flex bg-neutral-100 p-1 rounded-xl border border-neutral-200 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setBillingCycle('monthly')}
-                  className={`flex-1 py-1 text-[11px] font-bold rounded-lg transition ${
-                    billingCycle === 'monthly'
-                      ? 'bg-white text-neutral-900 shadow-xs'
-                      : 'text-neutral-500 hover:text-neutral-900'
-                  }`}
-                >
-                  Mensuel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingCycle('yearly')}
-                  className={`flex-1 py-1 text-[11px] font-bold rounded-lg transition flex items-center justify-center gap-1 ${
-                    billingCycle === 'yearly'
-                      ? 'bg-indigo-600 text-white shadow-xs'
-                      : 'text-neutral-500 hover:text-neutral-900'
-                  }`}
-                >
-                  <span>Annuel</span>
-                  <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded font-black">-28%</span>
-                </button>
+              <div className="h-[28px] flex items-center mb-3">
+                <span className="text-xs text-neutral-500 font-medium">
+                  Renouvelable chaque année, sans engagement
+                </span>
               </div>
 
               {/* Price */}
               <div className="mb-4">
-                {billingCycle === 'monthly' ? (
-                  <div>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-3xl font-black text-neutral-900">35 $</span>
-                      <span className="text-xs text-neutral-500">/ mois</span>
-                    </div>
-                    <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
-                      ≈ 21 000 FCFA / mois
-                    </span>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-3xl font-black text-neutral-900">300 $</span>
-                      <span className="text-xs text-neutral-500">/ an</span>
-                    </div>
-                    <span className="text-[11px] text-emerald-600 font-bold block mt-0.5">
-                      ≈ 180 000 FCFA / an (Soit 25 $/m • -28%)
-                    </span>
-                  </div>
-                )}
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-3xl font-black text-neutral-900">185 $</span>
+                  <span className="text-xs text-neutral-500 font-bold">/ an</span>
+                </div>
+                <span className="inline-block mt-1 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 font-bold text-[11px]">
+                  ≈ 110 000 FCFA / an (Soit ~15 $/mois)
+                </span>
               </div>
 
               {/* Features */}
-              <ul className="flex flex-col gap-2 text-xs text-neutral-700 mb-6">
+              <ul className="flex flex-col gap-2.5 text-xs text-neutral-700 mb-6">
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                   <span>Liens personnalisés illimités</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Thèmes de luxe débloqués</span>
+                  <span>Tous les thèmes de luxe débloqués</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
@@ -172,9 +136,9 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                   <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                   <span>Statistiques & Analytics de clics</span>
                 </li>
-                <li className="flex items-center gap-2 text-neutral-400">
-                  <Check className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                  <span>Annulation libre en 1 clic</span>
+                <li className="flex items-center gap-2 text-neutral-500">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Support prioritaire par email</span>
                 </li>
               </ul>
             </div>
@@ -182,20 +146,17 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
             <button
               type="button"
               disabled={loadingPlan !== null}
-              onClick={() => handleCheckout(billingCycle)}
+              onClick={() => handleCheckout('yearly')}
               className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-xs"
             >
-              {loadingPlan === billingCycle ? (
+              {loadingPlan === 'yearly' ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
                   <span>
                     {currentPlan === 'pro_subscription'
-                      ? billingCycle === 'yearly'
-                        ? "Passer à l'annuel (-28%)"
-                        : "Renouveler mensuel"
-                      : "Passer à PRO"}{' '}
-                    ({billingCycle === 'monthly' ? '21 000 FCFA' : '180 000 FCFA'})
+                      ? "Renouveler 1 An (110 000 FCFA)"
+                      : "Choisir 1 An (110 000 FCFA)"}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
