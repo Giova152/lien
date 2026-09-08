@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Réinitialisation de votre mot de passe — Lien-Bio</title>
+  <title>Confirmez votre nouvelle adresse email — Lien-Bio</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -26,7 +26,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       text-decoration: none;
     }
     .logo-text {
@@ -89,10 +89,10 @@
       color: #64748b;
       margin: 0 0 20px;
     }
-    .security-badge {
+    .email-badge {
       display: inline-block;
-      background-color: #fef3c7;
-      color: #92400e;
+      background-color: #f1f5f9;
+      color: #334155;
       font-size: 12px;
       font-weight: 600;
       padding: 4px 10px;
@@ -143,20 +143,20 @@
       </table>
     </div>
 
-    <!-- Security Alert Badge -->
+    <!-- Badge -->
     <div>
-      <span class="security-badge">🔒 Sécurité du compte</span>
+      <span class="email-badge">✉️ Modification d'adresse</span>
     </div>
 
     <!-- Title & Greeting -->
-    <h1>Réinitialisation de votre mot de passe</h1>
+    <h1>Confirmez votre nouvelle adresse email</h1>
     <p>Bonjour,</p>
-    <p>Nous avons reçu une demande de réinitialisation du mot de passe associé à votre compte <strong>Lien-Bio</strong>.</p>
-    <p>Pour définir un nouveau mot de passe et récupérer l'accès à votre espace, cliquez sur le bouton ci-dessous :</p>
+    <p>Vous avez demandé à modifier l'adresse email associée à votre compte <strong>Lien-Bio</strong>.</p>
+    <p>Veuillez confirmer cette modification en cliquant sur le bouton ci-dessous pour valider votre nouvelle adresse :</p>
 
     <!-- Call to Action Button -->
     <div class="btn-container">
-      <a href="{{ .ConfirmationURL }}" class="btn">Réinitialiser mon mot de passe</a>
+      <a href="{{ .ConfirmationURL }}" class="btn">Confirmer mon nouvel email</a>
     </div>
 
     <!-- Direct link fallback -->
@@ -169,8 +169,7 @@
 
     <!-- Security notice -->
     <p class="note">
-      ⚠️ <strong>Ce lien est valide pour une durée limitée.</strong><br>
-      Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute tranquillité : votre mot de passe actuel reste parfaitement sécurisé et inchangé.
+      ⚠️ Si vous n'êtes pas à l'origine de cette démarche, veuillez contacter immédiatement notre support ou changer le mot de passe de votre compte.
     </p>
 
     <!-- Footer -->
@@ -181,4 +180,3 @@
   </div>
 </body>
 </html>
-

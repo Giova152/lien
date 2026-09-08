@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Réinitialisation de votre mot de passe — Lien-Bio</title>
+  <title>Votre lien de connexion magique — Lien-Bio</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -26,7 +26,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       text-decoration: none;
     }
     .logo-text {
@@ -89,10 +89,10 @@
       color: #64748b;
       margin: 0 0 20px;
     }
-    .security-badge {
+    .magic-badge {
       display: inline-block;
-      background-color: #fef3c7;
-      color: #92400e;
+      background-color: #e0e7ff;
+      color: #4338ca;
       font-size: 12px;
       font-weight: 600;
       padding: 4px 10px;
@@ -143,20 +143,19 @@
       </table>
     </div>
 
-    <!-- Security Alert Badge -->
+    <!-- Badge -->
     <div>
-      <span class="security-badge">🔒 Sécurité du compte</span>
+      <span class="magic-badge">✨ Connexion instantanée</span>
     </div>
 
     <!-- Title & Greeting -->
-    <h1>Réinitialisation de votre mot de passe</h1>
+    <h1>Connexion à votre espace</h1>
     <p>Bonjour,</p>
-    <p>Nous avons reçu une demande de réinitialisation du mot de passe associé à votre compte <strong>Lien-Bio</strong>.</p>
-    <p>Pour définir un nouveau mot de passe et récupérer l'accès à votre espace, cliquez sur le bouton ci-dessous :</p>
+    <p>Cliquez simplement sur le bouton ci-dessous pour vous connecter directement à votre tableau de bord sans mot de passe :</p>
 
     <!-- Call to Action Button -->
     <div class="btn-container">
-      <a href="{{ .ConfirmationURL }}" class="btn">Réinitialiser mon mot de passe</a>
+      <a href="{{ .ConfirmationURL }}" class="btn">Me connecter en un clic</a>
     </div>
 
     <!-- Direct link fallback -->
@@ -169,8 +168,8 @@
 
     <!-- Security notice -->
     <p class="note">
-      ⚠️ <strong>Ce lien est valide pour une durée limitée.</strong><br>
-      Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute tranquillité : votre mot de passe actuel reste parfaitement sécurisé et inchangé.
+      ⚠️ <strong>Ce lien à usage unique expire rapidement.</strong><br>
+      Si vous n'êtes pas à l'origine de cette demande de connexion, vous pouvez ignorer ce message.
     </p>
 
     <!-- Footer -->
@@ -181,4 +180,3 @@
   </div>
 </body>
 </html>
-
