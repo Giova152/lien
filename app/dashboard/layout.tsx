@@ -271,13 +271,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         openUpgradeModal: () => setIsUpgradeModalOpen(true),
       }}
     >
-      <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
+      <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white w-full max-w-full overflow-x-hidden relative">
         {/* Top Header */}
         <header className="w-full border-b border-neutral-200/70 bg-white/90 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/80">
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
             {/* Left: Brand Logo & Status */}
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-              <Logo href="/" size="sm" />
+              <Logo href="/" size="sm" showBadge={false} />
 
               {/* Status & PRO Badge Indicator (Desktop) */}
               {profile && (
@@ -316,7 +316,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-neutral-950 text-xs font-black shadow-xs active:scale-95 transition"
                 >
                   <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
-                  <span className="hidden xs:inline">PRO</span>
+                  <span>PRO</span>
                 </button>
               )}
 
@@ -326,23 +326,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <button
                     onClick={handleCopyPublicLink}
                     className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5"
-                    title="Copier le lien de votre page"
+                    title="Copier le lien public"
                   >
                     {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-indigo-600" />}
                     <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                   </button>
 
-                  {/* View Public Page Button */}
+                  {/* View Public Page in New Tab Button */}
                   <a
                     href={`/${profile.username}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-2 sm:px-3.5 sm:py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-100 text-xs font-bold text-indigo-700 transition flex items-center gap-1.5"
-                    title="Voir ma page en ligne"
+                    title="Voir la page publique en ligne"
                   >
-                    <Eye className="w-4 h-4 text-indigo-600" />
+                    <ExternalLink className="w-4 h-4 text-indigo-600" />
                     <span className="hidden sm:inline">Aperçu Web</span>
-                    <ExternalLink className="w-3 h-3 opacity-60 hidden sm:inline" />
                   </a>
                 </>
               )}
@@ -393,15 +392,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* Main Content Area */}
-        <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 pb-24 md:pb-8">
+        <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 pb-32 md:pb-8 min-w-0">
           {isFullWidthPage ? (
-            <div className="w-full max-w-5xl mx-auto">
+            <div className="w-full max-w-5xl mx-auto min-w-0">
               {children}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full min-w-0">
               {/* Left Column: Form Editors */}
-              <div className="lg:col-span-7 flex flex-col w-full">
+              <div className="lg:col-span-7 flex flex-col w-full min-w-0">
                 {children}
               </div>
 
@@ -413,35 +412,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           )}
         </main>
 
-        {/* Mobile Floating Action Button: Aperçu direct (Shown on mobile for editor pages) */}
-        {!isFullWidthPage && profile && (
-          <button
-            onClick={() => setIsMobilePreviewOpen(true)}
-            className="fixed bottom-20 right-4 z-20 md:hidden flex items-center gap-2 px-4 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 active:scale-95 transition-all"
-          >
-            <Eye className="w-4 h-4" />
-            <span>Aperçu direct</span>
-          </button>
-        )}
-
         {/* Mobile Full-Screen Native Preview Modal */}
         {isMobilePreviewOpen && profile && (
           <div className="fixed inset-0 z-50 bg-neutral-900/95 backdrop-blur-md flex flex-col md:hidden animate-fade-in">
             {/* Modal Header */}
             <div className="h-14 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-white shrink-0">
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4 text-indigo-400" />
-                <span className="text-xs font-bold">Aperçu en direct de votre page</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <Eye className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span className="text-xs font-bold truncate">Aperçu en direct de votre page</span>
               </div>
               <button
                 onClick={() => setIsMobilePreviewOpen(false)}
-                className="p-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition"
+                className="p-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto bg-neutral-950">
+            <div className="flex-1 overflow-y-auto bg-neutral-950 p-2">
               <div className="max-w-md mx-auto min-h-full">
                 <PublicProfileView profile={profile} links={links} contact={contact} />
               </div>
@@ -449,11 +437,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         )}
 
-        {/* Mobile Bottom Navigation Bar (5 core shortcuts) */}
-        <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-2 py-1.5 flex items-center justify-around md:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+        {/* Mobile Bottom Navigation Bar (Fixed with Safe Area Insets & Central Preview Button) */}
+        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-neutral-200/80 px-2 pt-1 pb-[max(env(safe-area-inset-bottom),0.5rem)] flex items-center justify-around md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
           <Link
             href="/dashboard/links"
-            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition ${
               pathname === '/dashboard/links' || pathname === '/dashboard'
                 ? 'text-indigo-600 font-extrabold'
                 : 'text-neutral-500 hover:text-neutral-800 font-medium'
@@ -465,7 +453,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <Link
             href="/dashboard/profile"
-            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition ${
               pathname === '/dashboard/profile'
                 ? 'text-indigo-600 font-extrabold'
                 : 'text-neutral-500 hover:text-neutral-800 font-medium'
@@ -475,9 +463,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="text-[10px]">Profil</span>
           </Link>
 
+          {/* Central Aperçu Button */}
+          {profile && (
+            <button
+              onClick={() => setIsMobilePreviewOpen(true)}
+              className="flex flex-col items-center justify-center -mt-3.5 py-1.5 px-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/35 active:scale-95 transition"
+              title="Aperçu direct de votre profil"
+            >
+              <Eye className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-black tracking-tight">Aperçu</span>
+            </button>
+          )}
+
           <Link
             href="/dashboard/services"
-            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition ${
               pathname === '/dashboard/services'
                 ? 'text-indigo-600 font-extrabold'
                 : 'text-neutral-500 hover:text-neutral-800 font-medium'
@@ -487,21 +487,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="text-[10px]">Services</span>
           </Link>
 
-          <Link
-            href="/dashboard/analytics"
-            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
-              pathname === '/dashboard/analytics'
-                ? 'text-indigo-600 font-extrabold'
-                : 'text-neutral-500 hover:text-neutral-800 font-medium'
-            }`}
-          >
-            <BarChart3 className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px]">Stats</span>
-          </Link>
-
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition ${
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition ${
               isMobileMenuOpen
                 ? 'text-indigo-600 font-extrabold'
                 : 'text-neutral-500 hover:text-neutral-800 font-medium'

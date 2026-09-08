@@ -97,7 +97,7 @@ export function ImageCropperModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-neutral-900 border border-neutral-800 text-white rounded-3xl max-w-lg w-full p-6 relative shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
+      <div className="bg-neutral-900 border border-neutral-800 text-white rounded-3xl max-w-lg w-full p-4 sm:p-6 relative shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-4 border-b border-neutral-800 mb-4">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button
@@ -122,7 +122,7 @@ export function ImageCropperModal({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4">
-            <div className="max-h-[350px] overflow-hidden rounded-xl bg-black flex items-center justify-center">
+            <div className="max-h-[320px] max-w-full overflow-hidden rounded-xl bg-black flex items-center justify-center">
               <ReactCrop
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -133,7 +133,7 @@ export function ImageCropperModal({
                   src={imgSrc}
                   onLoad={onImageLoad}
                   alt="Crop preview"
-                  className="max-h-[350px] object-contain"
+                  className="max-h-[300px] max-w-full object-contain"
                 />
               </ReactCrop>
             </div>

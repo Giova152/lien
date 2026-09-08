@@ -287,13 +287,13 @@ export function AnalyticsChart({ analytics }: AnalyticsChartProps) {
       </div>
 
       {/* Graphique d'évolution des vues (7 jours) */}
-      <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 flex flex-col gap-4 shadow-2xs">
+      <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-2xs min-w-0 overflow-hidden">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-bold text-neutral-800">Évolution des visites (7 derniers jours)</h3>
           <span className="text-xs text-neutral-400 font-medium">Mis à jour en temps réel</span>
         </div>
 
-        <div className="h-64 w-full pt-2">
+        <div className="h-64 w-full pt-2 min-w-0 overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={analytics.viewsByDate} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>

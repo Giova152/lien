@@ -194,24 +194,26 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
       )}
 
       {/* Switcher Tab between Style & Custom Content */}
-      <div className="flex bg-slate-100 border border-neutral-200 p-1.5 rounded-2xl">
+      <div className="flex bg-slate-100 border border-neutral-200 p-1.5 rounded-2xl gap-1">
         <button
           onClick={() => setActiveTabSection('style')}
-          className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+          className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-center ${
             activeTabSection === 'style' ? 'bg-indigo-600 text-white shadow-md' : 'text-neutral-600 hover:text-neutral-900 font-semibold'
           }`}
         >
-          <Palette className="w-4 h-4" />
-          <span>Style Visuel (Couleurs & Font)</span>
+          <Palette className="w-4 h-4 shrink-0" />
+          <span>Style Visuel</span>
+          <span className="hidden sm:inline">(Couleurs & Font)</span>
         </button>
         <button
           onClick={() => setActiveTabSection('content')}
-          className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+          className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-center ${
             activeTabSection === 'content' ? 'bg-indigo-600 text-white shadow-md' : 'text-neutral-600 hover:text-neutral-900 font-semibold'
           }`}
         >
-          <Layers className="w-4 h-4 text-amber-500" />
-          <span>Éditeur de Contenu (Stats, Services, Shop)</span>
+          <Layers className="w-4 h-4 text-amber-500 shrink-0" />
+          <span>Contenus</span>
+          <span className="hidden sm:inline">(Services & Shop)</span>
         </button>
       </div>
 

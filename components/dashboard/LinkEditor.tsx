@@ -152,7 +152,7 @@ export function LinkEditor({
   return (
     <div className="w-full flex flex-col gap-4 text-neutral-900 font-sans">
       {/* Top Header & Add Link Button */}
-      <div className="flex items-center justify-between pb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
         <div>
           <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
             Gestion des Liens
@@ -164,7 +164,7 @@ export function LinkEditor({
 
         <button
           onClick={openAddModal}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center gap-2 transition shadow-md"
+          className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-md shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Ajouter un lien</span>
@@ -178,7 +178,7 @@ export function LinkEditor({
             const upgradeBtn = document.querySelector('button:has-text("PRO")') as HTMLButtonElement;
             if (upgradeBtn) upgradeBtn.click();
           }}
-          className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex items-center justify-between text-xs text-amber-800 cursor-pointer hover:border-amber-400/50 transition shadow-xs"
+          className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-amber-800 cursor-pointer hover:border-amber-400/50 transition shadow-xs"
         >
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
@@ -214,38 +214,38 @@ export function LinkEditor({
                       <div
                         ref={providedDraggable.innerRef}
                         {...providedDraggable.draggableProps}
-                        className={`bg-white border border-neutral-200/80 rounded-2xl p-4 flex items-center justify-between transition-all shadow-xs ${
+                        className={`bg-white border border-neutral-200/80 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 transition-all shadow-xs ${
                           snapshot.isDragging ? 'shadow-2xl ring-2 ring-indigo-500/40 scale-[1.02]' : 'hover:border-neutral-300'
                         } ${!link.is_active ? 'opacity-50 bg-slate-50' : ''}`}
                       >
-                        <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 overflow-hidden">
                           {/* Drag Handle */}
                           <div
                             {...providedDraggable.dragHandleProps}
-                            className="text-neutral-400 hover:text-neutral-600 p-1 cursor-grab active:cursor-grabbing shrink-0"
+                            className="text-neutral-400 hover:text-neutral-600 p-1 cursor-grab active:cursor-grabbing shrink-0 touch-none"
                           >
                             <GripVertical className="w-5 h-5" />
                           </div>
 
                           {/* Icon */}
-                          <div className="w-10 h-10 rounded-xl bg-slate-100 border border-neutral-200 flex items-center justify-center text-neutral-800 shrink-0">
-                            <PlatformIcon name={link.platform || 'website'} className="w-5 h-5" />
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 border border-neutral-200 flex items-center justify-center text-neutral-800 shrink-0">
+                            <PlatformIcon name={link.platform || 'website'} className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
 
                           {/* Details */}
-                          <div className="flex flex-col overflow-hidden">
-                            <span className="font-bold text-neutral-900 text-sm truncate">
+                          <div className="flex flex-col min-w-0 overflow-hidden">
+                            <span className="font-bold text-neutral-900 text-xs sm:text-sm truncate">
                               {link.label}
                             </span>
-                            <span className="text-xs text-neutral-500 truncate flex items-center gap-1">
-                              {link.url}
+                            <span className="text-[11px] sm:text-xs text-neutral-500 truncate flex items-center gap-1">
+                              <span className="truncate">{link.url}</span>
                               <ExternalLink className="w-3 h-3 opacity-40 shrink-0" />
                             </span>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                           {/* Clicks Badge */}
                           <span className="hidden sm:inline-flex text-xs px-2.5 py-1 rounded-full bg-slate-100 text-neutral-600 font-mono font-bold border border-neutral-200">
                             {link.click_count || 0} clics
@@ -255,14 +255,14 @@ export function LinkEditor({
                           <button
                             type="button"
                             onClick={() => handleToggleActive(link)}
-                            className={`w-11 h-6 rounded-full transition-colors relative p-1 ${
+                            className={`w-10 sm:w-11 h-6 rounded-full transition-colors relative p-1 ${
                               link.is_active ? 'bg-indigo-600' : 'bg-neutral-300'
                             }`}
                             title={link.is_active ? 'Désactiver le lien' : 'Activer le lien'}
                           >
                             <div
                               className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                                link.is_active ? 'translate-x-5' : 'translate-x-0'
+                                link.is_active ? 'translate-x-4 sm:translate-x-5' : 'translate-x-0'
                               }`}
                             />
                           </button>
@@ -270,7 +270,7 @@ export function LinkEditor({
                           {/* Edit */}
                           <button
                             onClick={() => openEditModal(link)}
-                            className="p-2 text-neutral-500 hover:text-neutral-900 hover:bg-slate-100 rounded-lg transition"
+                            className="p-1.5 sm:p-2 text-neutral-500 hover:text-neutral-900 hover:bg-slate-100 rounded-lg transition"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
@@ -278,7 +278,7 @@ export function LinkEditor({
                           {/* Delete */}
                           <button
                             onClick={() => handleDelete(link.id)}
-                            className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                            className="p-1.5 sm:p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -296,8 +296,8 @@ export function LinkEditor({
 
       {/* Add / Edit Link Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-neutral-200 text-neutral-900 rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white border border-neutral-200 text-neutral-900 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl relative max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-neutral-200 mb-4">
               <h3 className="text-lg font-bold text-neutral-900">
                 {editingLink ? 'Modifier le lien' : 'Ajouter un nouveau lien'}
