@@ -1,7 +1,13 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 export async function proxy(request: NextRequest) {
+  const hostname = request.headers.get('host') || '';
+  if (hostname.includes('checkout.lien-bio.site')) {
+    const { pathname, search } = request.nextUrl;
+    return NextResponse.redirect(`https://lien-bio.mychariow.com${pathname}${search}`, 307);
+  }
+
   return await updateSession(request);
 }
 
