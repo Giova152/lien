@@ -39,13 +39,38 @@ export async function GET(req: Request) {
     }
 
     // Vérification de l'état du panier auprès de l'API Maketou
-    const verification = await verifyMaketouCart(cartId);
+    let verification = await verifyMaketouCart(cartId);
     console.log('[Maketou Callback] Statut panier vérifié:', verification.status);
 
-    const targetUserId =
+    let targetUserId =
       userId ||
       verification.cart?.meta?.userId ||
       verification.cart?.metadata?.userId;
+
+    if (!targetUserId) {
+      try {
+        const { createClient: createServerClient } = await import('@/lib/supabase/server');
+        const sessionClient = await createServerClient();
+        const {
+          data: { user },
+        } = await sessionClient.auth.getUser();
+        if (user) {
+          targetUserId = user.id;
+        }
+      } catch (e) {
+        console.warn('[Maketou Callback] Erreur lecture session:', e);
+      }
+    }
+
+    // Si le statut est waiting_payment, attendre 3s pour laisser l'opérateur Mobile Money finaliser
+    if (verification.status === 'waiting_payment') {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const retryCheck = await verifyMaketouCart(cartId);
+      console.log('[Maketou Callback] Statut panier après délai 3s:', retryCheck.status);
+      if (retryCheck.status === 'completed') {
+        verification = retryCheck;
+      }
+    }
 
     if (verification.status === 'completed') {
       if (targetUserId) {
@@ -58,7 +83,7 @@ export async function GET(req: Request) {
 
     if (verification.status === 'waiting_payment') {
       return NextResponse.redirect(
-        `${origin}/dashboard?payment=pending&provider=maketou&cart_id=${cartId}`
+        `${origin}/dashboard?payment=pending&provider=maketou&cart_id=${cartId}&plan=${plan}`
       );
     }
 
@@ -76,7 +101,7 @@ export async function GET(req: Request) {
 /**
  * Met à jour le profil de l'utilisateur vers le statut PRO
  */
-async function upgradeUserProfile(userId: string, plan: string, paymentRef: string) {
+export async function upgradeUserProfile(userId: string, plan: string, paymentRef: string) {
   const isLifetime = plan === 'lifetime';
   const planType = isLifetime ? 'pro_lifetime' : 'pro_subscription';
 
@@ -101,6 +126,7 @@ async function upgradeUserProfile(userId: string, plan: string, paymentRef: stri
         is_pro: true,
         plan: planType,
         pro_since: new Date().toISOString(),
+        payment_ref: paymentRef,
       };
 
       const { error: userErr } = await sessionClient
@@ -142,6 +168,7 @@ async function upgradeUserProfile(userId: string, plan: string, paymentRef: stri
     is_pro: true,
     plan: planType,
     pro_since: new Date().toISOString(),
+    payment_ref: paymentRef,
   };
 
   const { error } = await supabaseAdmin
@@ -149,7 +176,6 @@ async function upgradeUserProfile(userId: string, plan: string, paymentRef: stri
     .update({
       is_pro: true,
       plan: planType,
-      stripe_payment_id: paymentRef,
       theme: updatedTheme,
       updated_at: new Date().toISOString(),
     })

@@ -66,6 +66,7 @@ export async function POST(req: Request) {
       is_pro: true,
       plan: planType,
       pro_since: new Date().toISOString(),
+      payment_ref: cartId,
     };
 
     const { error: updateError } = await supabaseAdmin
@@ -73,7 +74,6 @@ export async function POST(req: Request) {
       .update({
         is_pro: true,
         plan: planType,
-        stripe_payment_id: cartId,
         theme: updatedTheme,
         updated_at: new Date().toISOString(),
       })

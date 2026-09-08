@@ -158,13 +158,52 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // En attente de paiement (opérateur mobile money)
       if (searchParams.get('payment') === 'pending') {
-        toast.loading('Paiement en cours de validation par votre opérateur...', { duration: 6000 });
+        const pendingCartId = searchParams.get('cart_id') || searchParams.get('cartId');
+        const pendingPlan = searchParams.get('plan') || 'yearly';
+
         searchParams.delete('payment');
         searchParams.delete('provider');
         searchParams.delete('cart_id');
+        searchParams.delete('cartId');
+        searchParams.delete('plan');
         const newSearch = searchParams.toString();
         const newPath = window.location.pathname + (newSearch ? `?${newSearch}` : '');
         window.history.replaceState({}, document.title, newPath);
+
+        if (pendingCartId) {
+          toast.loading('Validation de votre paiement par votre opérateur...', { id: 'pending-payment-check', duration: 30000 });
+
+          let attempts = 0;
+          const maxAttempts = 10;
+          const interval = setInterval(async () => {
+            attempts++;
+            try {
+              const res = await fetch(`/api/maketou/verify?cart_id=${pendingCartId}&plan=${pendingPlan}`);
+              const data = await res.json();
+              if (data.completed || data.status === 'completed') {
+                clearInterval(interval);
+                toast.success('Félicitations ! Votre paiement est validé, votre compte PRO est actif 🎉', {
+                  id: 'pending-payment-check',
+                  duration: 6000,
+                });
+                fetchDashboardData();
+                return;
+              }
+            } catch (e) {
+              console.error('Erreur vérification paiement:', e);
+            }
+
+            if (attempts >= maxAttempts) {
+              clearInterval(interval);
+              toast.info('Votre opérateur traite toujours la confirmation. Votre accès sera actualisé dès validation.', {
+                id: 'pending-payment-check',
+                duration: 8000,
+              });
+            }
+          }, 2500);
+        } else {
+          toast.loading('Paiement en cours de validation par votre opérateur...', { duration: 6000 });
+        }
       }
 
       // 3. Instant payment success handling
