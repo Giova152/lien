@@ -15,18 +15,10 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowRight,
-  PhoneCall,
-  Whatsapp,
-  Mail,
   Calendar,
   Zap,
   ExternalLink,
   User,
-  MapPin,
-  Globe,
-  OfficialWhatsappIcon,
-  OfficialPhoneIcon,
-  OfficialMailIcon,
 } from '@/components/ui/Icons';
 import { formatExternalUrl } from '@/lib/utils';
 
@@ -216,161 +208,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                 </div>
               )}
 
-              {/* Section Coordonnées & Contact */}
-              {contact && (contact.phone || contact.whatsapp || contact.email || contact.address || contact.website) && (
-                <div
-                  className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-4 sm:p-5 shadow-xs text-left flex flex-col gap-3 transition-all`}
-                  style={{ borderColor: `${accentColor}25` }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs"
-                      style={{ backgroundColor: `${accentColor}18`, color: accentColor }}
-                    >
-                      <PhoneCall className="w-3.5 h-3.5" />
-                    </div>
-                    <h3
-                      className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
-                      style={{ color: theme.text_color }}
-                    >
-                      Coordonnées & Contact
-                    </h3>
-                  </div>
 
-                  <div className="flex flex-col gap-2">
-                    {contact.phone && (
-                      <a
-                        href={`tel:${contact.phone}`}
-                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
-                        style={{
-                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                          borderColor: `${accentColor}18`,
-                          color: theme.text_color,
-                        }}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-black/5">
-                            <OfficialPhoneIcon className="w-8 h-8" />
-                          </div>
-                          <div className="flex flex-col text-left min-w-0">
-                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
-                              Téléphone
-                            </span>
-                            <span className="text-xs font-semibold truncate">{contact.phone}</span>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
-                      </a>
-                    )}
-
-                    {contact.whatsapp && (
-                      <a
-                        href={`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
-                        style={{
-                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                          borderColor: `${accentColor}18`,
-                          color: theme.text_color,
-                        }}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-black/5">
-                            <OfficialWhatsappIcon className="w-8 h-8" />
-                          </div>
-                          <div className="flex flex-col text-left min-w-0">
-                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
-                              WhatsApp
-                            </span>
-                            <span className="text-xs font-semibold truncate">{contact.whatsapp}</span>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
-                      </a>
-                    )}
-
-                    {contact.email && (
-                      <a
-                        href={`mailto:${contact.email}`}
-                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
-                        style={{
-                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                          borderColor: `${accentColor}18`,
-                          color: theme.text_color,
-                        }}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-black/5">
-                            <OfficialMailIcon className="w-8 h-8" />
-                          </div>
-                          <div className="flex flex-col text-left min-w-0">
-                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
-                              Email
-                            </span>
-                            <span className="text-xs font-semibold truncate">{contact.email}</span>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
-                      </a>
-                    )}
-
-                    {contact.address && (
-                      <a
-                        href={`https://maps.google.com/?q=${encodeURIComponent(contact.address)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
-                        style={{
-                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                          borderColor: `${accentColor}18`,
-                          color: theme.text_color,
-                        }}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
-                            <MapPin className="w-4 h-4" />
-                          </div>
-                          <div className="flex flex-col text-left min-w-0">
-                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
-                              Adresse
-                            </span>
-                            <span className="text-xs font-semibold truncate">{contact.address}</span>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
-                      </a>
-                    )}
-
-                    {contact.website && (
-                      <a
-                        href={contact.website.startsWith('http') ? contact.website : `https://${contact.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:translate-x-0.5 group"
-                        style={{
-                          backgroundColor: isDarkCard ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                          borderColor: `${accentColor}18`,
-                          color: theme.text_color,
-                        }}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center shrink-0">
-                            <Globe className="w-4 h-4" />
-                          </div>
-                          <div className="flex flex-col text-left min-w-0">
-                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
-                              Site web
-                            </span>
-                            <span className="text-xs font-semibold truncate">{contact.website}</span>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 opacity-30 group-hover:opacity-80 transition shrink-0" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
 
               {/* Links List */}
               {links.length > 0 && (
