@@ -121,7 +121,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                 <span className="text-xs text-neutral-500">/ an</span>
               </div>
               <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
-                ≈ 110 000 FCFA / an (Soit ~15 $/mois)
+                Soit ~15 $/mois • Facturé annuellement
               </span>
             </div>
 
@@ -161,7 +161,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <span>Passer à PRO 1 An (110 000 FCFA)</span>
+                <span>Passer à PRO 1 An (185 $)</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
@@ -184,7 +184,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                 <span className="text-xs text-neutral-500">/ accès à vie</span>
               </div>
               <span className="text-[11px] text-amber-700 font-bold block mt-0.5">
-                ≈ 300 000 FCFA (0 $ ensuite • Tout inclus)
+                Paiement unique définitif (0 $ ensuite • Tout inclus)
               </span>
             </div>
 
@@ -227,7 +227,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Obtenir l&apos;accès à vie (300 000 FCFA)</span>
+                <span>Obtenir l&apos;accès à vie (500 $)</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
@@ -257,7 +257,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
                   {authPromptPlan === 'lifetime' ? 'Pack PRO À Vie' : 'Formule PRO 1 An'}
                 </h3>
                 <p className="text-xs text-neutral-500 font-medium">
-                  {authPromptPlan === 'lifetime' ? '300 000 FCFA (500 $) à vie' : '110 000 FCFA (185 $) / an'}
+                  {authPromptPlan === 'lifetime' ? '500 $ à vie (Paiement unique)' : '185 $ / an'}
                 </p>
               </div>
             </div>

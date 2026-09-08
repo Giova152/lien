@@ -110,7 +110,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                   <span className="text-xs text-neutral-500 font-bold">/ an</span>
                 </div>
                 <span className="inline-block mt-1 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 font-bold text-[11px]">
-                  ≈ 110 000 FCFA / an (Soit ~15 $/mois)
+                  Soit ~15 $/mois • Facturé annuellement
                 </span>
               </div>
 
@@ -155,8 +155,8 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                 <>
                   <span>
                     {currentPlan === 'pro_subscription'
-                      ? "Renouveler 1 An (110 000 FCFA)"
-                      : "Choisir 1 An (110 000 FCFA)"}
+                      ? "Renouveler 1 An (185 $)"
+                      : "Passer à PRO 1 An (185 $)"}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
@@ -191,7 +191,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                   <span className="text-xs text-neutral-500 font-bold">/ à vie</span>
                 </div>
                 <span className="inline-block mt-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 font-bold text-[11px]">
-                  ≈ 300 000 FCFA • Paiement unique définitif
+                  Paiement unique définitif • 0 $ ensuite
                 </span>
               </div>
 
@@ -237,8 +237,8 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>
                     {currentPlan === 'pro_subscription'
-                      ? "Passer à l'accès à vie (300 000 FCFA)"
-                      : "Obtenir l'accès à vie (300 000 FCFA)"}
+                      ? "Passer à l'accès à vie (500 $)"
+                      : "Obtenir l'accès à vie (500 $)"}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
