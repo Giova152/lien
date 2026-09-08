@@ -14,10 +14,13 @@ export const metadata: Metadata = {
     'Créez et personnalisez votre page de profil professionnelle, centralisez vos liens sociaux, coordonnées de contact vCard et QR code en une minute.',
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=2', sizes: '32x32' },
+      { url: '/icon.svg?v=2', type: 'image/svg+xml' },
+      { url: '/icon.png?v=2', sizes: '32x32', type: 'image/png' },
     ],
+    shortcut: '/favicon.ico?v=2',
     apple: [
-      { url: '/apple-icon.svg', type: 'image/svg+xml' },
+      { url: '/apple-icon.png?v=2', sizes: '180x180', type: 'image/png' },
     ],
   },
   openGraph: {
@@ -37,6 +40,11 @@ export default function RootLayout({
       lang="fr"
       className={`${inter.variable} ${outfit.variable} ${playfair.variable} ${spaceGrotesk.variable}`}
     >
+      <head>
+        <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+        <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-icon.png?v=2" />
+      </head>
       <body className="bg-white text-neutral-900 antialiased min-h-screen flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
         {children}
         <Toaster position="top-right" theme="light" richColors closeButton />
