@@ -196,50 +196,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
         </p>
       </div>
 
-      {/* Two Clean PRO Offers Banner */}
-      {!profile?.is_pro && (
-        <div className="bg-neutral-950 text-white border border-neutral-800 rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
-          {/* Subtle Glow */}
-          <div className="absolute top-0 right-0 w-64 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
-          
-          <div className="flex items-start sm:items-center gap-3.5 z-10">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 text-neutral-950 flex items-center justify-center font-black shrink-0 shadow-md">
-              <Sparkles className="w-5 h-5 fill-neutral-950" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-black text-amber-400 uppercase tracking-wider">Passez en PRO</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300 font-semibold">2 formules au choix</span>
-              </div>
-              <p className="text-xs text-neutral-300 mt-0.5 font-medium leading-relaxed">
-                Débloquez tous les thèmes de luxe, les onglets Services & E-books, et vos statistiques détaillées.
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0 z-10">
-            {/* Offre 1 : Abonnement */}
-            <button
-              type="button"
-              onClick={() => openUpgradeModal?.()}
-              className="flex-1 md:flex-initial px-3.5 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs"
-            >
-              <span>Abonnement</span>
-              <span className="text-amber-400 font-black">35 $/m</span>
-            </button>
-
-            {/* Offre 2 : À Vie */}
-            <button
-              type="button"
-              onClick={() => openUpgradeModal?.()}
-              className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider transition hover:scale-[1.02] shadow-sm flex items-center justify-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
-              <span>À Vie (500 $)</span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Switcher Tab between Style & Custom Content */}
       <div className="flex bg-neutral-100/90 p-1.5 rounded-2xl border border-neutral-200/80 gap-1.5">
