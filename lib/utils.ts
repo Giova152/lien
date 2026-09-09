@@ -129,3 +129,33 @@ export function formatExternalUrl(url?: string): string {
   return `https://${trimmed}`;
 }
 
+/**
+ * Automatically detects the user's browser language.
+ * Returns 'fr' if French is preferred, otherwise defaults to 'en' for international visitors.
+ */
+export function detectBrowserLanguage(): 'fr' | 'en' {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return 'fr';
+  try {
+    const navLangs =
+      navigator.languages && navigator.languages.length > 0
+        ? navigator.languages
+        : [navigator.language || (navigator as any).userLanguage || ''];
+
+    for (const l of navLangs) {
+      if (!l) continue;
+      const lower = l.toLowerCase();
+      if (lower.startsWith('fr')) return 'fr';
+      if (lower.startsWith('en')) return 'en';
+    }
+
+    // If preferred language is not French (e.g. es, de, it, pt, etc.), default to English for international visitors
+    const primary = (navigator.language || '').toLowerCase();
+    if (primary && !primary.startsWith('fr')) {
+      return 'en';
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'fr';
+}
+

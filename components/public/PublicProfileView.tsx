@@ -21,7 +21,7 @@ import {
   User,
 } from '@/components/ui/Icons';
 import { LogoIcon } from '@/components/ui/Logo';
-import { formatExternalUrl } from '@/lib/utils';
+import { formatExternalUrl, detectBrowserLanguage } from '@/lib/utils';
 
 interface PublicProfileViewProps {
   profile: Profile;
@@ -106,15 +106,35 @@ export function PublicProfileView({
   links,
   contact,
   isOwner,
-  initialLang = 'fr',
+  initialLang,
 }: PublicProfileViewProps) {
   const [lang, setLang] = useState<'fr' | 'en'>(initialLang || 'fr');
 
+  // Auto-detect browser language or read stored preference on client mount
   React.useEffect(() => {
     if (initialLang) {
       setLang(initialLang);
+      return;
     }
+
+    try {
+      const saved = localStorage.getItem('lien_bio_lang');
+      if (saved === 'fr' || saved === 'en') {
+        setLang(saved);
+        return;
+      }
+    } catch {}
+
+    const detected = detectBrowserLanguage();
+    setLang(detected);
   }, [initialLang]);
+
+  const handleLanguageChange = (newLang: 'fr' | 'en') => {
+    setLang(newLang);
+    try {
+      localStorage.setItem('lien_bio_lang', newLang);
+    } catch {}
+  };
 
   const t = TRANSLATIONS[lang];
 
@@ -205,7 +225,7 @@ export function PublicProfileView({
             >
               <button
                 type="button"
-                onClick={() => setLang('fr')}
+                onClick={() => handleLanguageChange('fr')}
                 className={`px-1.5 py-0.5 rounded-full transition-all flex items-center gap-1 ${
                   lang === 'fr'
                     ? 'font-black text-white shadow-xs'
@@ -222,7 +242,7 @@ export function PublicProfileView({
               </button>
               <button
                 type="button"
-                onClick={() => setLang('en')}
+                onClick={() => handleLanguageChange('en')}
                 className={`px-1.5 py-0.5 rounded-full transition-all flex items-center gap-1 ${
                   lang === 'en'
                     ? 'font-black text-white shadow-xs'

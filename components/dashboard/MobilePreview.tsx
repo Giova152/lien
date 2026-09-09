@@ -5,6 +5,7 @@ import { Profile, LinkItem, ContactInfo } from '@/types';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { Smartphone, Signal, Wifi, Battery } from '@/components/ui/Icons';
 import { LogoIcon } from '@/components/ui/Logo';
+import { detectBrowserLanguage } from '@/lib/utils';
 
 interface MobilePreviewProps {
   profile: Profile | null;
@@ -14,6 +15,24 @@ interface MobilePreviewProps {
 
 export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
   const [previewLang, setPreviewLang] = React.useState<'fr' | 'en'>('fr');
+
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('lien_bio_lang');
+      if (saved === 'fr' || saved === 'en') {
+        setPreviewLang(saved);
+        return;
+      }
+    } catch {}
+    setPreviewLang(detectBrowserLanguage());
+  }, []);
+
+  const handlePreviewLangChange = (lang: 'fr' | 'en') => {
+    setPreviewLang(lang);
+    try {
+      localStorage.setItem('lien_bio_lang', lang);
+    } catch {}
+  };
 
   if (!profile) {
     return (
@@ -39,7 +58,7 @@ export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
         <div className="flex items-center bg-white border border-neutral-200/80 rounded-full p-0.5 shadow-xs text-[11px] font-bold">
           <button
             type="button"
-            onClick={() => setPreviewLang('fr')}
+            onClick={() => handlePreviewLangChange('fr')}
             className={`px-2 py-0.5 rounded-full transition flex items-center gap-1 ${
               previewLang === 'fr'
                 ? 'bg-neutral-900 text-white shadow-xs'
@@ -52,7 +71,7 @@ export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
           </button>
           <button
             type="button"
-            onClick={() => setPreviewLang('en')}
+            onClick={() => handlePreviewLangChange('en')}
             className={`px-2 py-0.5 rounded-full transition flex items-center gap-1 ${
               previewLang === 'en'
                 ? 'bg-neutral-900 text-white shadow-xs'
