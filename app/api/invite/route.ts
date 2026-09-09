@@ -50,66 +50,7 @@ export async function POST(request: Request) {
       emailSubject
     )}&body=${encodeURIComponent(emailBody)}`;
 
-    // 1. Try sending via Supabase Auth Admin if SERVICE_ROLE_KEY is present (Primary method)
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-    if (serviceRoleKey && supabaseUrl) {
-      try {
-        const adminSupabase = createAdminClient(supabaseUrl, serviceRoleKey, {
-          auth: { autoRefreshToken: false, persistSession: false },
-        });
-
-        const siteUrl =
-          process.env.NEXT_PUBLIC_APP_URL || 'https://www.lien-bio.site';
-        const inviteRedirectUrl = `${siteUrl}/auth/callback?next=/onboarding`;
-
-        const { error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(
-          trimmedEmail,
-          {
-            redirectTo: inviteRedirectUrl,
-            data: {
-              invited_by: senderName,
-              custom_message: customMessage || null,
-            },
-          }
-        );
-
-        if (!inviteError) {
-          return NextResponse.json({
-            success: true,
-            emailSent: true,
-            provider: 'supabase',
-            message: 'Invitation officielle envoyée avec succès via Supabase !',
-          });
-        } else {
-          console.warn('Supabase inviteUserByEmail error:', inviteError);
-          const rawMsg = inviteError.message || '';
-          let userMsg = "Impossible d'envoyer l'invitation";
-
-          if (rawMsg.toLowerCase().includes('already been registered') || rawMsg.toLowerCase().includes('already exists')) {
-            userMsg = 'Cette adresse e-mail possède déjà un compte sur Lien-Bio.';
-          } else if (rawMsg.toLowerCase().includes('rate limit')) {
-            userMsg = 'Limite d’envois atteinte pour l’instant. Veuillez réessayer dans quelques minutes.';
-          } else {
-            userMsg = rawMsg;
-          }
-
-          return NextResponse.json(
-            { error: userMsg, rawError: rawMsg },
-            { status: 400 }
-          );
-        }
-      } catch (sbErr: any) {
-        console.error('Failed to send invite via Supabase admin:', sbErr);
-        return NextResponse.json(
-          { error: 'Erreur lors de la communication avec le serveur' },
-          { status: 500 }
-        );
-      }
-    }
-
-    // 2. Try sending via Resend if API key is configured
+    // 1. Try sending via Resend if API key is configured (Primary transaction method)
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       try {
@@ -193,12 +134,49 @@ export async function POST(request: Request) {
             provider: 'resend',
             message: 'E-mail d’invitation envoyé avec succès !',
           });
-        } else {
-          const resendError = await resendRes.json();
-          console.warn('Resend API returned error:', resendError);
         }
-      } catch (resendErr) {
-        console.warn('Failed to send email via Resend:', resendErr);
+      } catch (rErr) {
+        console.warn('Resend send error:', rErr);
+      }
+    }
+
+    // 2. Try sending via Supabase Auth Admin if SERVICE_ROLE_KEY is present
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    if (serviceRoleKey && supabaseUrl) {
+      try {
+        const adminSupabase = createAdminClient(supabaseUrl, serviceRoleKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
+        });
+
+        const siteUrl =
+          process.env.NEXT_PUBLIC_APP_URL || 'https://www.lien-bio.site';
+        const inviteRedirectUrl = `${siteUrl}/auth/callback?next=/onboarding`;
+
+        const { error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(
+          trimmedEmail,
+          {
+            redirectTo: inviteRedirectUrl,
+            data: {
+              invited_by: senderName,
+              custom_message: customMessage || null,
+            },
+          }
+        );
+
+        if (!inviteError) {
+          return NextResponse.json({
+            success: true,
+            emailSent: true,
+            provider: 'supabase',
+            message: 'Invitation officielle envoyée avec succès via Supabase !',
+          });
+        } else {
+          console.warn('Supabase inviteUserByEmail note:', inviteError.message);
+        }
+      } catch (sbErr: any) {
+        console.warn('Failed to send invite via Supabase admin:', sbErr);
       }
     }
 
