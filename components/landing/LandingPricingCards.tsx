@@ -360,8 +360,14 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
         planTitle={checkoutModalConfig?.planTitle}
         userEmail={user?.email}
         onSuccess={() => {
+          const selectedPlan =
+            checkoutModalConfig?.productId === CHARIOW_PRODUCTS.LIFETIME
+              ? 'lifetime'
+              : checkoutModalConfig?.productId === CHARIOW_PRODUCTS.MONTHLY
+              ? 'monthly'
+              : 'yearly';
           setCheckoutModalConfig(null);
-          window.location.href = '/dashboard?upgrade_success=true';
+          window.location.href = `/dashboard?payment=success&provider=chariow&plan=${selectedPlan}`;
         }}
       />
     </>

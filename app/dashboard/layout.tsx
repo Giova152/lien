@@ -257,8 +257,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
 
       // 3. Instant payment success handling
-      if (searchParams.get('payment') === 'success') {
-        const planParam = searchParams.get('plan');
+      if (searchParams.get('payment') === 'success' || searchParams.get('upgrade_success') === 'true') {
+        const planParam = searchParams.get('plan') || 'yearly';
         const planType = planParam === 'monthly' || planParam === 'yearly' ? 'pro_subscription' : 'pro_lifetime';
 
         const upgradeAccount = async () => {

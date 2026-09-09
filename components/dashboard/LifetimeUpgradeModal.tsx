@@ -341,8 +341,15 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
         planTitle={checkoutModalConfig?.planTitle}
         userEmail={userEmail}
         onSuccess={() => {
+          const selectedPlan =
+            checkoutModalConfig?.productId === CHARIOW_PRODUCTS.LIFETIME
+              ? 'lifetime'
+              : checkoutModalConfig?.productId === CHARIOW_PRODUCTS.MONTHLY
+              ? 'monthly'
+              : 'yearly';
           setCheckoutModalConfig(null);
           onClose();
+          window.location.href = `/dashboard?payment=success&provider=chariow&plan=${selectedPlan}`;
         }}
       />
     </div>
