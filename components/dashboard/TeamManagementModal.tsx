@@ -422,20 +422,35 @@ export function TeamManagementModal({
                           </div>
                         </div>
 
-                        {/* Action Révoquer */}
-                        <button
-                          type="button"
-                          onClick={() => handleRevokeMember(member.id, member.member_email)}
-                          disabled={revokingId === member.id}
-                          className="p-2 rounded-xl text-neutral-400 hover:text-red-600 hover:bg-red-50 transition shrink-0 cursor-pointer"
-                          title="Révoquer les accès de ce collaborateur"
-                        >
-                          {revokingId === member.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-red-600" />
-                          ) : (
-                            <Trash2 className="w-4 h-4" />
-                          )}
-                        </button>
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const acceptUrl = `${origin}/login?collab=${encodeURIComponent(profile?.username || '')}`;
+                              navigator.clipboard.writeText(acceptUrl);
+                              toast.success('Lien d’accès copié ! Transmettez-le à votre collaborateur.');
+                            }}
+                            className="p-1.5 rounded-lg text-neutral-500 hover:text-indigo-600 hover:bg-indigo-50 transition cursor-pointer"
+                            title="Copier le lien d'accès collaborateur"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRevokeMember(member.id, member.member_email)}
+                            disabled={revokingId === member.id}
+                            className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                            title="Révoquer les accès de ce collaborateur"
+                          >
+                            {revokingId === member.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-red-600" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

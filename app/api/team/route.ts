@@ -264,11 +264,13 @@ export async function POST(request: Request) {
 </html>
     `;
 
-    // Tentative d'envoi via Resend si configuré
+    // Envoi de l'e-mail d'invitation de collaboration
+    let emailSent = false;
     const resendApiKey = process.env.RESEND_API_KEY;
+
     if (resendApiKey) {
       try {
-        await fetch('https://api.resend.com/emails', {
+        const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${resendApiKey}`,
@@ -281,14 +283,44 @@ export async function POST(request: Request) {
             html: emailBodyHtml,
           }),
         });
+        if (res.ok) emailSent = true;
       } catch (err) {
         console.warn('Resend send failed:', err);
       }
     }
 
+    // Fallback via Supabase Auth Admin si SERVICE_ROLE_KEY est disponible
+    const adminSupabase = getAdminSupabase();
+    if (!emailSent && adminSupabase) {
+      try {
+        const { error: inviteErr } = await adminSupabase.auth.admin.inviteUserByEmail(
+          trimmedEmail,
+          {
+            redirectTo: acceptUrl,
+            data: {
+              invited_by: inviterName,
+              card_title: cardTitle,
+              role: validRole,
+            },
+          }
+        );
+        if (!inviteErr) {
+          emailSent = true;
+        } else {
+          console.warn('Supabase inviteUserByEmail note:', inviteErr.message);
+        }
+      } catch (sbErr) {
+        console.warn('Supabase invite email error:', sbErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Collaborateur invité avec succès en tant que ${roleLabel} !`,
+      emailSent,
+      acceptUrl,
+      message: emailSent
+        ? `Collaborateur invité avec succès en tant que ${roleLabel} ! Un e-mail a été transmis.`
+        : `Collaborateur ajouté à l’équipe en tant que ${roleLabel} ! Vous pouvez lui transmettre le lien direct.`,
       member: newMember,
     });
   } catch (error: any) {
