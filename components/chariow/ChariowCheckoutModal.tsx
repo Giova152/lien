@@ -130,7 +130,7 @@ export function ChariowCheckoutModal({
                 {planTitle || 'Paiement Sécurisé Chariow'}
               </span>
               <span className="text-[10px] text-neutral-500 font-medium">
-                Wave • Orange Money • Carte bancaire
+                Carte bancaire
               </span>
             </div>
           </div>

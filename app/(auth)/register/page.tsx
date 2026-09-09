@@ -134,7 +134,7 @@ export default function RegisterPage() {
                       : '⭐ Formule PRO 1 An sélectionnée (185 $)'}
                   </span>
                   <span className="text-amber-800 text-[11px] font-medium mt-0.5 block">
-                    Créez votre compte pour accéder immédiatement au paiement sécurisé (Wave, Orange Money, Carte bancaire).
+                    Créez votre compte pour accéder immédiatement au paiement sécurisé (Carte bancaire).
                   </span>
                 </div>
               </div>
