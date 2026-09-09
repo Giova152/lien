@@ -10,7 +10,6 @@ import {
   MapPin,
   ExternalLink,
   Calendar,
-  Sparkles,
   Check,
 } from '@/components/ui/Icons';
 

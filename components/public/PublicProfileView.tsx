@@ -10,7 +10,8 @@ import { VCardButton } from '@/components/public/VCardButton';
 import { QrCodeModal } from '@/components/public/QrCodeModal';
 import { ThemeWrapper } from '@/components/public/ThemeWrapper';
 import {
-  Sparkles,
+  Award,
+  Briefcase,
   BookOpen,
   ChevronDown,
   ChevronUp,
@@ -442,7 +443,7 @@ export function PublicProfileView({
                       className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs"
                       style={{ backgroundColor: `${accentColor}18`, color: accentColor }}
                     >
-                      <Sparkles className="w-3.5 h-3.5" />
+                      <Award className="w-3.5 h-3.5" />
                     </div>
                     <h3
                       className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
@@ -538,14 +539,14 @@ export function PublicProfileView({
 
               {services.length === 0 ? (
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
-                  <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
+                  <Briefcase className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
                   <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
                     {t.noServices}
                   </p>
                 </div>
               ) : filteredServices.length === 0 ? (
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
-                  <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
+                  <Briefcase className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
                   <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
                     {t.noCategoryServices}
                   </p>

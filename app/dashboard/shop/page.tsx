@@ -15,7 +15,8 @@ import {
   Camera,
   Loader2,
   X,
-  Sparkles,
+  Crown,
+  Layers,
   Lock,
   ArrowRight,
 } from '@/components/ui/Icons';
@@ -234,7 +235,7 @@ export default function ShopPage() {
             onClick={() => openUpgradeModal?.()}
             className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md shrink-0 cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <Crown className="w-3.5 h-3.5 text-amber-300" />
             <span>Passer à la formule PRO</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
@@ -244,7 +245,7 @@ export default function ShopPage() {
       {/* Quick Add Bar */}
       <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
-          <Sparkles className="w-4 h-4 text-indigo-600" />
+          <Layers className="w-4 h-4 text-indigo-600" />
           <span>Ajouts rapides :</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">

@@ -13,7 +13,7 @@ import {
   ExternalLink,
   X,
   Check,
-  Sparkles,
+  LinkIcon,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 import { DashboardContext } from '@/lib/context/DashboardContext';
@@ -198,7 +198,7 @@ export function LinkEditor({
             >
               {links.length === 0 ? (
                 <div className="p-8 text-center border-2 border-dashed border-neutral-200 rounded-2xl text-neutral-500 bg-white shadow-xs">
-                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-indigo-500 opacity-60" />
+                  <LinkIcon className="w-8 h-8 mx-auto mb-2 text-indigo-500 opacity-60" />
                   <p className="text-sm font-bold text-neutral-800 mb-1">Aucun lien enregistré</p>
                   <p className="text-xs text-neutral-500">
                     Cliquez sur "Ajouter un lien" pour créer votre premier bouton.

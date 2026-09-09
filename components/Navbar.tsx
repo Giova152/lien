@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LogOut, LayoutDashboard } from '@/components/ui/Icons';
+import { LogOut, LayoutDashboard } from '@/components/ui/Icons';
 import { createClient } from '@/lib/supabase/client';
 
 import { Logo } from '@/components/ui/Logo';

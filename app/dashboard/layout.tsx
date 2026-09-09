@@ -12,7 +12,7 @@ import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModa
 import { InviteFriendModal } from '@/components/dashboard/InviteFriendModal';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
-  Sparkles,
+  Crown,
   LinkIcon,
   User,
   PhoneCall,
@@ -358,7 +358,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                   {profile.plan === 'pro_lifetime' ? (
                     <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-2xs">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <Crown className="w-3.5 h-3.5 text-amber-600" />
                       <span>PRO À Vie</span>
                     </div>
                   ) : profile.is_pro ? (
@@ -367,7 +367,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition shadow-2xs"
                       title="Changer de formule ou passer à l'accès À Vie"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <Crown className="w-3.5 h-3.5 text-amber-600" />
                       <span>Changer / Passer À Vie</span>
                     </button>
                   ) : (
@@ -375,7 +375,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       onClick={() => setIsUpgradeModalOpen(true)}
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-xs hover:scale-105 transition-all"
                     >
-                      <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
+                      <Crown className="w-3.5 h-3.5 fill-neutral-950" />
                       <span>Passer PRO</span>
                     </button>
                   )}
@@ -391,7 +391,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   onClick={() => setIsUpgradeModalOpen(true)}
                   className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-neutral-950 text-xs font-black shadow-xs active:scale-95 transition"
                 >
-                  <Sparkles className="w-3.5 h-3.5 fill-neutral-950" />
+                  <Crown className="w-3.5 h-3.5 fill-neutral-950" />
                   <span>PRO</span>
                 </button>
               )}
@@ -401,7 +401,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-xs active:scale-95 transition"
                   title="Changer d'offre ou passer à l'offre À Vie"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <Crown className="w-3.5 h-3.5 text-amber-600" />
                   <span>À Vie</span>
                 </button>
               )}

@@ -12,7 +12,6 @@ import {
   WhatsappIcon,
   Check,
   Loader2,
-  Sparkles,
   Download,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';

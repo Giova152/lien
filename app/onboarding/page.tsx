@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { sanitizeUsername, DEFAULT_THEME } from '@/lib/utils';
 import {
-  Sparkles,
   User,
   CheckCircle2,
   ShieldAlert,

@@ -7,7 +7,8 @@ import { THEME_PRESETS } from '@/lib/utils';
 import {
   Palette,
   Check,
-  Sparkles,
+  Crown,
+  Award,
   Plus,
   Trash2,
   BookOpen,
@@ -259,7 +260,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm sm:text-base font-black text-neutral-900 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <Award className="w-4 h-4 text-amber-500" />
                   <span>Thèmes & Styles de Marque (1-Clic)</span>
                 </h3>
                 <p className="text-xs text-neutral-500 mt-0.5">
@@ -296,7 +297,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                         <span className="text-xs font-black text-neutral-900 truncate">{preset.name}</span>
                         {isPro && (
                           <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100/90 text-amber-900 border border-amber-300/80 shrink-0">
-                            {isLocked ? <Lock className="w-2.5 h-2.5 text-amber-800" /> : <Sparkles className="w-2.5 h-2.5 text-amber-800" />}
+                            {isLocked ? <Lock className="w-2.5 h-2.5 text-amber-800" /> : <Crown className="w-2.5 h-2.5 text-amber-800" />}
                             PRO
                           </span>
                         )}
@@ -1010,7 +1011,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
               <div>
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200/60 flex items-center justify-center text-indigo-600 shadow-2xs">
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Award className="w-3.5 h-3.5" />
                   </div>
                   <h3 className="text-sm font-bold text-neutral-900">
                     Domaines d'expertise & Puces

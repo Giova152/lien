@@ -11,7 +11,6 @@ import {
   Send,
   Loader2,
   Share2,
-  Sparkles,
   WhatsappIcon,
   LinkIcon,
 } from '@/components/ui/Icons';

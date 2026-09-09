@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
-import { ArrowRight, Sparkles } from '@/components/ui/Icons';
+import { ArrowRight } from '@/components/ui/Icons';
 
 export default function NotFound() {
   return (

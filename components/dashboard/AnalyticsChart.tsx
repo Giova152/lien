@@ -15,7 +15,7 @@ import {
   ExternalLink,
   BarChart3,
   PlatformIcon,
-  Sparkles,
+  Crown,
   Smartphone,
   Laptop,
   Globe,
@@ -380,7 +380,7 @@ export function AnalyticsChart({ analytics }: AnalyticsChartProps) {
         <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-left">
             <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4" />
+              <Crown className="w-4 h-4" />
             </div>
             <div>
               <h4 className="text-xs font-bold text-neutral-900">Passez au statut PRO</h4>

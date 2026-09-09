@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Check, X, BookOpen, BarChart3, Palette, UserCheck, Zap, Loader2, ArrowRight } from '@/components/ui/Icons';
+import { Crown, Award, Check, X, BookOpen, BarChart3, Palette, UserCheck, Zap, Loader2, ArrowRight } from '@/components/ui/Icons';
 import { LogoIcon } from '@/components/ui/Logo';
 import { toast } from 'sonner';
 
@@ -65,7 +65,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
         <div className="flex flex-col items-center text-center gap-2 relative z-10">
           <LogoIcon size="md" className="mb-1" />
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <Award className="w-3.5 h-3.5 text-indigo-600" />
             <span>Formules Créateurs & Professionnels</span>
           </div>
 
@@ -218,7 +218,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                   <span>Support VIP & Assistance prioritaire</span>
                 </li>
                 <li className="flex items-center gap-2.5 text-amber-800 font-medium">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Rentabilisé dès la 1ère année</span>
                 </li>
               </ul>
@@ -234,7 +234,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <Crown className="w-4 h-4 text-amber-400" />
                   <span>
                     {currentPlan === 'pro_subscription'
                       ? "Passer à l'accès à vie (500 $)"

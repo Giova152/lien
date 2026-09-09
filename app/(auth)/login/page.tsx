@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Sparkles, Mail, Lock, Loader2, ArrowRight } from '@/components/ui/Icons';
+import { Mail, Lock, Loader2, ArrowRight } from '@/components/ui/Icons';
 import { Logo } from '@/components/ui/Logo';
 import { toast } from 'sonner';
 

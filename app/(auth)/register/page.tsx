@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Sparkles, Mail, Lock, Loader2, ArrowRight } from '@/components/ui/Icons';
+import { Crown, Mail, Lock, Loader2, ArrowRight } from '@/components/ui/Icons';
 import { Logo } from '@/components/ui/Logo';
 import { toast } from 'sonner';
 
@@ -124,7 +124,7 @@ export default function RegisterPage() {
 
             {planParam && (
               <div className="mb-5 p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-950 shadow-xs">
-                <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <Crown className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-amber-900 block">
                     {planParam === 'lifetime' ? '⭐ Pack PRO À Vie sélectionné (500 $)' : '⭐ Formule PRO 1 An sélectionnée (185 $)'}

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Sparkles, Loader2, ArrowRight, ShieldCheck, X } from '@/components/ui/Icons';
+import { CheckCircle2, Crown, Loader2, ArrowRight, ShieldCheck, X } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
 interface LandingPricingCardsProps {
@@ -226,7 +226,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
                 <span>Obtenir l&apos;accès à vie (500 $)</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
@@ -250,7 +250,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
 
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                <Sparkles className="w-6 h-6 text-indigo-600" />
+                <Crown className="w-6 h-6 text-indigo-600" />
               </div>
               <div>
                 <h3 className="text-base font-black text-neutral-900">

@@ -16,7 +16,7 @@ import {
   Copy,
   ExternalLink,
   LogOut,
-  Sparkles,
+  Crown,
   ShieldCheck,
   X,
   Globe,
@@ -302,7 +302,7 @@ export default function SettingsPage() {
                 </span>
                 {profile.is_pro ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                    <Sparkles className="w-3 h-3 text-amber-600" />
+                    <Crown className="w-3 h-3 text-amber-600" />
                     {profile.plan === 'pro_lifetime' ? 'PRO À Vie' : 'PRO Abonnement'}
                   </span>
                 ) : (
@@ -368,7 +368,7 @@ export default function SettingsPage() {
               </h3>
               {profile.is_pro ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <Crown className="w-3.5 h-3.5 text-amber-600" />
                   {profile.plan === 'pro_lifetime' ? 'Pack PRO À Vie' : 'Abonnement PRO Actif'}
                 </span>
               ) : (
@@ -398,7 +398,7 @@ export default function SettingsPage() {
                 onClick={openUpgradeModal}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs hover:scale-[1.01] active:scale-[0.99]"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <Crown className="w-3.5 h-3.5 text-amber-300" />
                 <span>{profile.is_pro ? "Changer de formule / Passer à Vie" : "Passer à la formule PRO"}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
