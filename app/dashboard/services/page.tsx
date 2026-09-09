@@ -29,6 +29,11 @@ export default function ServicesPage() {
   );
 
   const handleAddService = (template?: Partial<ServiceItem>) => {
+    if (!profile?.is_pro) {
+      toast.info('⚡ Les Services & Prises de RDV sont réservés aux membres PRO.');
+      openUpgradeModal?.();
+      return;
+    }
     const newService: ServiceItem = {
       id: Date.now().toString(),
       title: template?.title || 'Prestation / Consultation',
@@ -156,6 +161,34 @@ export default function ServicesPage() {
           </button>
         </div>
       </div>
+
+      {/* PRO Upgrade Callout if not PRO */}
+      {!profile?.is_pro && (
+        <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-indigo-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Zap className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-neutral-900">
+                Fonctionnalité PRO : Services & Prises de RDV
+              </h4>
+              <p className="text-xs text-neutral-600 mt-0.5">
+                Passez à la formule PRO pour ajouter et afficher vos consultations, coachings et forfaits sur votre profil.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openUpgradeModal?.()}
+            className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md shrink-0 cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Passer à la formule PRO</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Category Organisation Banner (Facultatif - Choix de l'utilisateur) */}
       <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">

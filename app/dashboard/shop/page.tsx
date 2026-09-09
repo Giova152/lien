@@ -17,6 +17,7 @@ import {
   X,
   Sparkles,
   Lock,
+  ArrowRight,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -30,6 +31,11 @@ export default function ShopPage() {
   const [products, setProducts] = useState<ShopProduct[]>(profile?.theme?.products || []);
 
   const handleAddProduct = (type: 'free' | 'paid' = 'free') => {
+    if (!profile?.is_pro) {
+      toast.info('⚡ La Boutique et la vente de produits sont réservées aux membres PRO.');
+      openUpgradeModal?.();
+      return;
+    }
     const newProd: ShopProduct = {
       id: Date.now().toString(),
       title: type === 'free' ? 'Guide PDF / Ressource offerte' : 'Formation ou E-book Payant',
@@ -206,6 +212,34 @@ export default function ShopPage() {
           </button>
         </div>
       </div>
+
+      {/* PRO Upgrade Callout if not PRO */}
+      {!profile?.is_pro && (
+        <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-indigo-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-neutral-900">
+                Fonctionnalité PRO : Boutique & Produits Digitaux
+              </h4>
+              <p className="text-xs text-neutral-600 mt-0.5">
+                Passez à la formule PRO pour vendre vos e-books, templates, formations et fichiers sur votre profil.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openUpgradeModal?.()}
+            className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md shrink-0 cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Passer à la formule PRO</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Quick Add Bar */}
       <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
