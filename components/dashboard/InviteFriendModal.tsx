@@ -98,10 +98,19 @@ export function InviteFriendModal({ isOpen, onClose, profile }: InviteFriendModa
         throw new Error(data.error || 'Erreur lors de l’envoi');
       }
 
-      toast.success(`Invitation envoyée avec succès à ${friendEmail} ! 🎉`);
+      if (data.emailSent) {
+        toast.success(`Invitation envoyée par e-mail à ${friendEmail} ! 🎉`);
+      } else if (data.mailtoUrl) {
+        toast.info(`Ouverture de votre messagerie pour envoyer l'invitation à ${friendEmail}...`);
+        // Open default mail client with recipient and message pre-filled
+        window.location.href = data.mailtoUrl;
+      } else {
+        toast.success(`Invitation transmise avec succès ! 🎉`);
+      }
+
       setFriendEmail('');
       setCustomMessage('');
-      setTimeout(() => onClose(), 1500);
+      setTimeout(() => onClose(), 1200);
     } catch (err: any) {
       toast.error(err.message || 'Impossible d’envoyer l’invitation pour le moment');
     } finally {
