@@ -35,8 +35,13 @@ export async function POST(req: Request) {
 
     const event = pulseEvent || payload?.event;
 
-    // Traitement de l'événement d'achat réussi
-    if (event === 'successful.sale') {
+    // Traitement de l'événement d'achat réussi ou de renouvellement d'abonnement
+    if (
+      event === 'successful.sale' ||
+      event === 'sale.completed' ||
+      event === 'subscription.renewed' ||
+      event === 'subscription.payment_succeeded'
+    ) {
       const sale = payload?.sale || payload?.data;
       const saleId = sale?.id || 'chariow_sale';
       const metadata = sale?.custom_metadata || payload?.custom_metadata || {};
@@ -62,7 +67,8 @@ export async function POST(req: Request) {
         }
       }
 
-      console.log('[Chariow Webhook] Achat validé pour:', {
+      console.log('[Chariow Webhook] Vente/Renouvellement validé pour:', {
+        event,
         saleId,
         userId,
         customerEmail,
@@ -96,9 +102,57 @@ export async function POST(req: Request) {
 
       if (userId) {
         await upgradeUserProfile(userId, plan, saleId);
-        console.log(`[Chariow Webhook] Utilisateur ${userId} passé en PRO avec succès !`);
+        console.log(`[Chariow Webhook] Utilisateur ${userId} renouvelé en PRO avec succès !`);
       } else {
-        console.warn('[Chariow Webhook] Aucun userId trouvé pour la vente', saleId, 'email:', customerEmail);
+        console.warn('[Chariow Webhook] Aucun userId trouvé pour cet événement', event, saleId, 'email:', customerEmail);
+      }
+    } else if (
+      event === 'subscription.cancelled' ||
+      event === 'subscription.expired' ||
+      event === 'subscription.payment_failed'
+    ) {
+      const sale = payload?.sale || payload?.data;
+      const metadata = sale?.custom_metadata || payload?.custom_metadata || {};
+      let userId = metadata?.userId;
+      const customerEmail = sale?.customer?.email || payload?.customer?.email;
+
+      if (!userId && customerEmail) {
+        try {
+          const { createClient } = await import('@supabase/supabase-js');
+          const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+            process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+          );
+          const { data: contactMatch } = await supabaseAdmin
+            .from('contact_info')
+            .select('profile_id')
+            .eq('email', customerEmail)
+            .maybeSingle();
+
+          if (contactMatch?.profile_id) {
+            userId = contactMatch.profile_id;
+          }
+        } catch (e) {
+          console.warn('[Chariow Webhook] Recherche utilisateur pour annulation échouée:', e);
+        }
+      }
+
+      if (userId) {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseAdmin = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+          process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+        );
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            is_pro: false,
+            plan: 'free',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', userId);
+
+        console.log(`[Chariow Webhook] Abonnement résilié/expiré pour l'utilisateur ${userId}.`);
       }
     } else {
       console.log(`[Chariow Webhook] Événement ignoré : ${event}`);
