@@ -313,10 +313,18 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               </div>
               <div>
                 <h3 className="text-base font-black text-neutral-900">
-                  {authPromptPlan === 'lifetime' ? 'Pack PRO À Vie' : 'Formule PRO 1 An'}
+                  {authPromptPlan === 'lifetime'
+                    ? 'Pack PRO À Vie'
+                    : authPromptPlan === 'monthly'
+                    ? 'Formule PRO Mensuel'
+                    : 'Formule PRO 1 An'}
                 </h3>
                 <p className="text-xs text-neutral-500 font-medium">
-                  {authPromptPlan === 'lifetime' ? '500 $ à vie (Paiement unique)' : '185 $ / an'}
+                  {authPromptPlan === 'lifetime'
+                    ? '500 $ à vie (Paiement unique)'
+                    : authPromptPlan === 'monthly'
+                    ? '25 $ / mois (Sans engagement)'
+                    : '185 $ / an'}
                 </p>
               </div>
             </div>

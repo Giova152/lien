@@ -59,7 +59,48 @@ export async function GET(req: Request) {
           targetUserId = user.id;
         }
       } catch (e) {
-        console.warn('[Chariow Callback] Erreur lecture session:', e);
+        console.warn('[Chariow Callback] Impossible de récupérer l’utilisateur depuis la session:', e);
+      }
+    }
+
+    // Si toujours non trouvé, recherche par email client Chariow
+    if (!targetUserId && verification.sale?.customer?.email) {
+      try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+        const supabaseServiceKey =
+          process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+        const { data: contactMatch } = await supabaseAdmin
+          .from('contact_info')
+          .select('profile_id')
+          .eq('email', verification.sale.customer.email)
+          .maybeSingle();
+
+        if (contactMatch?.profile_id) {
+          targetUserId = contactMatch.profile_id;
+        }
+      } catch (e) {
+        console.warn('[Chariow Callback] Recherche utilisateur par email échouée:', e);
+      }
+    }
+
+    // Détermination précise du forfait acheté (URL, metadata ou productId)
+    let effectivePlan = plan || verification.sale?.custom_metadata?.plan;
+    if (!effectivePlan || effectivePlan === 'yearly') {
+      const prodId = verification.sale?.product?.id || verification.sale?.product_id;
+      if (
+        prodId === (process.env.CHARIOW_PRODUCT_ID_LIFETIME || 'prd_sndsd48e') ||
+        prodId === 'prd_sndsd48e'
+      ) {
+        effectivePlan = 'lifetime';
+      } else if (
+        prodId === (process.env.CHARIOW_PRODUCT_ID_MONTHLY || 'prd_s5bag6eh') ||
+        prodId === 'prd_s5bag6eh'
+      ) {
+        effectivePlan = 'monthly';
+      } else if (prodId) {
+        effectivePlan = 'yearly';
       }
     }
 
@@ -75,16 +116,16 @@ export async function GET(req: Request) {
 
     if (verification.status === 'completed' || verification.paymentStatus === 'success') {
       if (targetUserId) {
-        await upgradeUserProfile(targetUserId, plan, saleId);
+        await upgradeUserProfile(targetUserId, effectivePlan, saleId);
       }
       return NextResponse.redirect(
-        `${origin}/dashboard?payment=success&provider=chariow&plan=${plan}`
+        `${origin}/dashboard?payment=success&provider=chariow&plan=${effectivePlan}`
       );
     }
 
     if (verification.status === 'awaiting_payment' || verification.paymentStatus === 'pending') {
       return NextResponse.redirect(
-        `${origin}/dashboard?payment=pending&provider=chariow&sale_id=${saleId}&plan=${plan}`
+        `${origin}/dashboard?payment=pending&provider=chariow&sale_id=${saleId}&plan=${effectivePlan}`
       );
     }
 

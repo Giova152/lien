@@ -44,10 +44,22 @@ export async function POST(req: Request) {
       const customerEmail = sale?.customer?.email || payload?.customer?.email;
 
       // Déduction du forfait par produit Chariow si non précisé dans metadata
-      const productId = sale?.product?.id || '';
+      const productId = sale?.product?.id || sale?.product_id || '';
       let plan = metadata?.plan;
       if (!plan) {
-        plan = productId === process.env.CHARIOW_PRODUCT_ID_LIFETIME ? 'lifetime' : 'yearly';
+        if (
+          productId === (process.env.CHARIOW_PRODUCT_ID_LIFETIME || 'prd_sndsd48e') ||
+          productId === 'prd_sndsd48e'
+        ) {
+          plan = 'lifetime';
+        } else if (
+          productId === (process.env.CHARIOW_PRODUCT_ID_MONTHLY || 'prd_s5bag6eh') ||
+          productId === 'prd_s5bag6eh'
+        ) {
+          plan = 'monthly';
+        } else {
+          plan = 'yearly';
+        }
       }
 
       console.log('[Chariow Webhook] Achat validé pour:', {
