@@ -45,9 +45,9 @@ export function getChariowConfig() {
   const pulseSecret = (process.env.CHARIOW_PULSE_SECRET || '').trim();
 
   const productIds: Record<ChariowPlanId, string> = {
-    monthly: (process.env.CHARIOW_PRODUCT_ID_MONTHLY || '').trim(),
-    yearly: (process.env.CHARIOW_PRODUCT_ID_YEARLY || '').trim(),
-    lifetime: (process.env.CHARIOW_PRODUCT_ID_LIFETIME || '').trim(),
+    monthly: (process.env.CHARIOW_PRODUCT_ID_MONTHLY || process.env.NEXT_PUBLIC_CHARIOW_PRODUCT_ID_MONTHLY || 'prd_s5bag6eh').trim(),
+    yearly: (process.env.CHARIOW_PRODUCT_ID_YEARLY || process.env.NEXT_PUBLIC_CHARIOW_PRODUCT_ID_YEARLY || 'prd_78x1xfjr').trim(),
+    lifetime: (process.env.CHARIOW_PRODUCT_ID_LIFETIME || process.env.NEXT_PUBLIC_CHARIOW_PRODUCT_ID_LIFETIME || 'prd_sndsd48e').trim(),
   };
 
   const isConfigured = Boolean(
