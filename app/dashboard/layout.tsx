@@ -308,8 +308,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       await supabase.auth.signOut();
       toast.success('Déconnexion réussie !');
       window.location.href = '/login';
-    } catch {
-      window.location.href = '/login';
+    } catch (err: any) {
+      toast.error('Erreur lors de la déconnexion');
+    }
+  };
+
+  const handleTogglePublish = async () => {
+    if (!profile) return;
+    try {
+      const nextPublished = !profile.is_published;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_published: nextPublished, updated_at: new Date().toISOString() })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      setProfile((prev) => (prev ? { ...prev, is_published: nextPublished } : prev));
+      if (nextPublished) {
+        toast.success('🎉 Votre carte est de nouveau en ligne et publique !');
+      } else {
+        toast.info('Votre carte est maintenant masquée au public.');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Erreur lors du changement de statut de la carte.');
     }
   };
 
@@ -467,12 +489,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {/* Status & PRO Badge Indicator (Desktop) */}
               {profile && (
                 <div className="hidden md:flex items-center gap-2">
-                  <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-100/90 border border-neutral-200/80 text-[11px] font-medium">
+                  <button
+                    type="button"
+                    onClick={handleTogglePublish}
+                    title={profile.is_published ? "Cliquer pour masquer la carte" : "Cliquer pour remettre la carte en ligne"}
+                    className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 border border-neutral-200/80 text-[11px] font-medium transition cursor-pointer"
+                  >
                     <span className={`w-2 h-2 rounded-full ${profile.is_published ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
                     <span className={profile.is_published ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
-                      {profile.is_published ? 'Carte Publique' : 'Carte Masquée'}
+                      {profile.is_published ? 'Carte Publique' : 'Carte Masquée (Remettre en ligne)'}
                     </span>
-                  </div>
+                  </button>
 
                   {profile.plan === 'pro_lifetime' ? (
                     <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-2xs">
