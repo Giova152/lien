@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Crown, Loader2, ArrowRight, ShieldCheck, X } from '@/components/ui/Icons';
+import { ChariowCheckoutModal } from '@/components/chariow/ChariowCheckoutModal';
+import { CHARIOW_PRODUCTS } from '@/lib/chariow-constants';
 import { toast } from 'sonner';
 
 interface LandingPricingCardsProps {
@@ -12,46 +14,27 @@ interface LandingPricingCardsProps {
 export function LandingPricingCards({ user }: LandingPricingCardsProps) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [authPromptPlan, setAuthPromptPlan] = useState<'yearly' | 'lifetime' | null>(null);
+  const [checkoutModalConfig, setCheckoutModalConfig] = useState<{
+    isOpen: boolean;
+    productId: string;
+    planTitle: string;
+  } | null>(null);
 
-  const handlePlanClick = async (plan: 'yearly' | 'lifetime') => {
+  const handlePlanClick = (plan: 'yearly' | 'lifetime') => {
     // Si l'utilisateur n'est pas connecté, afficher la modale d'inscription rapide
     if (!user) {
       setAuthPromptPlan(plan);
       return;
     }
 
-    // Si l'utilisateur est connecté, initier directement le paiement sécurisé
-    try {
-      setLoadingPlan(plan);
-      toast.loading('Connexion sécurisée au paiement...', { id: 'landing-checkout' });
-
-      const res = await fetch('/api/chariow/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      });
-
-      if (res.status === 401) {
-        toast.error('Session expirée. Veuillez vous reconnecter.', { id: 'landing-checkout' });
-        setAuthPromptPlan(plan);
-        setLoadingPlan(null);
-        return;
-      }
-
-      const data = await res.json();
-
-      if (data.url) {
-        toast.success('Paiement initié ! Redirection en cours...', { id: 'landing-checkout' });
-        window.location.href = data.url;
-      } else {
-        toast.error(data.error || 'Erreur lors de l’initialisation du paiement', { id: 'landing-checkout' });
-        setLoadingPlan(null);
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error('Erreur de connexion au service de paiement', { id: 'landing-checkout' });
-      setLoadingPlan(null);
-    }
+    // Si l'utilisateur est connecté, ouvrir directement le terminal Chariow sans redirection
+    const productId = plan === 'lifetime' ? CHARIOW_PRODUCTS.LIFETIME : CHARIOW_PRODUCTS.YEARLY;
+    const planTitle = plan === 'lifetime' ? 'Pack PRO À Vie (500 $)' : 'Formule PRO 1 An (185 $)';
+    setCheckoutModalConfig({
+      isOpen: true,
+      productId,
+      planTitle,
+    });
   };
 
   return (
@@ -284,6 +267,19 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
           </div>
         </div>
       )}
+
+      {/* Modale de Paiement In-Page Chariow (Sans redirection) */}
+      <ChariowCheckoutModal
+        isOpen={Boolean(checkoutModalConfig?.isOpen)}
+        onClose={() => setCheckoutModalConfig(null)}
+        productId={checkoutModalConfig?.productId || ''}
+        planTitle={checkoutModalConfig?.planTitle}
+        userEmail={user?.email}
+        onSuccess={() => {
+          setCheckoutModalConfig(null);
+          window.location.href = '/dashboard?upgrade_success=true';
+        }}
+      />
     </>
   );
 }

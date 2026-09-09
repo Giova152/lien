@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Crown, Award, Check, X, BookOpen, BarChart3, Palette, UserCheck, Zap, Loader2, ArrowRight } from '@/components/ui/Icons';
 import { LogoIcon } from '@/components/ui/Logo';
+import { ChariowCheckoutModal } from '@/components/chariow/ChariowCheckoutModal';
+import { CHARIOW_PRODUCTS } from '@/lib/chariow-constants';
+import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 
 interface LifetimeUpgradeModalProps {
@@ -13,40 +16,39 @@ interface LifetimeUpgradeModalProps {
 
 export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeUpgradeModalProps) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [checkoutModalConfig, setCheckoutModalConfig] = useState<{
+    isOpen: boolean;
+    productId: string;
+    planTitle: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email) {
+          setUserEmail(user.email);
+        }
+      } catch (err) {
+        // Ignorer si échec
+      }
+    };
+    fetchUser();
+  }, []);
 
   if (!isOpen) return null;
 
-  const handleCheckout = async (plan: 'yearly' | 'lifetime') => {
-    try {
-      setLoadingPlan(plan);
-      toast.loading('Connexion sécurisée au paiement...', { id: 'checkout-action' });
-      
-      const res = await fetch('/api/chariow/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      });
+  const handleCheckout = (plan: 'yearly' | 'lifetime') => {
+    const productId = plan === 'lifetime' ? CHARIOW_PRODUCTS.LIFETIME : CHARIOW_PRODUCTS.YEARLY;
+    const planTitle = plan === 'lifetime' ? 'Pack PRO À Vie (500 $)' : 'Formule PRO 1 An (185 $)';
 
-      if (res.status === 401) {
-        toast.error('Session expirée ou non connectée. Veuillez vous reconnecter.', { id: 'checkout-action' });
-        window.location.href = `/login?redirect=/dashboard?upgrade=true`;
-        return;
-      }
-
-      const data = await res.json();
-
-      if (data.url) {
-        toast.success('Paiement initié ! Redirection en cours...', { id: 'checkout-action' });
-        // Redirection directe vers la page de paiement sécurisée
-        window.location.href = data.url;
-      } else {
-        toast.error(data.error || 'Erreur lors de l’initialisation du paiement', { id: 'checkout-action' });
-        setLoadingPlan(null);
-      }
-    } catch (err: any) {
-      toast.error('Erreur de connexion au service de paiement', { id: 'checkout-action' });
-      setLoadingPlan(null);
-    }
+    setCheckoutModalConfig({
+      isOpen: true,
+      productId,
+      planTitle,
+    });
   };
 
   return (
@@ -247,6 +249,19 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
           </div>
         </div>
       </div>
+
+      {/* Modale de Paiement In-Page Chariow (Sans redirection) */}
+      <ChariowCheckoutModal
+        isOpen={Boolean(checkoutModalConfig?.isOpen)}
+        onClose={() => setCheckoutModalConfig(null)}
+        productId={checkoutModalConfig?.productId || ''}
+        planTitle={checkoutModalConfig?.planTitle}
+        userEmail={userEmail}
+        onSuccess={() => {
+          setCheckoutModalConfig(null);
+          onClose();
+        }}
+      />
     </div>
   );
 }
