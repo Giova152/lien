@@ -14,6 +14,10 @@ interface DashboardContextType {
   setContact: React.Dispatch<React.SetStateAction<ContactInfo | null>>;
   openUpgradeModal?: () => void;
   openInviteModal?: () => void;
+  userRole?: 'owner' | 'admin' | 'assistant';
+  delegatedCards?: any[];
+  activeCardId?: string | null;
+  switchCard?: (id: string | null) => void;
 }
 
 export const DashboardContext = createContext<DashboardContextType>({
@@ -27,6 +31,10 @@ export const DashboardContext = createContext<DashboardContextType>({
   setContact: () => {},
   openUpgradeModal: () => {},
   openInviteModal: () => {},
+  userRole: 'owner',
+  delegatedCards: [],
+  activeCardId: null,
+  switchCard: () => {},
 });
 
 export const useDashboard = () => useContext(DashboardContext);

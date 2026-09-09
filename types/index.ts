@@ -44,13 +44,29 @@ export interface ThemeConfig {
   stats?: StatItem[];
   expertise_tags?: string[];
   services?: ServiceItem[];
-  enable_service_categories?: boolean; // Facultatif : activer le filtrage par catégories
+  enable_service_categories?: boolean;
   products?: ShopProduct[];
+  // Team & Collaborators
+  team_members?: TeamMember[];
 
   // PRO subscription details stored in JSONB theme
   is_pro?: boolean;
   plan?: string;
   pro_since?: string;
+}
+
+export type TeamRole = 'admin' | 'assistant';
+export type TeamMemberStatus = 'pending' | 'accepted';
+
+export interface TeamMember {
+  id: string;
+  card_owner_id: string;
+  member_email: string;
+  member_user_id?: string | null;
+  role: TeamRole;
+  status: TeamMemberStatus;
+  created_at: string;
+  updated_at?: string;
 }
 
 export interface Profile {

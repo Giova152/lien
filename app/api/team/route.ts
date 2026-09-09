@@ -1,0 +1,368 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { TeamMember, TeamRole } from '@/types';
+
+// Helper to get admin supabase client if configured
+function getAdminSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return null;
+  return createAdminClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
+// GET: Liste des membres d'équipe de la carte + cartes déléguées
+export async function GET(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+    }
+
+    const userEmail = user.email?.toLowerCase().trim() || '';
+
+    // 1. Récupérer le profil du propriétaire connecté
+    const { data: ownProfile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    let teamMembers: TeamMember[] = [];
+
+    // Essayer de lire depuis la table SQL `team_members` si elle existe
+    try {
+      const { data: sqlMembers } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('card_owner_id', user.id);
+      if (sqlMembers && sqlMembers.length > 0) {
+        teamMembers = sqlMembers;
+      }
+    } catch {
+      // Table non existante, fallback sur theme JSONB
+    }
+
+    // Si vide ou table non existante, utiliser profile.theme.team_members
+    if (teamMembers.length === 0 && ownProfile?.theme?.team_members) {
+      teamMembers = (ownProfile.theme.team_members as TeamMember[]) || [];
+    }
+
+    // 2. Récupérer les cartes où l'utilisateur connecté est invité / collaborateur
+    let delegatedCards: any[] = [];
+    if (userEmail) {
+      try {
+        const { data: cardsWithMember } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, avatar_url, theme')
+          .neq('id', user.id);
+
+        if (cardsWithMember) {
+          delegatedCards = cardsWithMember
+            .filter((p: any) => {
+              const members = (p.theme?.team_members as TeamMember[]) || [];
+              return members.some(
+                (m) => m.member_email.toLowerCase() === userEmail
+              );
+            })
+            .map((p: any) => {
+              const myMembership = (p.theme?.team_members as TeamMember[]).find(
+                (m) => m.member_email.toLowerCase() === userEmail
+              );
+              return {
+                id: p.id,
+                username: p.username,
+                display_name: p.display_name,
+                avatar_url: p.avatar_url,
+                role: myMembership?.role || 'assistant',
+                status: myMembership?.status || 'accepted',
+              };
+            });
+        }
+      } catch (err) {
+        console.warn('Error fetching delegated cards:', err);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      members: teamMembers,
+      delegatedCards,
+    });
+  } catch (error: any) {
+    console.error('Error in GET /api/team:', error);
+    return NextResponse.json(
+      { error: error.message || 'Erreur lors du chargement de l’équipe' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST: Inviter un nouveau collaborateur (Assistant ou Administrateur)
+export async function POST(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { email, role = 'assistant' } = body;
+
+    if (!email || typeof email !== 'string') {
+      return NextResponse.json({ error: 'Adresse e-mail requise' }, { status: 400 });
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      return NextResponse.json({ error: 'Format d’e-mail invalide' }, { status: 400 });
+    }
+
+    if (trimmedEmail === user.email?.toLowerCase()) {
+      return NextResponse.json(
+        { error: 'Vous ne pouvez pas vous inviter vous-même en tant que collaborateur' },
+        { status: 400 }
+      );
+    }
+
+    const validRole: TeamRole = role === 'admin' ? 'admin' : 'assistant';
+
+    // 1. Récupérer le profil du propriétaire
+    const { data: ownProfile, error: profError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profError || !ownProfile) {
+      return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 });
+    }
+
+    const currentTheme = ownProfile.theme || {};
+    const existingMembers: TeamMember[] = currentTheme.team_members || [];
+
+    // Vérifier si déjà invité
+    if (existingMembers.some((m) => m.member_email.toLowerCase() === trimmedEmail)) {
+      return NextResponse.json(
+        { error: 'Ce collaborateur a déjà été invité dans votre équipe' },
+        { status: 400 }
+      );
+    }
+
+    const newMember: TeamMember = {
+      id: crypto.randomUUID(),
+      card_owner_id: user.id,
+      member_email: trimmedEmail,
+      role: validRole,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+    };
+
+    const updatedMembers = [...existingMembers, newMember];
+
+    // Sauvegarde 1 : Dans le JSONB theme (résilient et immédiatement disponible)
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        theme: {
+          ...currentTheme,
+          team_members: updatedMembers,
+        },
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    // Sauvegarde 2 : Dans la table SQL `team_members` si elle existe
+    try {
+      await supabase.from('team_members').upsert({
+        id: newMember.id,
+        card_owner_id: user.id,
+        member_email: trimmedEmail,
+        role: validRole,
+        status: 'pending',
+        created_at: newMember.created_at,
+        updated_at: new Date().toISOString(),
+      });
+    } catch {
+      // Table non existante, ignorer
+    }
+
+    // Envoi de l'e-mail d'invitation de collaboration
+    const inviterName = ownProfile.display_name || ownProfile.username || 'Un utilisateur';
+    const cardTitle = ownProfile.title || ownProfile.username;
+    const roleLabel = validRole === 'admin' ? 'Co-Administrateur' : 'Assistant(e)';
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.lien-bio.site';
+    const acceptUrl = `${siteUrl}/login?collab=${encodeURIComponent(ownProfile.username)}`;
+
+    const emailSubject = `${inviterName} vous a invité à gérer sa carte Lien-Bio en tant que ${roleLabel}`;
+    const emailBodyHtml = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Invitation Collaborateur Lien-Bio</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px 20px;">
+  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 20px; padding: 36px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+    <div style="margin-bottom: 24px;">
+      <span style="font-size: 22px; font-weight: 900; color: #09090b;">Lien<span style="color: #4f46e5;">-Bio</span></span>
+    </div>
+
+    <div style="display: inline-block; background-color: #e0e7ff; color: #3730a3; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;">
+      👥 Espace Collaboratif
+    </div>
+
+    <h1 style="font-size: 21px; color: #09090b; margin: 0 0 14px; font-weight: 800; line-height: 1.3;">
+      Rejoignez l'équipe de ${inviterName}
+    </h1>
+
+    <p style="font-size: 15px; line-height: 24px; color: #475569; margin: 0 0 16px;">
+      Bonjour,
+    </p>
+
+    <p style="font-size: 15px; line-height: 24px; color: #475569; margin: 0 0 16px;">
+      <strong>${inviterName}</strong> vous a nommé <strong>${roleLabel}</strong> sur sa carte de visite digitale <em>« ${cardTitle} »</em>.
+    </p>
+
+    <div style="background: #f8fafc; border-left: 4px solid #4f46e5; border-radius: 8px; padding: 14px 18px; margin: 20px 0; color: #334155; font-size: 13px; line-height: 20px;">
+      ${validRole === 'admin'
+        ? '👑 <strong>Rôle Administrateur :</strong> Vous aurez accès à la gestion complète de la carte, des liens, du contenu et des services.'
+        : '🛡️ <strong>Rôle Assistant(e) :</strong> Vous pourrez gérer et actualiser les liens, les coordonnées de contact et les contenus de la carte.'}
+    </div>
+
+    <div style="margin: 28px 0;">
+      <a href="${acceptUrl}" style="display: inline-block; background: #09090b; color: #ffffff !important; font-weight: 700; font-size: 14px; padding: 14px 30px; border-radius: 12px; text-decoration: none;">
+        Accéder à l'espace collaborateur →
+      </a>
+    </div>
+
+    <p style="font-size: 12px; color: #94a3b8; line-height: 18px; margin: 0 0 20px;">
+      Si vous n'avez pas encore de compte avec cette adresse e-mail, vous pourrez simplement vous connecter ou vous inscrire pour activer votre accès.
+    </p>
+
+    <div style="font-size: 12px; color: #94a3b8; line-height: 18px; border-top: 1px solid #f1f5f9; padding-top: 18px; margin-top: 24px;">
+      Lien-Bio — La référence de la carte de visite digitale.<br>
+      <a href="https://www.lien-bio.site" style="color: #94a3b8; text-decoration: none;">https://www.lien-bio.site</a>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    // Tentative d'envoi via Resend si configuré
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (resendApiKey) {
+      try {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: process.env.RESEND_FROM_EMAIL || 'Lien-Bio <contact@lien-bio.site>',
+            to: [trimmedEmail],
+            subject: emailSubject,
+            html: emailBodyHtml,
+          }),
+        });
+      } catch (err) {
+        console.warn('Resend send failed:', err);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Collaborateur invité avec succès en tant que ${roleLabel} !`,
+      member: newMember,
+    });
+  } catch (error: any) {
+    console.error('Error in POST /api/team:', error);
+    return NextResponse.json(
+      { error: error.message || 'Erreur lors de l’invitation du collaborateur' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE: Révoquer un collaborateur
+export async function DELETE(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const memberId = searchParams.get('id');
+
+    if (!memberId) {
+      return NextResponse.json({ error: 'Identifiant du membre requis' }, { status: 400 });
+    }
+
+    // 1. Mettre à jour profiles.theme.team_members
+    const { data: ownProfile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!ownProfile) {
+      return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 });
+    }
+
+    const currentTheme = ownProfile.theme || {};
+    const existingMembers: TeamMember[] = currentTheme.team_members || [];
+    const updatedMembers = existingMembers.filter((m) => m.id !== memberId);
+
+    await supabase
+      .from('profiles')
+      .update({
+        theme: {
+          ...currentTheme,
+          team_members: updatedMembers,
+        },
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id);
+
+    // 2. Supprimer de team_members SQL si existant
+    try {
+      await supabase
+        .from('team_members')
+        .delete()
+        .eq('id', memberId)
+        .eq('card_owner_id', user.id);
+    } catch {}
+
+    return NextResponse.json({
+      success: true,
+      message: 'Accès du collaborateur révoqué avec succès.',
+    });
+  } catch (error: any) {
+    console.error('Error in DELETE /api/team:', error);
+    return NextResponse.json(
+      { error: error.message || 'Erreur lors de la révocation' },
+      { status: 500 }
+    );
+  }
+}

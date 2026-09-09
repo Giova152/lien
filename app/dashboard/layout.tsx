@@ -9,7 +9,7 @@ import { DashboardContext } from '@/lib/context/DashboardContext';
 import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
-import { InviteFriendModal } from '@/components/dashboard/InviteFriendModal';
+import { TeamManagementModal } from '@/components/dashboard/TeamManagementModal';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
   Crown,
@@ -31,6 +31,9 @@ import {
   X,
   MoreHorizontal,
   UserPlus,
+  Users,
+  ChevronDown,
+  ShieldCheck,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -50,13 +53,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
 
+  // Espace collaboratif et gestion d'équipe
+  const [delegatedCards, setDelegatedCards] = useState<any[]>([]);
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<'owner' | 'admin' | 'assistant'>('owner');
+  const [isCardSwitcherOpen, setIsCardSwitcherOpen] = useState(false);
+
   // Close mobile menus whenever the pathname changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setIsCardSwitcherOpen(false);
     setIsMobilePreviewOpen(false);
   }, [pathname]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (targetCardId?: string | null) => {
     try {
       setErrorMessage(null);
       const {
@@ -74,11 +84,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return;
       }
 
-      // 1. Fetch Profile
+      // 1. Récupérer les cartes où l'utilisateur est collaborateur
+      let userDelegatedCards: any[] = [];
+      try {
+        const teamRes = await fetch('/api/team');
+        if (teamRes.ok) {
+          const teamData = await teamRes.json();
+          userDelegatedCards = teamData.delegatedCards || [];
+          setDelegatedCards(userDelegatedCards);
+        }
+      } catch {}
+
+      // 2. Déterminer la carte active (propre carte vs carte déléguée)
+      const selectedId = targetCardId !== undefined ? targetCardId : activeCardId;
+      const effectiveCardId = selectedId && selectedId !== user.id ? selectedId : user.id;
+
+      let currentRole: 'owner' | 'admin' | 'assistant' = 'owner';
+      if (effectiveCardId !== user.id) {
+        const membership = userDelegatedCards.find((c) => c.id === effectiveCardId);
+        currentRole = membership?.role === 'admin' ? 'admin' : 'assistant';
+      }
+      setUserRole(currentRole);
+      setActiveCardId(effectiveCardId === user.id ? null : effectiveCardId);
+
+      // 3. Charger le profil de la carte active
       const { data: prof, error: profError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', effectiveCardId)
         .maybeSingle();
 
       if (profError) {
@@ -87,8 +120,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
 
       if (!prof) {
-        router.push('/onboarding');
-        return;
+        if (effectiveCardId === user.id) {
+          router.push('/onboarding');
+          return;
+        } else {
+          toast.error('Carte déléguée introuvable');
+          return;
+        }
       }
 
       const normalizedTheme = {
@@ -105,20 +143,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         theme: normalizedTheme,
       });
 
-      // 2. Fetch Links
+      // 4. Charger les liens de la carte active
       const { data: lnks } = await supabase
         .from('links')
         .select('*')
-        .eq('profile_id', user.id)
+        .eq('profile_id', effectiveCardId)
         .order('position', { ascending: true });
 
       setLinks(lnks || []);
 
-      // 3. Fetch Contact Info
+      // 5. Charger les infos de contact de la carte active
       const { data: cnt } = await supabase
         .from('contact_info')
         .select('*')
-        .eq('profile_id', user.id)
+        .eq('profile_id', effectiveCardId)
         .maybeSingle();
 
       setContact(cnt || null);
@@ -128,6 +166,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSwitchCard = (cardId: string | null) => {
+    setIsCardSwitcherOpen(false);
+    setLoading(true);
+    fetchDashboardData(cardId);
   };
 
   useEffect(() => {
@@ -336,15 +380,89 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setContact,
         openUpgradeModal: () => setIsUpgradeModalOpen(true),
         openInviteModal: () => setIsInviteModalOpen(true),
+        userRole,
+        delegatedCards,
+        activeCardId,
+        switchCard: handleSwitchCard,
       }}
     >
       <div className="min-h-screen bg-slate-50/70 text-neutral-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white w-full max-w-full overflow-x-hidden relative">
         {/* Top Header */}
         <header className="w-full border-b border-neutral-200/70 bg-white/90 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/80">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
-            {/* Left: Brand Logo & Status */}
+            {/* Left: Brand Logo & Status & Workspace Switcher */}
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <Logo href="/" size="sm" showBadge={false} />
+
+              {/* Card / Workspace Switcher (if user is collaborator on other cards) */}
+              {delegatedCards.length > 0 && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsCardSwitcherOpen(!isCardSwitcherOpen)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200/80 text-xs font-bold text-neutral-800 transition cursor-pointer"
+                  >
+                    <span className="truncate max-w-[110px] sm:max-w-[160px]">
+                      {activeCardId ? (profile?.display_name || profile?.username) : 'Ma Carte'}
+                    </span>
+                    <span
+                      className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider ${
+                        userRole === 'owner'
+                          ? 'bg-neutral-900 text-white'
+                          : userRole === 'admin'
+                          ? 'bg-amber-100 text-amber-900 border border-amber-200/70'
+                          : 'bg-indigo-100 text-indigo-900 border border-indigo-200/70'
+                      }`}
+                    >
+                      {userRole === 'owner' ? 'Propriétaire' : userRole === 'admin' ? 'Admin' : 'Assistant'}
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-neutral-500" />
+                  </button>
+
+                  {isCardSwitcherOpen && (
+                    <div className="absolute top-full left-0 mt-1.5 w-60 bg-white rounded-2xl shadow-xl border border-neutral-200 py-1.5 z-50 animate-in fade-in zoom-in-95">
+                      <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100">
+                        Espaces de travail
+                      </div>
+
+                      {/* Ma propre carte */}
+                      <button
+                        type="button"
+                        onClick={() => handleSwitchCard(null)}
+                        className={`w-full px-3 py-2 text-left text-xs font-bold flex items-center justify-between hover:bg-neutral-50 transition cursor-pointer ${
+                          !activeCardId ? 'bg-indigo-50/60 text-indigo-900' : 'text-neutral-800'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          <span className="truncate">Ma carte personnelle</span>
+                        </div>
+                        <span className="text-[10px] text-neutral-400 font-normal">Propriétaire</span>
+                      </button>
+
+                      {/* Cartes déléguées */}
+                      {delegatedCards.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => handleSwitchCard(c.id)}
+                          className={`w-full px-3 py-2 text-left text-xs font-bold flex items-center justify-between hover:bg-neutral-50 transition cursor-pointer ${
+                            activeCardId === c.id ? 'bg-indigo-50/60 text-indigo-900' : 'text-neutral-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className={`w-2 h-2 rounded-full ${c.role === 'admin' ? 'bg-amber-500' : 'bg-indigo-500'}`} />
+                            <span className="truncate">{c.display_name || c.username}</span>
+                          </div>
+                          <span className="text-[10px] text-neutral-400 font-normal">
+                            {c.role === 'admin' ? 'Co-Admin' : 'Assistant'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Status & PRO Badge Indicator (Desktop) */}
               {profile && (
@@ -364,7 +482,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   ) : profile.is_pro ? (
                     <button
                       onClick={() => setIsUpgradeModalOpen(true)}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition shadow-2xs"
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition shadow-2xs cursor-pointer"
                       title="Changer de formule ou passer à l'accès À Vie"
                     >
                       <Crown className="w-3.5 h-3.5 text-amber-600" />
@@ -373,7 +491,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   ) : (
                     <button
                       onClick={() => setIsUpgradeModalOpen(true)}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-xs hover:scale-105 transition-all"
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-xs hover:scale-105 transition-all cursor-pointer"
                     >
                       <Crown className="w-3.5 h-3.5 fill-neutral-950" />
                       <span>Passer PRO</span>
@@ -408,20 +526,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               {profile?.username && (
                 <>
-                  {/* Invite Friend Button */}
+                  {/* Team & Collaborators Button */}
                   <button
                     onClick={() => setIsInviteModalOpen(true)}
-                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200/80 text-xs font-bold text-purple-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5"
-                    title="Inviter un ami sur Lien-Bio"
+                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 text-xs font-bold text-indigo-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    title="Gestion de l'équipe et collaborateurs"
                   >
-                    <UserPlus className="w-4 h-4 text-purple-600" />
-                    <span className="hidden sm:inline">Inviter</span>
+                    <Users className="w-4 h-4 text-indigo-600" />
+                    <span className="hidden sm:inline">Équipe</span>
+                    {profile.theme?.team_members && profile.theme.team_members.length > 0 && (
+                      <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[10px] font-bold">
+                        {profile.theme.team_members.length}
+                      </span>
+                    )}
                   </button>
 
                   {/* Copy Link Button */}
                   <button
                     onClick={handleCopyPublicLink}
-                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5"
+                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5 cursor-pointer"
                     title="Copier le lien public"
                   >
                     {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-indigo-600" />}
@@ -694,10 +817,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         setIsMobileMenuOpen(false);
                         setIsInviteModalOpen(true);
                       }}
-                      className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200/80 text-xs font-bold text-purple-700 flex items-center justify-center gap-2 transition"
+                      className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 text-xs font-bold text-indigo-700 flex items-center justify-center gap-2 transition cursor-pointer"
                     >
-                      <UserPlus className="w-4 h-4 text-purple-600" />
-                      <span>Inviter un ami / Parrainer</span>
+                      <Users className="w-4 h-4 text-indigo-600" />
+                      <span>Équipe & Collaborateurs</span>
                     </button>
 
                     <a
@@ -732,8 +855,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           currentPlan={profile?.plan}
         />
 
-        {/* Invite Friend Modal */}
-        <InviteFriendModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} profile={profile} />
+        {/* Team Management Modal (Collaborators & Referral) */}
+        <TeamManagementModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          profile={profile}
+          onTeamUpdated={fetchDashboardData}
+        />
       </div>
     </DashboardContext.Provider>
   );

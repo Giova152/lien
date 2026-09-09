@@ -61,6 +61,8 @@ import {
   ShieldCheck,
   Star,
   UserPlus,
+  Users,
+  Clock,
   Gift,
   Send,
 } from 'lucide-react';
@@ -295,6 +297,8 @@ export {
   ShieldCheck,
   Star,
   UserPlus,
+  Users,
+  Clock,
   Gift,
   Send,
 };
