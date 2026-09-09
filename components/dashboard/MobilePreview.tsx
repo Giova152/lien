@@ -13,6 +13,8 @@ interface MobilePreviewProps {
 }
 
 export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
+  const [previewLang, setPreviewLang] = React.useState<'fr' | 'en'>('fr');
+
   if (!profile) {
     return (
       <div className="flex flex-col items-center justify-center p-8 bg-white border border-neutral-200/80 rounded-[48px] text-neutral-400 h-[680px] w-[340px] shadow-sm">
@@ -24,11 +26,44 @@ export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Title Badge */}
-      <div className="flex items-center gap-2 mb-3.5 px-3 py-1 rounded-full bg-white border border-neutral-200/80 text-[11px] font-bold text-neutral-700 shadow-xs">
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
-        <span>Aperçu Mobile en Direct</span>
+      {/* Title & Language Switcher Header */}
+      <div className="flex items-center justify-between w-[320px] sm:w-[350px] mb-3 px-1">
+        {/* Title Badge */}
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-neutral-200/80 text-[11px] font-bold text-neutral-700 shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Aperçu Mobile</span>
+        </div>
+
+        {/* Bilingual Switcher */}
+        <div className="flex items-center bg-white border border-neutral-200/80 rounded-full p-0.5 shadow-xs text-[11px] font-bold">
+          <button
+            type="button"
+            onClick={() => setPreviewLang('fr')}
+            className={`px-2 py-0.5 rounded-full transition flex items-center gap-1 ${
+              previewLang === 'fr'
+                ? 'bg-neutral-900 text-white shadow-xs'
+                : 'text-neutral-500 hover:text-neutral-800'
+            }`}
+            title="Aperçu en Français"
+          >
+            <span>🇫🇷</span>
+            <span>FR</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPreviewLang('en')}
+            className={`px-2 py-0.5 rounded-full transition flex items-center gap-1 ${
+              previewLang === 'en'
+                ? 'bg-neutral-900 text-white shadow-xs'
+                : 'text-neutral-500 hover:text-neutral-800'
+            }`}
+            title="Preview in English"
+          >
+            <span>🇬🇧</span>
+            <span>EN</span>
+          </button>
+        </div>
       </div>
 
       {/* Realistic Smartphone Shell (Titanium Style) */}
@@ -52,7 +87,12 @@ export function MobilePreview({ profile, links, contact }: MobilePreviewProps) {
 
         {/* Screen Scrollable Viewport */}
         <div className="flex-1 w-full h-full overflow-y-auto no-scrollbar">
-          <PublicProfileView profile={profile} links={links} contact={contact} />
+          <PublicProfileView
+            profile={profile}
+            links={links}
+            contact={contact}
+            initialLang={previewLang}
+          />
         </div>
 
         {/* Home Bar Indicator */}

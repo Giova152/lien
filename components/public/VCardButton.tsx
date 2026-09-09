@@ -9,9 +9,10 @@ interface VCardButtonProps {
   profile: Profile;
   contact: ContactInfo | null;
   theme: ThemeConfig;
+  label?: string;
 }
 
-export function VCardButton({ profile, contact, theme }: VCardButtonProps) {
+export function VCardButton({ profile, contact, theme, label }: VCardButtonProps) {
   const handleSaveContact = () => {
     downloadVCard(profile, contact);
   };
@@ -26,7 +27,7 @@ export function VCardButton({ profile, contact, theme }: VCardButtonProps) {
       }}
     >
       <Download className="w-5 h-5" />
-      <span>Enregistrer le contact</span>
+      <span>{label || 'Enregistrer le contact'}</span>
     </button>
   );
 }

@@ -11,9 +11,17 @@ interface ProfileHeaderProps {
   contact?: ContactInfo | null;
   activeTab?: 'profil' | 'services' | 'shop';
   onTabChange?: (tab: 'profil' | 'services' | 'shop') => void;
+  lang?: 'fr' | 'en';
 }
 
-export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', onTabChange }: ProfileHeaderProps) {
+export function ProfileHeader({
+  profile,
+  theme,
+  contact,
+  activeTab = 'profil',
+  onTabChange,
+  lang = 'fr',
+}: ProfileHeaderProps) {
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -90,7 +98,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         {isPro && (
           <span
             className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm shrink-0"
-            title="Créateur Vérifié PRO"
+            title={lang === 'en' ? 'Verified PRO Creator' : 'Créateur Vérifié PRO'}
           >
             <svg className="w-3 h-3 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" />
@@ -149,7 +157,7 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
           <a
             href={phoneUrl}
             className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
-            title="Appeler"
+            title={lang === 'en' ? 'Call' : 'Appeler'}
           >
             <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(0,180,216,0.25)] group-hover:ring-2 group-hover:ring-sky-500/30 transition-all">
               <Image
@@ -193,7 +201,12 @@ export function ProfileHeader({ profile, theme, contact, activeTab = 'profil', o
         >
           {(['profil', 'services', 'shop'] as const).map((tab) => {
             const isActive = activeTab === tab;
-            const tabLabel = tab === 'profil' ? 'Profil' : tab === 'services' ? 'Services' : 'Boutique';
+            const tabLabel =
+              tab === 'profil'
+                ? (lang === 'en' ? 'Profile' : 'Profil')
+                : tab === 'services'
+                ? 'Services'
+                : (lang === 'en' ? 'Store' : 'Boutique');
             return (
               <button
                 key={tab}

@@ -11,9 +11,10 @@ interface QrCodeModalProps {
   profile: Profile;
   url?: string;
   triggerStyle?: 'button' | 'icon';
+  lang?: 'fr' | 'en';
 }
 
-export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeModalProps) {
+export function QrCodeModal({ profile, url, triggerStyle = 'button', lang = 'fr' }: QrCodeModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string>(url || '');
@@ -112,7 +113,7 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             style={{ color: textColor }}
           >
             <QrCode className="w-4 h-4" style={{ color: accentColor }} />
-            <span>Afficher le QR Code</span>
+            <span>{lang === 'en' ? 'Show QR Code' : 'Afficher le QR Code'}</span>
           </button>
         </div>
       )}
@@ -124,20 +125,26 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 rounded-full hover:bg-neutral-800 transition"
+              className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 rounded-full hover:bg-neutral-800 transition cursor-pointer"
               aria-label="Fermer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <h3 className="text-xl font-black mb-1">{profile.display_name}</h3>
-            <p className="text-xs text-neutral-400 mb-4">Scannez avec l'appareil photo de votre téléphone</p>
+            <p className="text-xs text-neutral-400 mb-4">
+              {lang === 'en' ? 'Scan with your phone camera' : "Scannez avec l'appareil photo de votre téléphone"}
+            </p>
 
             {/* Unpublished Warning if Profile is hidden */}
             {!profile.is_published && (
               <div className="w-full mb-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] flex items-center gap-2 text-left">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
-                <span>Profil actuellement masqué. Activez-le dans les paramètres pour qu'il réponde au scan.</span>
+                <span>
+                  {lang === 'en'
+                    ? 'Profile is currently unpublished. Enable it in settings.'
+                    : "Profil actuellement masqué. Activez-le dans les paramètres pour qu'il réponde au scan."}
+                </span>
               </div>
             )}
 
@@ -145,7 +152,11 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             {isLocalhost && (
               <div className="w-full mb-3 px-3 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[11px] flex items-center gap-2 text-left">
                 <Globe className="w-3.5 h-3.5 shrink-0 text-indigo-400" />
-                <span>QR Code pointant vers le lien public pour un scan mobile réussi.</span>
+                <span>
+                  {lang === 'en'
+                    ? 'QR Code points to canonical live URL for seamless mobile scanning.'
+                    : 'QR Code pointant vers le lien public pour un scan mobile réussi.'}
+                </span>
               </div>
             )}
 
@@ -161,7 +172,7 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
                 />
               ) : (
                 <div className="w-[210px] h-[210px] flex items-center justify-center text-xs text-neutral-500">
-                  Génération du QR Code...
+                  {lang === 'en' ? 'Generating QR Code...' : 'Génération du QR Code...'}
                 </div>
               )}
             </div>
@@ -171,10 +182,10 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
               <span className="truncate max-w-[200px] font-mono text-[11px]">{profileUrl}</span>
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1 font-bold text-indigo-400 hover:text-indigo-300 ml-2"
+                className="flex items-center gap-1 font-bold text-indigo-400 hover:text-indigo-300 ml-2 cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                {copied ? 'Copié !' : 'Copier'}
+                {copied ? (lang === 'en' ? 'Copied!' : 'Copié !') : (lang === 'en' ? 'Copy' : 'Copier')}
               </button>
             </div>
 
@@ -182,20 +193,20 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button' }: QrCodeMod
             <div className="w-full flex flex-col gap-2">
               <button
                 onClick={handleDownloadQr}
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md"
+                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md cursor-pointer"
               >
                 <Download className="w-4 h-4" />
-                Télécharger le QR Code PNG
+                {lang === 'en' ? 'Download QR Code PNG' : 'Télécharger le QR Code PNG'}
               </button>
 
               <a
                 href={profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition border border-neutral-700"
+                className="w-full py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white font-medium rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                Ouvrir la page dans le navigateur
+                {lang === 'en' ? 'Open link in new tab' : 'Ouvrir le lien dans un nouvel onglet'}
               </a>
             </div>
           </div>

@@ -28,6 +28,58 @@ interface PublicProfileViewProps {
   links: LinkItem[];
   contact: ContactInfo | null;
   isOwner?: boolean;
+  initialLang?: 'fr' | 'en';
+}
+
+const TRANSLATIONS = {
+  fr: {
+    about: 'À propos',
+    expertise: "Domaines d'expertise",
+    all: 'TOUS',
+    noServices: 'Aucune prestation ajoutée pour le moment.',
+    noCategoryServices: 'Aucune prestation dans cette catégorie.',
+    bookCall: 'Prendre RDV',
+    bookService: 'Réserver',
+    contactWhatsapp: 'Contacter via WhatsApp',
+    learnMore: 'En savoir plus',
+    serviceOnDemand: 'Prestation disponible sur demande',
+    ourProducts: 'Nos produits',
+    free: 'GRATUITS',
+    paid: 'PAYANTS',
+    noProducts: 'Aucun produit disponible en boutique pour le moment.',
+    access: 'Accéder ➔',
+    saveContact: 'Enregistrer le contact',
+    createdWith: 'Créé avec Lien-Bio',
+  },
+  en: {
+    about: 'About',
+    expertise: 'Areas of Expertise',
+    all: 'ALL',
+    noServices: 'No services added yet.',
+    noCategoryServices: 'No services in this category.',
+    bookCall: 'Book a Call',
+    bookService: 'Book Now',
+    contactWhatsapp: 'Contact on WhatsApp',
+    learnMore: 'Learn More',
+    serviceOnDemand: 'Service available upon request',
+    ourProducts: 'Our Products',
+    free: 'FREE',
+    paid: 'PREMIUM',
+    noProducts: 'No products available in store right now.',
+    access: 'Access ➔',
+    saveContact: 'Save Contact',
+    createdWith: 'Created with Lien-Bio',
+  },
+};
+
+function translateKpiLabel(label: string, lang: 'fr' | 'en'): string {
+  if (lang === 'fr') return label;
+  const l = label.trim().toLowerCase();
+  if (l.includes('expérience') || l.includes('experience')) return 'Years Experience';
+  if (l.includes('client')) return 'Happy Clients';
+  if (l.includes('avis')) return 'Verified Reviews';
+  if (l.includes('sur-mesure') || l.includes('sur mesure')) return 'Tailor-made';
+  return label;
 }
 
 function isDarkColor(colorHex?: string): boolean {
@@ -49,7 +101,23 @@ function isDarkColor(colorHex?: string): boolean {
   return false;
 }
 
-export function PublicProfileView({ profile, links, contact, isOwner }: PublicProfileViewProps) {
+export function PublicProfileView({
+  profile,
+  links,
+  contact,
+  isOwner,
+  initialLang = 'fr',
+}: PublicProfileViewProps) {
+  const [lang, setLang] = useState<'fr' | 'en'>(initialLang || 'fr');
+
+  React.useEffect(() => {
+    if (initialLang) {
+      setLang(initialLang);
+    }
+  }, [initialLang]);
+
+  const t = TRANSLATIONS[lang];
+
   const [activeTab, setActiveTab] = useState<'profil' | 'services' | 'shop'>('profil');
   const [openServiceAccordion, setOpenServiceAccordion] = useState<string | null>(null);
   // Tab 3 Filter: Boutique / Shop
@@ -118,13 +186,59 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
         <div
           className={`w-full max-w-md rounded-[36px] sm:rounded-[44px] border transition-all overflow-hidden flex flex-col items-center px-4 sm:px-6 pb-8 pt-2 relative ${cardBoxBg}`}
         >
-          {/* Top Gold Rim Accent Line */}
-          <div
-            className="w-full h-1.5 mb-2 rounded-full opacity-80"
-            style={{
-              background: `linear-gradient(90deg, transparent 0%, ${accentColor} 50%, transparent 100%)`,
-            }}
-          />
+          {/* Top Bar with Accent Line & Bilingual Switcher */}
+          <div className="w-full flex items-center justify-between pt-1 pb-1 px-1">
+            <div className="w-12" />
+            <div
+              className="h-1 flex-1 mx-2 rounded-full opacity-70"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${accentColor} 50%, transparent 100%)`,
+              }}
+            />
+            {/* Language Pill Switcher */}
+            <div
+              className="inline-flex items-center p-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md shrink-0 shadow-2xs z-10"
+              style={{
+                backgroundColor: isDarkCard ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                borderColor: `${accentColor}33`,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setLang('fr')}
+                className={`px-1.5 py-0.5 rounded-full transition-all flex items-center gap-1 ${
+                  lang === 'fr'
+                    ? 'font-black text-white shadow-xs'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
+                style={{
+                  backgroundColor: lang === 'fr' ? accentColor : 'transparent',
+                  color: lang === 'fr' ? '#ffffff' : theme.text_color,
+                }}
+                title="Français"
+              >
+                <span>🇫🇷</span>
+                <span className="text-[9px]">FR</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('en')}
+                className={`px-1.5 py-0.5 rounded-full transition-all flex items-center gap-1 ${
+                  lang === 'en'
+                    ? 'font-black text-white shadow-xs'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
+                style={{
+                  backgroundColor: lang === 'en' ? accentColor : 'transparent',
+                  color: lang === 'en' ? '#ffffff' : theme.text_color,
+                }}
+                title="English"
+              >
+                <span>🇬🇧</span>
+                <span className="text-[9px]">EN</span>
+              </button>
+            </div>
+          </div>
 
           {/* Profile Header & Navigation Pills */}
           <ProfileHeader
@@ -133,6 +247,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
             contact={contact}
             activeTab={activeTab}
             onTabChange={setActiveTab}
+            lang={lang}
           />
 
           {/* Tab 1: PROFIL */}
@@ -167,7 +282,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                         className="text-[10px] font-bold uppercase tracking-wider opacity-75"
                         style={{ color: theme.text_color }}
                       >
-                        {st.label}
+                        {translateKpiLabel(st.label, lang)}
                       </div>
                     </div>
                   ))}
@@ -191,7 +306,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                       className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
                       style={{ color: theme.text_color }}
                     >
-                      À propos
+                      {t.about}
                     </h3>
                   </div>
                   <p
@@ -220,7 +335,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                       className={`text-sm font-bold tracking-tight ${isLuxuryTheme ? 'font-serif' : ''}`}
                       style={{ color: theme.text_color }}
                     >
-                      Domaines d'expertise
+                      {t.expertise}
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -278,7 +393,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                       color: serviceCategoryFilter === 'all' ? '#ffffff' : theme.text_color,
                     }}
                   >
-                    TOUS ({services.length})
+                    {t.all} ({services.length})
                   </button>
                   {availableServiceCategories.map((cat) => {
                     const count = services.filter((s) => s.category?.trim().toLowerCase() === cat.toLowerCase()).length;
@@ -307,14 +422,14 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
                   <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
                   <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
-                    Aucune prestation ajoutée pour le moment.
+                    {t.noServices}
                   </p>
                 </div>
               ) : filteredServices.length === 0 ? (
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
                   <Sparkles className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
                   <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
-                    Aucune prestation dans cette catégorie.
+                    {t.noCategoryServices}
                   </p>
                 </div>
               ) : (
@@ -337,12 +452,12 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     service.category?.toLowerCase().includes('calend');
 
                   const defaultActionText = isCalendarService
-                    ? 'Prendre RDV'
+                    ? t.bookCall
                     : service.url
-                    ? 'Réserver'
+                    ? t.bookService
                     : contact?.whatsapp
-                    ? 'Contacter via WhatsApp'
-                    : 'En savoir plus';
+                    ? t.contactWhatsapp
+                    : t.learnMore;
 
                   const buttonLabel = service.button_text?.trim() || defaultActionText;
 
@@ -421,7 +536,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                           className="w-full mt-1 py-2 px-3 rounded-xl font-semibold text-xs text-center border opacity-80"
                           style={{ borderColor: `${accentColor}33`, color: theme.text_color }}
                         >
-                          Prestation disponible sur demande
+                          {t.serviceOnDemand}
                         </div>
                       )}
                     </div>
@@ -437,7 +552,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               {/* Title */}
               <div className="flex items-center justify-between px-1 pt-1 text-left">
                 <h3 className="text-base font-black tracking-tight" style={{ color: theme.text_color }}>
-                  Nos produits
+                  {t.ourProducts}
                 </h3>
               </div>
 
@@ -453,7 +568,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     color: shopFilter === 'all' ? '#ffffff' : theme.text_color,
                   }}
                 >
-                  TOUS
+                  {t.all}
                 </button>
                 <button
                   onClick={() => setShopFilter('free')}
@@ -465,7 +580,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     color: shopFilter === 'free' ? '#ffffff' : theme.text_color,
                   }}
                 >
-                  GRATUITS
+                  {t.free}
                 </button>
                 <button
                   onClick={() => setShopFilter('paid')}
@@ -477,7 +592,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                     color: shopFilter === 'paid' ? '#ffffff' : theme.text_color,
                   }}
                 >
-                  PAYANTS
+                  {t.paid}
                 </button>
               </div>
 
@@ -486,7 +601,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                 <div className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-8 text-center shadow-sm`} style={{ borderColor: `${accentColor}33` }}>
                   <BookOpen className="w-7 h-7 mx-auto mb-2 opacity-40" style={{ color: accentColor }} />
                   <p className="text-xs font-semibold opacity-70" style={{ color: theme.text_color }}>
-                    Aucun produit disponible en boutique pour le moment.
+                    {t.noProducts}
                   </p>
                 </div>
               ) : (
@@ -521,7 +636,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
                             <span className="text-[10px] font-bold opacity-80 group-hover:translate-x-0.5 transition-transform" style={{ color: accentColor }}>
-                              Accéder ➔
+                              {t.access}
                             </span>
                           </div>
                         </div>
@@ -536,7 +651,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
 
 
           {/* QR Code Trigger */}
-          <QrCodeModal profile={profile} />
+          <QrCodeModal profile={profile} lang={lang} />
 
           {/* Branding Watermark (Only visible for free accounts; removed for PRO) */}
           {!isPro && (
@@ -548,7 +663,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
               style={{ color: theme.text_color }}
             >
               <LogoIcon size="xs" />
-              <span>Créé avec Lien-Bio</span>
+              <span>{t.createdWith}</span>
             </Link>
           )}
 
