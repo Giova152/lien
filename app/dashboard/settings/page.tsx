@@ -96,7 +96,7 @@ export default function SettingsPage() {
       toast.success(
         nextPublished
           ? '🎉 Votre carte est maintenant publique et accessible à tous !'
-          : '🔒 Votre carte a été masquée. Seul vous pouvez la voir.'
+          : '🔒 Votre carte a été masquée. Le lien public n’affiche plus votre page.'
       );
       if (refreshDashboard) refreshDashboard();
     } catch (err: any) {
@@ -430,7 +430,7 @@ export default function SettingsPage() {
             <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed max-w-2xl">
               {profile.is_published
                 ? 'Votre carte est actuellement en ligne et accessible publiquement à tout visiteur disposant de votre lien.'
-                : 'Votre carte est masquée aux visiteurs. Seul vous pouvez la consulter en restant connecté.'}
+                : 'Votre carte est masquée. Le lien public n’affiche plus votre profil aux visiteurs (l’aperçu reste accessible dans votre tableau de bord).'}
             </p>
           </div>
 

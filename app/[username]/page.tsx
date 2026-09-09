@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { sanitizeUsername } from '@/lib/utils';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
-import { ShieldAlert } from '@/components/ui/Icons';
+import { UnpublishedProfileView } from '@/components/public/UnpublishedProfileView';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -65,24 +65,14 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
   const { data: { user } } = await supabase.auth.getUser();
   const isOwner = user?.id === profile.id;
 
-  // If unpublished and not owner, display unavailable message
-  if (!profile.is_published && !isOwner) {
+  // Si le profil est masqué, la page publique ne doit pas afficher le contenu du profil
+  if (!profile.is_published) {
     return (
-      <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mb-4">
-          <ShieldAlert className="w-8 h-8" />
-        </div>
-        <h1 className="text-2xl font-bold mb-2">Ce profil n'est pas disponible</h1>
-        <p className="text-sm text-neutral-400 max-w-sm mb-6">
-          Ce profil a été temporairement dépublié par son propriétaire ou n'est plus accessible.
-        </p>
-        <Link
-          href="/"
-          className="px-6 py-2.5 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-white font-medium text-xs rounded-xl transition"
-        >
-          Retour à l'accueil
-        </Link>
-      </div>
+      <UnpublishedProfileView
+        isOwner={isOwner}
+        profileId={profile.id}
+        username={profile.username || username}
+      />
     );
   }
 
@@ -140,12 +130,6 @@ export default async function PublicProfilePage({ params }: PublicProfileProps) 
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: trackViewScript }} />
-      {!profile.is_published && isOwner && (
-        <div className="w-full bg-amber-500/10 border-b border-amber-500/30 text-amber-300 px-4 py-2 text-xs font-semibold text-center flex items-center justify-center gap-2">
-          <ShieldAlert className="w-4 h-4 shrink-0" />
-          <span>Mode Aperçu : Votre profil est actuellement masqué au public.</span>
-        </div>
-      )}
       <PublicProfileView profile={normalizedProfile} links={links} contact={contact} isOwner={isOwner} />
     </>
   );
