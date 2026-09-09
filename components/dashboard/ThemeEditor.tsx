@@ -21,6 +21,8 @@ import {
   ChevronRight,
   X,
   ArrowRight,
+  Eye,
+  EyeOff,
 } from '@/components/ui/Icons';
 import { DashboardContext } from '@/lib/context/DashboardContext';
 import { createClient } from '@/lib/supabase/client';
@@ -69,6 +71,13 @@ const POPULAR_TAG_SUGGESTIONS = [
   'Création de Contenu',
   'Marketing Digital',
   'Coaching & Mentorat',
+];
+
+export const DEFAULT_KPIS: StatItem[] = [
+  { id: 'kpi-1', value: '10+', label: "Ans d'expérience", hidden: false },
+  { id: 'kpi-2', value: '500+', label: 'Clients satisfaits', hidden: false },
+  { id: 'kpi-3', value: '4.9/5', label: 'Avis certifiés', hidden: false },
+  { id: 'kpi-4', value: '100%', label: 'Sur-mesure', hidden: false },
 ];
 
 const KPI_STARTER_TEMPLATES = [
@@ -138,8 +147,9 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
     onChange(presetTheme);
   };
 
-  // Helper getters & setters for custom sections (starts empty for new users)
-  const stats: StatItem[] = theme.stats || [];
+  // Helper getters & setters for custom sections (starts with the 4 default KPIs if empty)
+  const stats: StatItem[] =
+    theme.stats && theme.stats.length > 0 ? theme.stats : DEFAULT_KPIS;
   const tags: string[] = theme.expertise_tags || [];
   const services: ServiceItem[] = theme.services || [];
   const products: ShopProduct[] = theme.products || [];
@@ -151,15 +161,26 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
     const updated = stats.map((s) => (s.id === id ? { ...s, [field]: val } : s));
     updateField('stats', updated);
   };
-  const handleAddStat = (customValue = '10+', customLabel = "Ans d'expérience") => {
-    if (stats.length >= 3) {
-      toast.info('Maximum 3 indicateurs recommandés pour conserver un affichage optimal sur mobile.');
+  const handleToggleStatVisibility = (id: string) => {
+    const updated = stats.map((s) => (s.id === id ? { ...s, hidden: !s.hidden } : s));
+    updateField('stats', updated);
+    const target = updated.find((s) => s.id === id);
+    if (target?.hidden) {
+      toast.info(`Indicateur "${target.label}" masqué du profil.`);
+    } else if (target) {
+      toast.success(`Indicateur "${target.label}" visible sur le profil.`);
     }
-    const newStat: StatItem = { id: Date.now().toString(), value: customValue, label: customLabel };
+  };
+  const handleAddStat = (customValue = '100%', customLabel = 'Nouvel indicateur') => {
+    const newStat: StatItem = { id: Date.now().toString(), value: customValue, label: customLabel, hidden: false };
     updateField('stats', [...stats, newStat]);
   };
   const handleDeleteStat = (id: string) => {
     updateField('stats', stats.filter((s) => s.id !== id));
+  };
+  const handleResetDefaultStats = () => {
+    updateField('stats', DEFAULT_KPIS);
+    toast.success('Les 4 indicateurs par défaut ont été restaurés !');
   };
 
   // Tag Handlers
@@ -846,55 +867,70 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                   </span>
                 </div>
                 <p className="text-xs text-neutral-500 mt-1">
-                  Affichez jusqu'à 3 chiffres d'impact sous votre bio pour inspirer confiance.
+                  Modifiez vos chiffres d'impact et masquez ceux que vous ne souhaitez pas faire apparaître sur votre profil.
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => handleAddStat()}
-                className="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs shrink-0"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Ajouter un KPI</span>
-              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleResetDefaultStats}
+                  className="px-3 py-1.5 rounded-xl border border-neutral-200 hover:bg-neutral-50 text-neutral-600 text-xs font-medium transition cursor-pointer"
+                  title="Restaurer les 4 indicateurs par défaut"
+                >
+                  Restaurer les 4
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddStat()}
+                  className="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs shrink-0 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Ajouter un KPI</span>
+                </button>
+              </div>
             </div>
 
-            {stats.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-7 px-4 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50/50 text-center">
-                <div className="w-10 h-10 rounded-2xl bg-white border border-neutral-200 flex items-center justify-center text-neutral-400 mb-2 shadow-2xs">
-                  <BarChart3 className="w-5 h-5 text-neutral-400" />
-                </div>
-                <p className="text-xs font-bold text-neutral-800">Aucun indicateur configuré</p>
-                <p className="text-[11px] text-neutral-500 max-w-sm mt-0.5 mb-3">
-                  Choisissez un modèle prêt à l'emploi ou créez un indicateur personnalisé :
-                </p>
-                <div className="flex items-center gap-2 flex-wrap justify-center">
-                  {KPI_STARTER_TEMPLATES.map((tmpl) => (
-                    <button
-                      key={tmpl.label}
-                      type="button"
-                      onClick={() => handleAddStat(tmpl.value, tmpl.label)}
-                      className="px-3 py-1.5 rounded-xl bg-white hover:bg-neutral-100 border border-neutral-200 text-xs text-neutral-700 font-medium transition shadow-2xs flex items-center gap-1.5"
-                    >
-                      <span className="font-bold text-neutral-900">{tmpl.value}</span>
-                      <span>{tmpl.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {stats.map((s, idx) => (
+            <div className="flex flex-col gap-3">
+              {stats.map((s, idx) => {
+                const isHidden = Boolean(s.hidden);
+                return (
                   <div
                     key={s.id}
-                    className="p-3.5 rounded-2xl bg-neutral-50/70 border border-neutral-200/80 flex flex-col sm:flex-row sm:items-center gap-3 transition hover:border-neutral-300"
+                    className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center gap-3 ${
+                      isHidden
+                        ? 'bg-neutral-100/50 border-neutral-200 opacity-60'
+                        : 'bg-neutral-50/80 border-neutral-200/90 hover:border-neutral-300'
+                    }`}
                   >
                     <div className="flex items-center justify-between sm:justify-start gap-2">
                       <span className="w-6 h-6 rounded-lg bg-white border border-neutral-200 text-neutral-600 text-[11px] font-bold flex items-center justify-center shadow-2xs shrink-0">
                         #{idx + 1}
                       </span>
                       <span className="sm:hidden text-xs font-semibold text-neutral-400">KPI #{idx + 1}</span>
+
+                      {/* Mobile visibility toggle button */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStatVisibility(s.id)}
+                        className={`sm:hidden px-2.5 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition cursor-pointer ${
+                          isHidden
+                            ? 'bg-neutral-200 border-neutral-300 text-neutral-600'
+                            : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                        }`}
+                      >
+                        {isHidden ? (
+                          <>
+                            <EyeOff className="w-3.5 h-3.5 text-neutral-500" />
+                            <span>Masqué</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Visible</span>
+                          </>
+                        )}
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 flex-1">
@@ -907,7 +943,7 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                           type="text"
                           value={s.value}
                           onChange={(e) => handleUpdateStat(s.id, 'value', e.target.value)}
-                          placeholder="Ex: 10+, 500k, 98%"
+                          placeholder="Ex: 10+, 500+, 98%"
                           className="w-full px-3 py-2 rounded-xl bg-white border border-neutral-200 text-xs font-black text-neutral-900 focus:outline-none focus:border-neutral-900 shadow-2xs"
                         />
                       </div>
@@ -927,18 +963,45 @@ export function ThemeEditor({ theme, onChange, onSave, saving }: ThemeEditorProp
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteStat(s.id)}
-                      className="self-end sm:self-center p-2 rounded-xl text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition shrink-0"
-                      title="Supprimer cet indicateur"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                      {/* Desktop visibility toggle button */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStatVisibility(s.id)}
+                        className={`hidden sm:flex px-3 py-2 rounded-xl border text-xs font-bold items-center gap-1.5 transition cursor-pointer ${
+                          isHidden
+                            ? 'bg-neutral-200/70 hover:bg-neutral-200 border-neutral-300 text-neutral-600'
+                            : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700'
+                        }`}
+                        title={isHidden ? "Cliquer pour afficher sur votre profil public" : "Cliquer pour masquer de votre profil public"}
+                      >
+                        {isHidden ? (
+                          <>
+                            <EyeOff className="w-3.5 h-3.5 text-neutral-500" />
+                            <span>Masqué</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Visible</span>
+                          </>
+                        )}
+                      </button>
+
+                      {/* Delete button */}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteStat(s.id)}
+                        className="p-2 rounded-xl text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition shrink-0 cursor-pointer"
+                        title="Supprimer cet indicateur"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
 
           {/* 2. Éditeur des Domaines d'Expertise */}

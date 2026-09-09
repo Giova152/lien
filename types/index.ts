@@ -5,6 +5,7 @@ export interface StatItem {
   id: string;
   value: string; // e.g. "12+"
   label: string; // e.g. "Ans d'expérience"
+  hidden?: boolean; // Permet de masquer/afficher l'indicateur
 }
 
 export interface ServiceItem {

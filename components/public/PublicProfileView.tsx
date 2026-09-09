@@ -74,8 +74,9 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
     ? 'bg-white/5 border-white/10'
     : 'bg-white/80 border-[#E8E2D5]';
 
-  // Dynamic user data (only if explicitly configured by the user)
-  const stats: StatItem[] = theme.stats || [];
+  // Dynamic user data (only if explicitly configured by the user, excluding hidden KPIs)
+  const rawStats: StatItem[] = theme.stats || [];
+  const stats: StatItem[] = rawStats.filter((st) => !st.hidden);
   const tags: string[] = theme.expertise_tags || [];
   const services: ServiceItem[] = theme.services || [];
   const products: ShopProduct[] = theme.products || [];
@@ -139,7 +140,17 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
               {/* KPI Stat Cards Grid */}
               {stats.length > 0 && (
-                <div className={`grid grid-cols-${Math.min(stats.length, 3)} gap-2`}>
+                <div
+                  className={`grid ${
+                    stats.length === 1
+                      ? 'grid-cols-1'
+                      : stats.length === 2
+                      ? 'grid-cols-2'
+                      : stats.length === 3
+                      ? 'grid-cols-3'
+                      : 'grid-cols-2 sm:grid-cols-4'
+                  } gap-2`}
+                >
                   {stats.map((st) => (
                     <div
                       key={st.id}
