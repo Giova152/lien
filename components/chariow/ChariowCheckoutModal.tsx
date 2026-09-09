@@ -30,7 +30,8 @@ export function ChariowCheckoutModal({
     if (!productId) return '';
     const params = new URLSearchParams({
       primary_color: '#4f39f6',
-      background_color: '#4f39f6',
+      background_color: '#ffffff',
+      cta_animation: 'pulse_glow',
       locale: 'fr',
       border_style: 'rounded',
     });
@@ -49,7 +50,24 @@ export function ChariowCheckoutModal({
     const handleMessage = (event: MessageEvent) => {
       if (!event.data || typeof event.data !== 'object') return;
 
-      // 1. Détection de paiement réussi Chariow
+      // 1. Déclenchement de la redirection vers la passerelle de paiement (Wave, Orange Money, 3D Secure...)
+      if (
+        event.data.type === 'chariow-checkout-redirect' &&
+        typeof event.data.url === 'string'
+      ) {
+        try {
+          const targetUrl = new URL(event.data.url);
+          if (targetUrl.protocol === 'https:') {
+            toast.loading('Connexion sécurisée au prestataire de paiement...');
+            window.location.href = event.data.url;
+            return;
+          }
+        } catch {
+          // URL invalide, fallback gracieux
+        }
+      }
+
+      // 2. Détection de paiement réussi Chariow
       if (
         event.data.eventType === 'PAYMENT_SUCCESSFUL' ||
         event.data.type === 'chariow-purchase-completed'
@@ -59,6 +77,13 @@ export function ChariowCheckoutModal({
 
         if (onSuccess) {
           onSuccess();
+        }
+
+        if (event.data.eventData?.return_url) {
+          setTimeout(() => {
+            window.location.href = event.data.eventData.return_url;
+          }, 2000);
+          return;
         }
 
         // Fermer la modale après un court délai pour laisser l'utilisateur voir le succès
@@ -150,6 +175,7 @@ export function ChariowCheckoutModal({
             title="Paiement Sécurisé Chariow"
             className="w-full h-full border-0 block"
             loading="eager"
+            allow="payment; camera; microphone; geolocation"
             onLoad={() => setLoading(false)}
           />
         </div>

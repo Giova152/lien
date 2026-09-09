@@ -34,7 +34,7 @@ export function ChariowWidget({
   ctaAnimation = 'pulse_glow',
   locale = 'fr',
   primaryColor = '#4f39f6',
-  backgroundColor = '#4f39f6',
+  backgroundColor = '#ffffff',
   userEmail,
   className = '',
 }: ChariowWidgetProps) {
