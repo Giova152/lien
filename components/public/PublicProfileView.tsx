@@ -135,7 +135,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           />
 
           {/* Tab 1: PROFIL */}
-          {(activeTab === 'profil' || !isPro) && (
+          {activeTab === 'profil' && (
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
               {/* KPI Stat Cards Grid */}
               {stats.length > 0 && (
@@ -251,7 +251,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           )}
 
           {/* Tab 2: SERVICES */}
-          {isPro && activeTab === 'services' && (
+          {activeTab === 'services' && (
             <div className="w-full flex flex-col gap-3.5 animate-in fade-in duration-300">
               {/* Category Filter Pills (Facultatif : affiché uniquement si configuré et activé) */}
               {showServiceCategories && (
@@ -421,7 +421,7 @@ export function PublicProfileView({ profile, links, contact, isOwner }: PublicPr
           )}
 
           {/* Tab 3: BOUTIQUE / SHOP */}
-          {isPro && activeTab === 'shop' && (
+          {activeTab === 'shop' && (
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
               {/* Title */}
               <div className="flex items-center justify-between px-1 pt-1 text-left">
