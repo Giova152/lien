@@ -57,10 +57,13 @@ export function getChariowConfig() {
       !apiKey.includes('YOUR_')
   );
 
+  const storeUrl = (process.env.CHARIOW_STORE_URL || 'https://enfancience-academy.mychariow.shop').replace(/\/$/, '');
+
   return {
     apiKey,
     baseUrl,
     pulseSecret,
+    storeUrl,
     productIds,
     isConfigured,
   };
@@ -244,9 +247,9 @@ export async function createChariowCheckout(
         result?.message?.includes('Service and Coaching') ||
         result?.message?.includes('not supported via the Public API')
       ) {
-        console.info('[Chariow API] Produit de type service détecté, redirection directe vers la page produit.');
+        console.info('[Chariow API] Produit de type service détecté, redirection directe vers la boutique réelle.');
         return {
-          url: `https://lien-bio.mychariow.com/${productId}`,
+          url: `${config.storeUrl}/${productId}`,
           saleId: `direct_${productId}_${Date.now()}`,
           isDemo: false,
         };

@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
             value: 'checkout.lien-bio.site',
           },
         ],
-        destination: 'https://lien-bio.mychariow.com/:path*',
+        destination: 'https://enfancience-academy.mychariow.shop/:path*',
         permanent: false,
       },
     ];

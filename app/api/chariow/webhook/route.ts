@@ -40,20 +40,53 @@ export async function POST(req: Request) {
       const sale = payload?.sale || payload?.data;
       const saleId = sale?.id || 'chariow_sale';
       const metadata = sale?.custom_metadata || payload?.custom_metadata || {};
-      const userId = metadata?.userId;
-      const plan = metadata?.plan || 'yearly';
+      let userId = metadata?.userId;
+      const customerEmail = sale?.customer?.email || payload?.customer?.email;
+
+      // Déduction du forfait par produit Chariow si non précisé dans metadata
+      const productId = sale?.product?.id || '';
+      let plan = metadata?.plan;
+      if (!plan) {
+        plan = productId === process.env.CHARIOW_PRODUCT_ID_LIFETIME ? 'lifetime' : 'yearly';
+      }
 
       console.log('[Chariow Webhook] Achat validé pour:', {
         saleId,
         userId,
+        customerEmail,
         plan,
+        productId,
       });
+
+      // Si userId n'est pas dans metadata (achat direct sur la boutique), chercher par email
+      if (!userId && customerEmail) {
+        try {
+          const { createClient } = await import('@supabase/supabase-js');
+          const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+            process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+          );
+
+          // Recherche dans contact_info
+          const { data: contactMatch } = await supabaseAdmin
+            .from('contact_info')
+            .select('profile_id')
+            .eq('email', customerEmail)
+            .maybeSingle();
+
+          if (contactMatch?.profile_id) {
+            userId = contactMatch.profile_id;
+          }
+        } catch (e) {
+          console.warn('[Chariow Webhook] Recherche utilisateur par email échouée:', e);
+        }
+      }
 
       if (userId) {
         await upgradeUserProfile(userId, plan, saleId);
         console.log(`[Chariow Webhook] Utilisateur ${userId} passé en PRO avec succès !`);
       } else {
-        console.warn('[Chariow Webhook] Aucun userId trouvé dans custom_metadata de la vente', saleId);
+        console.warn('[Chariow Webhook] Aucun userId trouvé pour la vente', saleId, 'email:', customerEmail);
       }
     } else {
       console.log(`[Chariow Webhook] Événement ignoré : ${event}`);
