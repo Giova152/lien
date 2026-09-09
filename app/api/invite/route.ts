@@ -79,16 +79,27 @@ export async function POST(request: Request) {
             message: 'Invitation officielle envoyée avec succès via Supabase !',
           });
         } else {
-          console.error('Supabase inviteUserByEmail error:', inviteError);
+          console.warn('Supabase inviteUserByEmail error:', inviteError);
+          const rawMsg = inviteError.message || '';
+          let userMsg = "Impossible d'envoyer l'invitation";
+
+          if (rawMsg.toLowerCase().includes('already been registered') || rawMsg.toLowerCase().includes('already exists')) {
+            userMsg = 'Cette adresse e-mail possède déjà un compte sur Lien-Bio.';
+          } else if (rawMsg.toLowerCase().includes('rate limit')) {
+            userMsg = 'Limite d’envois atteinte pour l’instant. Veuillez réessayer dans quelques minutes.';
+          } else {
+            userMsg = rawMsg;
+          }
+
           return NextResponse.json(
-            { error: `Supabase : ${inviteError.message || "Impossible d'envoyer l'invitation"}` },
+            { error: userMsg, rawError: rawMsg },
             { status: 400 }
           );
         }
       } catch (sbErr: any) {
         console.error('Failed to send invite via Supabase admin:', sbErr);
         return NextResponse.json(
-          { error: sbErr.message || "Erreur de connexion à Supabase" },
+          { error: 'Erreur lors de la communication avec le serveur' },
           { status: 500 }
         );
       }
