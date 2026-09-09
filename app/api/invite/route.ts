@@ -50,7 +50,51 @@ export async function POST(request: Request) {
       emailSubject
     )}&body=${encodeURIComponent(emailBody)}`;
 
-    // 1. Try sending via Resend if API key is configured
+    // 1. Try sending via Supabase Auth Admin if SERVICE_ROLE_KEY is present (Primary method)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    if (serviceRoleKey && supabaseUrl) {
+      try {
+        const adminSupabase = createAdminClient(supabaseUrl, serviceRoleKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
+        });
+
+        const { error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(
+          trimmedEmail,
+          {
+            redirectTo: finalInviteUrl,
+            data: {
+              invited_by: senderName,
+              custom_message: customMessage || null,
+            },
+          }
+        );
+
+        if (!inviteError) {
+          return NextResponse.json({
+            success: true,
+            emailSent: true,
+            provider: 'supabase',
+            message: 'Invitation officielle envoyée avec succès via Supabase !',
+          });
+        } else {
+          console.error('Supabase inviteUserByEmail error:', inviteError);
+          return NextResponse.json(
+            { error: `Supabase : ${inviteError.message || "Impossible d'envoyer l'invitation"}` },
+            { status: 400 }
+          );
+        }
+      } catch (sbErr: any) {
+        console.error('Failed to send invite via Supabase admin:', sbErr);
+        return NextResponse.json(
+          { error: sbErr.message || "Erreur de connexion à Supabase" },
+          { status: 500 }
+        );
+      }
+    }
+
+    // 2. Try sending via Resend if API key is configured
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       try {
@@ -137,46 +181,9 @@ export async function POST(request: Request) {
         } else {
           const resendError = await resendRes.json();
           console.warn('Resend API returned error:', resendError);
-          // Fall through to other methods / mailtoUrl fallback
         }
       } catch (resendErr) {
         console.warn('Failed to send email via Resend:', resendErr);
-      }
-    }
-
-    // 2. Try sending via Supabase Auth Admin if SERVICE_ROLE_KEY is present
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-    if (serviceRoleKey && supabaseUrl) {
-      try {
-        const adminSupabase = createAdminClient(supabaseUrl, serviceRoleKey, {
-          auth: { autoRefreshToken: false, persistSession: false },
-        });
-
-        const { error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(
-          trimmedEmail,
-          {
-            redirectTo: finalInviteUrl,
-            data: {
-              invited_by: senderName,
-              custom_message: customMessage || null,
-            },
-          }
-        );
-
-        if (!inviteError) {
-          return NextResponse.json({
-            success: true,
-            emailSent: true,
-            provider: 'supabase',
-            message: 'Invitation envoyée avec succès via Supabase Auth !',
-          });
-        } else {
-          console.warn('Supabase inviteUserByEmail error:', inviteError);
-        }
-      } catch (sbErr) {
-        console.warn('Failed to send invite via Supabase admin:', sbErr);
       }
     }
 
