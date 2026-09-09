@@ -4,6 +4,7 @@
 export const CHARIOW_STORE_DOMAIN = 'enfancience-academy.mychariow.shop';
 
 export const CHARIOW_PRODUCTS = {
+  MONTHLY: process.env.NEXT_PUBLIC_CHARIOW_PRODUCT_ID_MONTHLY || 'prd_monthly',
   YEARLY: 'prd_78x1xfjr',
   LIFETIME: 'prd_sndsd48e',
 } as const;

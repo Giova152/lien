@@ -32,10 +32,10 @@ export const CHARIOW_PLANS: Record<ChariowPlanId, ChariowPlanDetails> = {
   },
   monthly: {
     id: 'monthly',
-    name: 'Abonnement PRO 1 An — Lien-Bio',
-    description: 'Accès complet à toutes les fonctionnalités PRO pendant 1 an (185 $/an).',
-    amountUsd: 185,
-    amountXof: 110000,
+    name: 'Abonnement PRO Mensuel — Lien-Bio',
+    description: 'Accès complet sans engagement à toutes les fonctionnalités PRO (25 $/mois).',
+    amountUsd: 25,
+    amountXof: 15000, // ~15 000 FCFA
   },
 };
 

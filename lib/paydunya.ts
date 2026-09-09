@@ -22,9 +22,9 @@ export const PAYDUNYA_PLANS: Record<'monthly' | 'yearly' | 'lifetime', PaydunyaP
   monthly: {
     plan: 'monthly',
     name: 'Abonnement PRO Mensuel — Lien-Bio',
-    description: 'Accès complet sans engagement à toutes les fonctionnalités PRO (35 $/mois).',
-    amountUsd: 35,
-    amountXof: 21000, // ~21 000 FCFA
+    description: 'Accès complet sans engagement à toutes les fonctionnalités PRO (25 $/mois).',
+    amountUsd: 25,
+    amountXof: 15000, // ~15 000 FCFA
   },
   yearly: {
     plan: 'yearly',

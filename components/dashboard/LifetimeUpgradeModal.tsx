@@ -40,9 +40,17 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
 
   if (!isOpen) return null;
 
-  const handleCheckout = (plan: 'yearly' | 'lifetime') => {
-    const productId = plan === 'lifetime' ? CHARIOW_PRODUCTS.LIFETIME : CHARIOW_PRODUCTS.YEARLY;
-    const planTitle = plan === 'lifetime' ? 'Pack PRO À Vie (500 $)' : 'Formule PRO 1 An (185 $)';
+  const handleCheckout = (plan: 'monthly' | 'yearly' | 'lifetime') => {
+    let productId: string = CHARIOW_PRODUCTS.YEARLY;
+    let planTitle = 'Formule PRO 1 An (185 $)';
+
+    if (plan === 'monthly') {
+      productId = CHARIOW_PRODUCTS.MONTHLY;
+      planTitle = 'Formule PRO Mensuel (25 $)';
+    } else if (plan === 'lifetime') {
+      productId = CHARIOW_PRODUCTS.LIFETIME;
+      planTitle = 'Pack PRO À Vie (500 $)';
+    }
 
     setCheckoutModalConfig({
       isOpen: true,
@@ -53,7 +61,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white border border-neutral-200 text-neutral-900 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative flex flex-col gap-6 my-auto max-h-[94vh]">
+      <div className="bg-white border border-neutral-200 text-neutral-900 rounded-3xl p-6 sm:p-8 max-w-5xl w-full shadow-2xl relative flex flex-col gap-6 my-auto max-h-[94vh]">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -78,24 +86,99 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
               <>Choisissez votre formule <span className="text-indigo-600">PRO</span></>
             )}
           </h2>
-          <p className="text-xs text-neutral-500 max-w-md">
+          <p className="text-xs text-neutral-500 max-w-lg">
             {currentPlan === 'pro_subscription'
               ? 'Optez pour l’accès définitif À VIE pour ne plus jamais payer d’abonnement futur.'
-              : 'Choisissez entre l’accès annuel ou l’accès définitif à vie pour débloquer toutes les fonctionnalités.'}
+              : 'Choisissez entre l’abonnement mensuel flexible, l’accès annuel économique ou l’accès définitif à vie.'}
           </p>
         </div>
 
-        {/* The 2 PRO Offers Side-by-Side */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-          {/* OFFRE 1 : ABONNEMENT PRO 1 AN */}
-          <div className="bg-white border-2 border-indigo-500/50 hover:border-indigo-600 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-xs">
+        {/* The 3 PRO Offers Side-by-Side */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+          {/* OFFRE 1 : ABONNEMENT PRO MENSUEL */}
+          <div className="bg-white border border-neutral-200 hover:border-neutral-300 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-xs">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-neutral-600">
+                  PRO Mensuel
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-neutral-100 text-[10px] font-semibold text-neutral-600 border border-neutral-200">
+                  Flexible
+                </span>
+              </div>
+
+              <div className="h-[28px] flex items-center mb-3">
+                <span className="text-xs text-neutral-500 font-medium">
+                  Sans engagement, résiliable à tout moment
+                </span>
+              </div>
+
+              {/* Price */}
+              <div className="mb-4">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-3xl font-black text-neutral-900">25 $</span>
+                  <span className="text-xs text-neutral-500 font-bold">/ mois</span>
+                </div>
+                <span className="inline-block mt-1 px-2.5 py-1 rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-700 font-bold text-[11px]">
+                  Facturé mensuellement
+                </span>
+              </div>
+
+              {/* Features */}
+              <ul className="flex flex-col gap-2.5 text-xs text-neutral-700 mb-6">
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Liens personnalisés illimités</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Tous les thèmes de luxe débloqués</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Services & Prise de RDV Calendly</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Boutique E-books & guides PDF</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Statistiques & Analytics de clics</span>
+                </li>
+                <li className="flex items-center gap-2 text-neutral-500">
+                  <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>Support standard par email</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              disabled={loadingPlan !== null}
+              onClick={() => handleCheckout('monthly')}
+              className="w-full py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-xs"
+            >
+              {loadingPlan === 'monthly' ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>Choisir Mensuel (25 $)</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* OFFRE 2 : ABONNEMENT PRO 1 AN (POPULAIRE) */}
+          <div className="bg-white border-2 border-indigo-500 hover:border-indigo-600 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-md">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">
-                  Offre 1 : Abonnement 1 An
+                  PRO 1 An
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[10px] font-bold text-indigo-700 border border-indigo-200">
-                  Accès 12 mois
+                  Économisez 38%
                 </span>
               </div>
 
@@ -166,12 +249,12 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
             </button>
           </div>
 
-          {/* OFFRE 2 : PRO À VIE (LIFETIME) */}
-          <div className="bg-white border-2 border-amber-500/70 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-md">
+          {/* OFFRE 3 : PRO À VIE (LIFETIME) */}
+          <div className="bg-white border-2 border-amber-500/80 rounded-2xl p-5 flex flex-col justify-between transition relative shadow-md">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-700">
-                  Offre 2 : Accès Définitif
+                  PRO À Vie
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 text-[10px] font-bold border border-amber-200">
                   Paiement unique
@@ -187,7 +270,7 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
               {/* Price */}
               <div className="mb-4">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-4xl font-black text-neutral-900 tracking-tight">
+                  <span className="text-3xl font-black text-neutral-900 tracking-tight">
                     500 $
                   </span>
                   <span className="text-xs text-neutral-500 font-bold">/ à vie</span>
@@ -230,13 +313,13 @@ export function LifetimeUpgradeModal({ isOpen, onClose, currentPlan }: LifetimeU
               type="button"
               disabled={loadingPlan !== null}
               onClick={() => handleCheckout('lifetime')}
-              className="w-full py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-xs"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-xs"
             >
               {loadingPlan === 'lifetime' ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <Crown className="w-4 h-4 text-amber-400" />
+                  <Crown className="w-4 h-4 text-amber-100" />
                   <span>
                     {currentPlan === 'pro_subscription'
                       ? "Passer à l'accès à vie (500 $)"

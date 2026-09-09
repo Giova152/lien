@@ -127,7 +127,11 @@ export default function RegisterPage() {
                 <Crown className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-amber-900 block">
-                    {planParam === 'lifetime' ? '⭐ Pack PRO À Vie sélectionné (500 $)' : '⭐ Formule PRO 1 An sélectionnée (185 $)'}
+                    {planParam === 'lifetime'
+                      ? '⭐ Pack PRO À Vie sélectionné (500 $)'
+                      : planParam === 'monthly'
+                      ? '⭐ Formule PRO Mensuel sélectionnée (25 $/mois)'
+                      : '⭐ Formule PRO 1 An sélectionnée (185 $)'}
                   </span>
                   <span className="text-amber-800 text-[11px] font-medium mt-0.5 block">
                     Créez votre compte pour accéder immédiatement au paiement sécurisé (Wave, Orange Money, Carte bancaire).

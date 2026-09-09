@@ -13,14 +13,14 @@ interface LandingPricingCardsProps {
 
 export function LandingPricingCards({ user }: LandingPricingCardsProps) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [authPromptPlan, setAuthPromptPlan] = useState<'yearly' | 'lifetime' | null>(null);
+  const [authPromptPlan, setAuthPromptPlan] = useState<'monthly' | 'yearly' | 'lifetime' | null>(null);
   const [checkoutModalConfig, setCheckoutModalConfig] = useState<{
     isOpen: boolean;
     productId: string;
     planTitle: string;
   } | null>(null);
 
-  const handlePlanClick = (plan: 'yearly' | 'lifetime') => {
+  const handlePlanClick = (plan: 'monthly' | 'yearly' | 'lifetime') => {
     // Si l'utilisateur n'est pas connecté, afficher la modale d'inscription rapide
     if (!user) {
       setAuthPromptPlan(plan);
@@ -28,8 +28,17 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
     }
 
     // Si l'utilisateur est connecté, ouvrir directement le terminal Chariow sans redirection
-    const productId = plan === 'lifetime' ? CHARIOW_PRODUCTS.LIFETIME : CHARIOW_PRODUCTS.YEARLY;
-    const planTitle = plan === 'lifetime' ? 'Pack PRO À Vie (500 $)' : 'Formule PRO 1 An (185 $)';
+    let productId: string = CHARIOW_PRODUCTS.YEARLY;
+    let planTitle = 'Formule PRO 1 An (185 $)';
+
+    if (plan === 'lifetime') {
+      productId = CHARIOW_PRODUCTS.LIFETIME;
+      planTitle = 'Pack PRO À Vie (500 $)';
+    } else if (plan === 'monthly') {
+      productId = CHARIOW_PRODUCTS.MONTHLY;
+      planTitle = 'Formule PRO Mensuel (25 $)';
+    }
+
     setCheckoutModalConfig({
       isOpen: true,
       productId,
@@ -39,9 +48,9 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full text-left">
-        {/* Plan Gratuit */}
-        <div className="bg-white border border-neutral-200/80 rounded-2xl p-6 flex flex-col justify-between shadow-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto w-full text-left">
+        {/* 1. Plan Gratuit */}
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Gratuit</span>
@@ -87,13 +96,80 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
           </Link>
         </div>
 
-        {/* Plan PRO Abonnement 1 An */}
-        <div className="bg-white border-2 border-indigo-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-sm relative">
+        {/* 2. Plan PRO Mensuel */}
+        <div className="bg-white border border-neutral-300/90 rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs relative">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">PRO 1 An</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-700">PRO Mensuel</span>
+              <span className="px-2 py-0.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-700 text-[10px] font-bold">
+                Sans engagement
+              </span>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-black text-neutral-900">25 $</span>
+                <span className="text-xs text-neutral-500">/ mois</span>
+              </div>
+              <span className="text-[11px] text-neutral-500 font-medium block mt-0.5">
+                Renouvelable chaque mois • Annulable à tout moment
+              </span>
+            </div>
+
+            <p className="text-xs text-neutral-600 mb-5">Idéal pour tester toutes les fonctionnalités PRO sans engagement.</p>
+
+            <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+                <span>Tous les thèmes de luxe</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+                <span>Liens & Réseaux illimités</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+                <span>Services & Prise de RDV</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+                <span>Boutique & Produits PDF</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
+                <span>Statistiques complètes</span>
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            disabled={loadingPlan !== null}
+            onClick={() => handlePlanClick('monthly')}
+            className="w-full mt-7 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 text-white text-xs font-bold text-center transition shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            {loadingPlan === 'monthly' ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <span>Choisir Mensuel (25 $)</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* 3. Plan PRO Abonnement 1 An (Recommandé) */}
+        <div className="bg-white border-2 border-indigo-600 rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-md relative ring-2 ring-indigo-600/10">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs whitespace-nowrap">
+            ⭐ Plus Populaire • -38%
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">PRO 1 An</span>
               <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold">
-                Accès 12 mois
+                Économisez 38%
               </span>
             </div>
 
@@ -101,14 +177,14 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
             <div className="mb-4">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-3xl font-black text-neutral-900">185 $</span>
-                <span className="text-xs text-neutral-500">/ an</span>
+                <span className="text-xs text-neutral-500 font-bold">/ an</span>
               </div>
-              <span className="text-[11px] text-indigo-600 font-bold block mt-0.5">
-                Soit ~15 $/mois • Facturé annuellement
+              <span className="text-[11px] text-indigo-700 font-bold block mt-0.5">
+                Soit ~15 $/mois au lieu de 25 $
               </span>
             </div>
 
-            <p className="text-xs text-neutral-600 mb-5">Idéal pour les créateurs et indépendants avec flexibilité totale pendant 1 an.</p>
+            <p className="text-xs text-neutral-600 mb-5">La formule préférée des créateurs et professionnels.</p>
 
             <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
               <li className="flex items-center gap-2">
@@ -138,7 +214,7 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
             type="button"
             disabled={loadingPlan !== null}
             onClick={() => handlePlanClick('yearly')}
-            className="w-full mt-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold text-center transition shadow-xs flex items-center justify-center gap-2"
+            className="w-full mt-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold text-center transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
           >
             {loadingPlan === 'yearly' ? (
               <Loader2 className="w-4 h-4 animate-spin" />
