@@ -60,10 +60,14 @@ export async function POST(request: Request) {
           auth: { autoRefreshToken: false, persistSession: false },
         });
 
+        const siteUrl =
+          process.env.NEXT_PUBLIC_APP_URL || 'https://www.lien-bio.site';
+        const inviteRedirectUrl = `${siteUrl}/auth/callback?next=/onboarding`;
+
         const { error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(
           trimmedEmail,
           {
-            redirectTo: finalInviteUrl,
+            redirectTo: inviteRedirectUrl,
             data: {
               invited_by: senderName,
               custom_message: customMessage || null,
