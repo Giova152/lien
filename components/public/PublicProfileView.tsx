@@ -162,12 +162,101 @@ export function PublicProfileView({
     ? 'bg-white/5 border-white/10'
     : 'bg-white/80 border-[#E8E2D5]';
 
+  const [dynamicTranslations, setDynamicTranslations] = useState<Record<string, string>>({});
+
   // Dynamic user data (only if explicitly configured by the user, excluding hidden KPIs)
   const rawStats: StatItem[] = theme.stats || [];
   const stats: StatItem[] = rawStats.filter((st) => !st.hidden);
   const tags: string[] = theme.expertise_tags || [];
   const services: ServiceItem[] = theme.services || [];
   const products: ShopProduct[] = theme.products || [];
+
+  // Collect user-created texts that should be dynamically translated to English
+  // (Excluding: display_name, username, address/location, contact phones, urls, prices)
+  const textsToTranslate = useMemo(() => {
+    if (lang !== 'en') return [];
+    const list: string[] = [];
+    if (profile.title?.trim()) list.push(profile.title.trim());
+    if (profile.company?.trim()) list.push(profile.company.trim());
+    if (profile.bio?.trim()) list.push(profile.bio.trim());
+    tags.forEach((t) => {
+      const clean = t.replace(/^[✦•\-\*\s]+/, '').trim();
+      if (clean) list.push(clean);
+    });
+    services.forEach((s) => {
+      if (s.title?.trim()) list.push(s.title.trim());
+      if (s.subtitle?.trim()) list.push(s.subtitle.trim());
+      if (s.category?.trim()) list.push(s.category.trim());
+    });
+    products.forEach((p) => {
+      if (p.title?.trim()) list.push(p.title.trim());
+    });
+    links.forEach((l) => {
+      if (l.label?.trim()) list.push(l.label.trim());
+    });
+    return Array.from(new Set(list));
+  }, [lang, profile.title, profile.company, profile.bio, tags, services, products, links]);
+
+  // Dynamic on-the-fly translation effect with client-side localStorage caching
+  React.useEffect(() => {
+    if (lang !== 'en' || textsToTranslate.length === 0) return;
+
+    const missing: string[] = [];
+    const cachedUpdates: Record<string, string> = {};
+
+    try {
+      const localStore = localStorage.getItem('lien_bio_trans_cache');
+      const parsedCache = localStore ? JSON.parse(localStore) : {};
+      for (const t of textsToTranslate) {
+        if (parsedCache[t]) {
+          cachedUpdates[t] = parsedCache[t];
+        } else {
+          missing.push(t);
+        }
+      }
+    } catch {
+      missing.push(...textsToTranslate);
+    }
+
+    if (Object.keys(cachedUpdates).length > 0) {
+      setDynamicTranslations((prev) => ({ ...prev, ...cachedUpdates }));
+    }
+
+    if (missing.length === 0) return;
+
+    fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texts: missing, from: 'fr', to: 'en' }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.translations) {
+          setDynamicTranslations((prev) => {
+            const updated = { ...prev, ...data.translations };
+            try {
+              const localStore = localStorage.getItem('lien_bio_trans_cache');
+              const currentCache = localStore ? JSON.parse(localStore) : {};
+              localStorage.setItem(
+                'lien_bio_trans_cache',
+                JSON.stringify({ ...currentCache, ...data.translations })
+              );
+            } catch {}
+            return updated;
+          });
+        }
+      })
+      .catch((err) => console.error('Dynamic translation failed:', err));
+  }, [lang, textsToTranslate]);
+
+  const getTrans = <T extends string | null | undefined>(text: T): T => {
+    if (!text) return text;
+    if (lang === 'en') {
+      const trimmed = text.trim();
+      return (dynamicTranslations[trimmed] || text) as T;
+    }
+    return text;
+  };
 
   // Extract unique non-empty trimmed categories from services
   const availableServiceCategories = useMemo(() => {
@@ -262,7 +351,11 @@ export function PublicProfileView({
 
           {/* Profile Header & Navigation Pills */}
           <ProfileHeader
-            profile={profile}
+            profile={{
+              ...profile,
+              title: getTrans(profile.title),
+              company: getTrans(profile.company),
+            }}
             theme={theme}
             contact={contact}
             activeTab={activeTab}
@@ -333,7 +426,7 @@ export function PublicProfileView({
                     className="text-xs sm:text-sm font-normal leading-relaxed whitespace-pre-line opacity-90 pl-0.5"
                     style={{ color: theme.text_color }}
                   >
-                    {profile.bio}
+                    {getTrans(profile.bio)}
                   </p>
                 </div>
               )}
@@ -361,6 +454,7 @@ export function PublicProfileView({
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag, idx) => {
                       const cleanTag = tag.replace(/^[✦•\-\*\s]+/, '').trim();
+                      const displayTag = getTrans(cleanTag);
                       return (
                         <span
                           key={idx}
@@ -375,7 +469,7 @@ export function PublicProfileView({
                             className="w-1.5 h-1.5 rounded-full shrink-0"
                             style={{ backgroundColor: accentColor }}
                           />
-                          {cleanTag}
+                          {displayTag}
                         </span>
                       );
                     })}
@@ -389,7 +483,11 @@ export function PublicProfileView({
               {links.length > 0 && (
                 <div className="w-full flex flex-col items-center gap-2.5 mt-2">
                   {links.map((link) => (
-                    <LinkButton key={link.id} link={link} theme={theme} />
+                    <LinkButton
+                      key={link.id}
+                      link={{ ...link, label: getTrans(link.label) }}
+                      theme={theme}
+                    />
                   ))}
                 </div>
               )}
@@ -431,7 +529,7 @@ export function PublicProfileView({
                           color: isActive ? '#ffffff' : theme.text_color,
                         }}
                       >
-                        {cat} ({count})
+                        {getTrans(cat)} ({count})
                       </button>
                     );
                   })}
@@ -501,14 +599,14 @@ export function PublicProfileView({
                           </div>
                           <div>
                             <h4 className="font-extrabold text-sm leading-tight" style={{ color: theme.text_color }}>
-                              {service.title}
+                              {getTrans(service.title)}
                             </h4>
                             {service.category && (
                               <span
                                 className="inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
                                 style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
                               >
-                                {service.category}
+                                {getTrans(service.category)}
                               </span>
                             )}
                           </div>
@@ -530,7 +628,7 @@ export function PublicProfileView({
 
                       {service.subtitle && (
                         <p className="text-xs leading-relaxed opacity-85" style={{ color: theme.text_color }}>
-                          {service.subtitle}
+                          {getTrans(service.subtitle)}
                         </p>
                       )}
 
@@ -652,7 +750,7 @@ export function PublicProfileView({
                         </div>
 
                         <div className="p-3 flex flex-col justify-between flex-1 gap-2">
-                          <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{prod.title}</h4>
+                          <h4 className="text-xs font-bold line-clamp-2" style={{ color: theme.text_color }}>{getTrans(prod.title)}</h4>
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black" style={{ color: accentColor }}>{prod.price}</span>
                             <span className="text-[10px] font-bold opacity-80 group-hover:translate-x-0.5 transition-transform" style={{ color: accentColor }}>
