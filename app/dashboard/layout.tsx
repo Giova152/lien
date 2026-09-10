@@ -10,6 +10,7 @@ import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
 import { TeamManagementModal } from '@/components/dashboard/TeamManagementModal';
+import { QrCodeModal } from '@/components/public/QrCodeModal';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
   Crown,
@@ -577,6 +578,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-indigo-600" />}
                     <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                   </button>
+
+                  {/* QR Code HD Generator Button */}
+                  <QrCodeModal profile={profile} triggerStyle="dashboard" />
 
                   {/* View Public Page in New Tab Button */}
                   <a

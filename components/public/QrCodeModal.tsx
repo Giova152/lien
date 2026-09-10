@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 interface QrCodeModalProps {
   profile: Profile;
   url?: string;
-  triggerStyle?: 'button' | 'icon';
+  triggerStyle?: 'button' | 'icon' | 'dashboard';
   lang?: 'fr' | 'en';
 }
 
@@ -96,7 +96,17 @@ export function QrCodeModal({ profile, url, triggerStyle = 'button', lang = 'fr'
   return (
     <>
       {/* Trigger Button */}
-      {triggerStyle === 'icon' ? (
+      {triggerStyle === 'dashboard' ? (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-200/80 text-xs font-bold text-neutral-700 transition shadow-2xs hover:shadow-xs flex items-center gap-1.5 cursor-pointer"
+          title="Générer & Télécharger votre QR Code HD"
+        >
+          <QrCode className="w-4 h-4 text-indigo-600" />
+          <span className="hidden sm:inline">QR Code</span>
+        </button>
+      ) : triggerStyle === 'icon' ? (
         <button
           onClick={() => setIsOpen(true)}
           className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm shrink-0"
