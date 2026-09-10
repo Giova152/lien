@@ -63,6 +63,23 @@ export default function SettingsPage() {
   const [domainStatus, setDomainStatus] = useState<string | null>(profile?.custom_domain_status || profile?.theme?.custom_domain_status || null);
   const [checkingDns, setCheckingDns] = useState(false);
   const [savingDomain, setSavingDomain] = useState(false);
+  const [isEditingDomain, setIsEditingDomain] = useState(false);
+  const [copiedHost, setCopiedHost] = useState(false);
+  const [copiedTarget, setCopiedTarget] = useState(false);
+
+  const computeDnsInstructions = (rawDomain: string) => {
+    const clean = rawDomain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    if (!clean) {
+      return { type: 'CNAME', host: 'bio', value: 'cname.lien-bio.site' };
+    }
+    const parts = clean.split('.');
+    if (parts.length > 2) {
+      const host = parts.slice(0, parts.length - 2).join('.');
+      return { type: 'CNAME', host, value: 'cname.lien-bio.site' };
+    } else {
+      return { type: 'A', host: '@', value: '76.76.21.21' };
+    }
+  };
 
   // Load current Auth user and Custom Domain status
   useEffect(() => {
@@ -123,6 +140,7 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l’enregistrement');
 
       setDomainStatus(data.status);
+      setIsEditingDomain(false);
       toast.success(data.message || 'Domaine enregistré !');
       if (refreshDashboard) refreshDashboard();
     } catch (err: any) {
@@ -141,6 +159,7 @@ export default function SettingsPage() {
 
       setDomainInput('');
       setDomainStatus(null);
+      setIsEditingDomain(false);
       toast.success('Nom de domaine personnalisé supprimé.');
       if (refreshDashboard) refreshDashboard();
     } catch (err: any) {
@@ -531,144 +550,252 @@ export default function SettingsPage() {
       </div>
 
       {/* 4. Nom de Domaine Personnalisé (Réservé PRO) */}
-      <div className="bg-white border border-neutral-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <Globe className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm sm:text-base font-bold text-neutral-900">
-                Nom de Domaine Personnalisé
-              </h3>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700">
-                <Crown className="w-3 h-3 text-amber-500" />
-                Réservé PRO
-              </span>
-            </div>
-            <p className="text-xs text-neutral-500 leading-relaxed max-w-xl">
-              Associez votre propre nom de domaine ou sous-domaine (ex: <code className="font-mono text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded">bio.votre-entreprise.com</code> ou <code className="font-mono text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded">mon-nom.com</code>) pour remplacer l'URL par défaut.
-            </p>
-          </div>
+      {(() => {
+        const activeDomain = profile?.custom_domain || profile?.theme?.custom_domain || '';
+        const dnsInfo = computeDnsInstructions(domainInput || activeDomain);
 
-          {domainStatus && (
-            <div className="shrink-0">
-              {domainStatus === 'active' ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Actif & DNS Vérifié
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                  En attente de DNS
-                </span>
+        const handleCopyText = (text: string, type: 'host' | 'target') => {
+          navigator.clipboard.writeText(text);
+          if (type === 'host') {
+            setCopiedHost(true);
+            setTimeout(() => setCopiedHost(false), 2000);
+          } else {
+            setCopiedTarget(true);
+            setTimeout(() => setCopiedTarget(false), 2000);
+          }
+          toast.success('Copié dans le presse-papier !');
+        };
+
+        return (
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 pb-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                    <Globe className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-sm sm:text-base font-bold text-neutral-900">
+                    Nom de Domaine Personnalisé
+                  </h3>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700">
+                    <Crown className="w-3 h-3 text-amber-500" />
+                    Réservé PRO
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-500 leading-relaxed max-w-xl">
+                  Associez votre propre nom de domaine ou sous-domaine pour remplacer l’adresse par défaut de votre carte Lien-Bio.
+                </p>
+              </div>
+
+              {domainStatus && activeDomain && !isEditingDomain && (
+                <div className="shrink-0">
+                  {domainStatus === 'active' ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Actif & DNS Vérifié
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                      En attente de DNS
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
 
-        {!profile.is_pro ? (
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-amber-50 border border-indigo-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
-                <Crown className="w-4.5 h-4.5 text-amber-300" />
-              </div>
-              <div className="text-xs text-neutral-700">
-                <span className="font-bold text-neutral-900 block">Fonctionnalité PRO : Nom de domaine propre</span>
-                Connectez votre marque à 100% sans dépendre de lien-bio.site.
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={openUpgradeModal}
-              className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition shrink-0 cursor-pointer"
-            >
-              <Crown className="w-3.5 h-3.5 text-amber-300" />
-              <span>Passer PRO</span>
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <form onSubmit={handleSaveDomain} className="flex flex-col sm:flex-row gap-2.5">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
-                  <Globe className="w-4 h-4" />
+            {!profile.is_pro ? (
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-amber-50 border border-indigo-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <Crown className="w-4.5 h-4.5 text-amber-300" />
+                  </div>
+                  <div className="text-xs text-neutral-700">
+                    <span className="font-bold text-neutral-900 block">Fonctionnalité PRO : Nom de domaine propre</span>
+                    Connectez votre marque à 100% sans dépendre de lien-bio.site.
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: bio.mon-entreprise.com ou mon-nom.com"
-                  value={domainInput}
-                  onChange={(e) => setDomainInput(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="submit"
-                  disabled={savingDomain || !domainInput.trim()}
-                  className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition shadow-xs disabled:opacity-50 cursor-pointer"
-                >
-                  {savingDomain ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  <span>Enregistrer</span>
-                </button>
-
-                {(profile?.custom_domain || profile?.theme?.custom_domain) && (
-                  <button
-                    type="button"
-                    onClick={handleDeleteDomain}
-                    disabled={savingDomain}
-                    className="p-2.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 border border-neutral-200 rounded-xl transition cursor-pointer"
-                    title="Supprimer le domaine"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </form>
-
-            {/* DNS Instructions Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-neutral-200/90 text-xs space-y-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="font-bold text-neutral-900 flex items-center gap-1.5">
-                  <Settings className="w-3.5 h-3.5 text-indigo-600" />
-                  Instructions de configuration DNS :
-                </span>
                 <button
                   type="button"
-                  onClick={handleCheckDns}
-                  disabled={checkingDns || !(profile?.custom_domain || profile?.theme?.custom_domain)}
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline flex items-center gap-1.5 disabled:opacity-40 cursor-pointer"
+                  onClick={openUpgradeModal}
+                  className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition shrink-0 cursor-pointer"
                 >
-                  {checkingDns ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                  <span>Vérifier les DNS en temps réel</span>
+                  <Crown className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Passer PRO</span>
                 </button>
               </div>
+            ) : (
+              <div className="space-y-4">
+                {/* 1. If domain is saved and not editing -> Show sleek Domain Card */}
+                {activeDomain && !isEditingDomain ? (
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-neutral-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-white border border-neutral-200 flex items-center justify-center text-indigo-600 shrink-0 shadow-2xs">
+                        <Globe className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-extrabold font-mono text-neutral-900">
+                            {activeDomain}
+                          </span>
+                          <a
+                            href={`https://${activeDomain}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-400 hover:text-indigo-600 transition"
+                            title="Tester l'accès direct"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                        <span className="text-[11px] text-neutral-500 block mt-0.5">
+                          {domainStatus === 'active'
+                            ? 'Votre carte répond directement sur ce nom de domaine.'
+                            : 'Domaine enregistré. En attente de propagation de vos DNS.'}
+                        </span>
+                      </div>
+                    </div>
 
-              <p className="text-neutral-600 leading-relaxed">
-                Connectez-vous à votre gestionnaire DNS (GoDaddy, OVH, Cloudflare, Namecheap...) et ajoutez l’enregistrement suivant :
-              </p>
+                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                      <button
+                        type="button"
+                        onClick={handleCheckDns}
+                        disabled={checkingDns}
+                        className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition shadow-xs disabled:opacity-50 cursor-pointer"
+                      >
+                        {checkingDns ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                        <span>{checkingDns ? 'Vérification...' : 'Vérifier les DNS'}</span>
+                      </button>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white p-3 rounded-xl border border-neutral-200 text-neutral-800 font-mono text-[11px]">
-                <div>
-                  <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase">Type :</span>
-                  CNAME
-                </div>
-                <div>
-                  <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase">Nom / Hôte :</span>
-                  bio <span className="font-sans text-neutral-400 text-[10px]">(ou votre sous-domaine)</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase">Cible / Valeur :</span>
-                  cname.lien-bio.site
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDomainInput(activeDomain);
+                          setIsEditingDomain(true);
+                        }}
+                        className="px-3.5 py-2 bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 text-xs font-bold rounded-xl transition shadow-2xs cursor-pointer"
+                      >
+                        Modifier
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleDeleteDomain}
+                        disabled={savingDomain}
+                        className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 border border-neutral-200 rounded-xl transition cursor-pointer"
+                        title="Supprimer le domaine"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* 2. Domain Entry Form */
+                  <form onSubmit={handleSaveDomain} className="flex flex-col sm:flex-row gap-2.5">
+                    <div className="relative flex-1">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ex: bio.mon-entreprise.com ou mon-nom.com"
+                        value={domainInput}
+                        onChange={(e) => setDomainInput(e.target.value)}
+                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="submit"
+                        disabled={savingDomain || !domainInput.trim()}
+                        className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition shadow-xs disabled:opacity-50 cursor-pointer"
+                      >
+                        {savingDomain ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                        <span>Enregistrer le domaine</span>
+                      </button>
+
+                      {activeDomain && (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingDomain(false)}
+                          className="px-3.5 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                        >
+                          Annuler
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                )}
+
+                {/* 3. DNS Configuration Table & 1-Click Copy */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-neutral-200/90 text-xs space-y-3.5">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="font-bold text-neutral-900 flex items-center gap-1.5">
+                      <Settings className="w-3.5 h-3.5 text-indigo-600" />
+                      Configuration DNS requise chez votre registrar :
+                    </span>
+                  </div>
+
+                  <p className="text-neutral-600 leading-relaxed">
+                    Connectez-vous à votre gestionnaire DNS (GoDaddy, OVH, Cloudflare, Namecheap...) et créez l’enregistrement ci-dessous :
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3.5 rounded-xl border border-neutral-200 text-neutral-800 font-mono text-[11px] shadow-2xs">
+                    <div className="space-y-1">
+                      <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-wider">
+                        TYPE :
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold inline-block">
+                        {dnsInfo.type}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-wider">
+                          NOM / HÔTE :
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(dnsInfo.host, 'host')}
+                          className="text-[10px] font-sans font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5 cursor-pointer"
+                        >
+                          <Copy className="w-3 h-3" />
+                          <span>{copiedHost ? 'Copié !' : 'Copier'}</span>
+                        </button>
+                      </div>
+                      <div className="font-bold text-neutral-900 bg-slate-50 px-2 py-1 rounded border border-neutral-200 flex items-center justify-between">
+                        <span>{dnsInfo.host}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-wider">
+                          CIBLE / VALEUR :
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(dnsInfo.value, 'target')}
+                          className="text-[10px] font-sans font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5 cursor-pointer"
+                        >
+                          <Copy className="w-3 h-3" />
+                          <span>{copiedTarget ? 'Copié !' : 'Copier'}</span>
+                        </button>
+                      </div>
+                      <div className="font-bold text-neutral-900 bg-slate-50 px-2 py-1 rounded border border-neutral-200 flex items-center justify-between">
+                        <span>{dnsInfo.value}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        );
+      })()}
 
       {/* 3. Adresse email de connexion */}
       <div className="bg-white border border-neutral-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-4">

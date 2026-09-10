@@ -18,3 +18,4 @@ DROP POLICY IF EXISTS "Public can view custom domains" ON public.profiles;
 CREATE POLICY "Public can view custom domains"
 ON public.profiles FOR SELECT
 USING (true);
+
