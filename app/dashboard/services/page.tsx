@@ -250,82 +250,33 @@ export default function ServicesPage() {
             <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
               <Calendar className="w-5 h-5" />
             </div>
-            Services & Agenda Natif
+            Services & Prestations
           </h2>
           <p className="text-xs text-neutral-500 mt-1">
-            Gérez vos prestations, votre agenda natif sans outil tiers ou vos redirections vers Calendly / WhatsApp.
+            Gérez vos prestations, vos tarifs et insérez les liens vers votre calendrier professionnel (ex: calendar.lien-bio.site).
           </p>
         </div>
 
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
-          {activeTab === 'services' && (
-            <button
-              type="button"
-              onClick={() => handleAddService()}
-              className="flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-xs"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Ajouter une prestation</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => handleAddService()}
+            className="flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Ajouter une prestation</span>
+          </button>
 
           <button
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50"
+            className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50 cursor-pointer"
           >
             <Check className="w-4 h-4" />
             <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
           </button>
         </div>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-neutral-200 pb-2">
-        <button
-          type="button"
-          onClick={() => setActiveTab('services')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition ${
-            activeTab === 'services'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-          }`}
-        >
-          <ListOrdered className="w-4 h-4" />
-          <span>Mes Prestations ({services.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('availability')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition ${
-            activeTab === 'availability'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-          }`}
-        >
-          <Settings className="w-4 h-4" />
-          <span>Agenda & Disponibilités</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('appointments')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition relative ${
-            activeTab === 'appointments'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-          }`}
-        >
-          <Calendar className="w-4 h-4" />
-          <span>Rendez-vous reçus</span>
-          {appointments.length > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-400 text-zinc-950 font-black">
-              {appointments.length}
-            </span>
-          )}
-        </button>
       </div>
 
       {/* PRO Upgrade Callout if not PRO */}
