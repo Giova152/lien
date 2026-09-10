@@ -6,7 +6,9 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  const host = (request.headers.get('host') || '').toLowerCase().replace(/:\d+$/, '');
+  const rawHost = (request.headers.get('host') || '').toLowerCase().replace(/:\d+$/, '');
+  const host = rawHost.replace(/^www\./, '');
+  const isCalendarSubdomain = host.startsWith('calendar.');
   const isLienBioSite = host.endsWith('lien-bio.site');
 
   const supabase = createServerClient(
@@ -66,7 +68,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 1. Calendar Subdomain Routing (calendar.lien-bio.site or calendar.localhost)
-  if (host.startsWith('calendar.')) {
+  if (isCalendarSubdomain) {
     // If accessing auth or dashboard routes while on calendar subdomain, redirect to main domain
     if (
       pathname.startsWith('/dashboard') ||
@@ -77,7 +79,7 @@ export async function updateSession(request: NextRequest) {
       const mainHost = host.replace(/^calendar\./, '');
       const proto =
         request.headers.get('x-forwarded-proto') ||
-        (host.includes('localhost') ? 'http' : 'https');
+        (rawHost.includes('localhost') ? 'http' : 'https');
       const targetUrl = new URL(`${proto}://${mainHost}${pathname}${request.nextUrl.search}`);
       return NextResponse.redirect(targetUrl);
     }
