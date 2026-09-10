@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/dashboard/calendar',
+        destination: 'https://calendar.lien-bio.site',
+        permanent: false,
+      },
+      {
+        source: '/dashboard/calendar/:path*',
+        destination: 'https://calendar.lien-bio.site',
+        permanent: false,
+      },
+      {
         source: '/:path*',
         has: [
           {

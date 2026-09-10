@@ -374,9 +374,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       title: 'Outils',
       items: [
         {
-          href: '/dashboard/calendar',
+          href: 'https://calendar.lien-bio.site',
           label: 'Agenda Pro (calendar)',
           icon: Calendar,
+          external: true,
         },
       ],
     },

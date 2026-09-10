@@ -53,6 +53,11 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  // Redirection immédiate de l'ancienne URL /dashboard/calendar vers la suite dédiée calendar.lien-bio.site
+  if (!isCalendarSubdomain && (pathname === '/dashboard/calendar' || pathname.startsWith('/dashboard/calendar/'))) {
+    return NextResponse.redirect(new URL('https://calendar.lien-bio.site'));
+  }
+
   // Protect /dashboard and /onboarding
   if (!user && (pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding'))) {
     const url = request.nextUrl.clone();

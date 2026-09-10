@@ -120,6 +120,15 @@ export function sanitizeUsername(input: string): string {
     .slice(0, 30);
 }
 
+export function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD') // decompose accents
+    .replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[^a-z0-9]+/g, '-') // replace non-alphanumeric with hyphens
+    .replace(/^-+|-+$/g, ''); // remove leading/trailing hyphens
+}
+
 export function formatExternalUrl(url?: string): string {
   if (!url || !url.trim()) return '';
   const trimmed = url.trim();

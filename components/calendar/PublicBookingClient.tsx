@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Profile, ServiceItem, BookingAvailability } from '@/types';
+import { Profile, ServiceItem, BookingAvailability, LocationType } from '@/types';
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -14,11 +14,17 @@ import {
   ArrowRight,
   Loader2,
   ExternalLink,
+  Video,
+  MapPin,
+  Globe,
+  DollarSign,
+  Check,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
 interface PublicBookingClientProps {
   profile: Profile;
+  serviceSlug?: string;
 }
 
 const DAYS_MAP: Record<number, string> = {
@@ -36,12 +42,59 @@ const MONTH_NAMES = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
 
-export function PublicBookingClient({ profile }: PublicBookingClientProps) {
+export function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function getLocationLabel(type?: LocationType): string {
+  switch (type) {
+    case 'google_meet':
+      return 'Google Meet (Visioconférence)';
+    case 'zoom':
+      return 'Zoom (Visioconférence)';
+    case 'phone':
+      return 'Appel téléphonique';
+    case 'physical':
+      return 'En présentiel';
+    case 'custom_link':
+      return 'Lien visioconférence';
+    default:
+      return 'Visioconférence';
+  }
+}
+
+function LocationIcon({ type, className = 'w-3.5 h-3.5' }: { type?: LocationType; className?: string }) {
+  switch (type) {
+    case 'google_meet':
+    case 'zoom':
+      return <Video className={className} />;
+    case 'phone':
+      return <Phone className={className} />;
+    case 'physical':
+      return <MapPin className={className} />;
+    default:
+      return <Globe className={className} />;
+  }
+}
+
+export function PublicBookingClient({ profile, serviceSlug }: PublicBookingClientProps) {
   const theme = profile.theme || {};
-  const services: ServiceItem[] = theme.services || [];
+  let services: ServiceItem[] = (theme.services || []).filter((s: ServiceItem) => s.is_native_booking);
   
-  // Disponibilités configurées ou par défaut (Lun-Ven, 09h-18h, 30 min)
-  const availability: BookingAvailability = theme.booking_availability || {
+  if (serviceSlug) {
+    const matchedService = services.find((s: ServiceItem) => slugify(s.title) === serviceSlug);
+    if (matchedService) {
+      services = [matchedService];
+    }
+  }
+
+  // Global availability fallback
+  const globalAvailability: BookingAvailability = theme.booking_availability || {
     enabled_days: ['mon', 'tue', 'wed', 'thu', 'fri'],
     start_time: '09:00',
     end_time: '18:00',
@@ -53,8 +106,17 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     services.length > 0 ? services[0] : null
   );
 
+  // Disponibilité effective pour le service sélectionné
+  const availability: BookingAvailability = useMemo(() => {
+    if (selectedService?.has_custom_availability && selectedService.custom_availability) {
+      return selectedService.custom_availability;
+    }
+    return globalAvailability;
+  }, [selectedService, globalAvailability]);
+
   // Sélection du service avec réinitialisation du créneau
   const handleSelectService = (srv: ServiceItem) => {
+    if (serviceSlug) return;
     setSelectedService(srv);
     setSelectedSlot(null);
   };
@@ -82,6 +144,7 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
   const [clientNotes, setClientNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState<boolean>(false);
+  const [confirmedBookingData, setConfirmedBookingData] = useState<any>(null);
 
   // Charger les créneaux déjà réservés quand la date change
   useEffect(() => {
@@ -118,13 +181,11 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     const month = currentMonth.getMonth();
 
     const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Dimanche
-    // Ajuster pour commencer le lundi (0 = Lundi ... 6 = Dimanche)
     const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const days: Array<{ dateString: string; dayNum: number; isEnabled: boolean; isPast: boolean }> = [];
 
-    // Jours vides au début
     for (let i = 0; i < adjustedFirstDay; i++) {
       days.push({ dateString: '', dayNum: 0, isEnabled: false, isPast: true });
     }
@@ -136,7 +197,7 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
       const dayOfWeekKey = DAYS_MAP[dateObj.getDay()];
       const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const isPast = dateString < todayStr;
-      const isDayEnabled = availability.enabled_days.includes(dayOfWeekKey);
+      const isDayEnabled = (availability.enabled_days || []).includes(dayOfWeekKey);
 
       days.push({
         dateString,
@@ -149,7 +210,7 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     return days;
   }, [currentMonth, availability.enabled_days, today]);
 
-  // Génération des créneaux horaires possibles pour la journée adaptés à la durée du service
+  // Génération des créneaux horaires possibles pour la journée
   const availableSlots = useMemo(() => {
     if (!selectedDate) return [];
 
@@ -171,7 +232,6 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     }
 
     while (currentMinutes + duration <= endMinutes) {
-      // Vérifier si dans la pause déjeuner
       const isInBreak =
         breakStartMin !== -1 &&
         breakEndMin !== -1 &&
@@ -220,6 +280,9 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
           date: selectedDate,
           timeSlot: selectedSlot,
           notes: clientNotes.trim(),
+          location_type: selectedService?.location_type || 'google_meet',
+          location_details: selectedService?.location_details || '',
+          is_paid: selectedService?.is_paid || false,
         }),
       });
 
@@ -228,6 +291,14 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
       if (!res.ok) {
         throw new Error(data.error || 'Erreur lors de la réservation');
       }
+
+      setConfirmedBookingData(data.appointment || {
+        date: selectedDate,
+        time_slot: selectedSlot,
+        service_title: selectedService?.title,
+        location_type: selectedService?.location_type,
+        location_details: selectedService?.location_details,
+      });
 
       setBookingSuccess(true);
       toast.success('Votre rendez-vous a été confirmé avec succès !');
@@ -240,42 +311,67 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
 
   // Écran de succès
   if (bookingSuccess) {
+    const locType = confirmedBookingData?.location_type || selectedService?.location_type || 'google_meet';
+    const locDetails = confirmedBookingData?.location_details || selectedService?.location_details || '';
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 text-center shadow-lg animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-lg bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 text-center shadow-xl animate-in fade-in zoom-in-95 duration-200">
           <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
-          <h2 className="text-xl font-bold text-neutral-900">Rendez-vous confirmé !</h2>
+          <h2 className="text-2xl font-bold text-neutral-900">Rendez-vous confirmé !</h2>
           <p className="text-xs text-neutral-500 mt-1">
-            Un e-mail récapitulatif a été transmis à <span className="font-semibold text-neutral-800">{clientEmail}</span>.
+            Un e-mail récapitulatif avec les détails a été envoyé à <span className="font-semibold text-neutral-800">{clientEmail}</span> ainsi qu'à <span className="font-semibold text-neutral-800">{profile.display_name}</span>.
           </p>
 
-          <div className="bg-neutral-50 border border-neutral-200/80 rounded-2xl p-4 my-6 text-left text-xs flex flex-col gap-2">
-            <div className="flex justify-between items-center border-b border-neutral-200/60 pb-2">
+          {/* Récapitulatif Card */}
+          <div className="bg-neutral-50 border border-neutral-200/80 rounded-2xl p-5 my-6 text-left text-xs flex flex-col gap-3">
+            <div className="flex justify-between items-center border-b border-neutral-200/60 pb-2.5">
               <span className="text-neutral-500">Avec</span>
               <span className="font-bold text-neutral-900">{profile.display_name}</span>
             </div>
-            <div className="flex justify-between items-center border-b border-neutral-200/60 pb-2">
+            <div className="flex justify-between items-center border-b border-neutral-200/60 pb-2.5">
               <span className="text-neutral-500">Prestation</span>
               <span className="font-semibold text-neutral-900">{selectedService?.title || 'Rendez-vous'}</span>
             </div>
-            <div className="flex justify-between items-center border-b border-neutral-200/60 pb-2">
-              <span className="text-neutral-500">Date</span>
-              <span className="font-semibold text-neutral-900">{selectedDate}</span>
+            <div className="flex justify-between items-center border-b border-neutral-200/60 pb-2.5">
+              <span className="text-neutral-500">Date & Heure</span>
+              <span className="font-bold text-indigo-600">{selectedDate} à {selectedSlot}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-neutral-500">Heure</span>
-              <span className="font-bold text-indigo-600">{selectedSlot}</span>
+
+            {/* Détails du Lieu */}
+            <div className="flex flex-col gap-1.5 pt-1">
+              <span className="text-neutral-500 font-medium">Lieu / Modalité :</span>
+              <div className="p-3 bg-white border border-neutral-200 rounded-xl flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <LocationIcon type={locType} className="w-4 h-4 text-indigo-600" />
+                  <span className="font-semibold text-neutral-800">{getLocationLabel(locType)}</span>
+                </div>
+                {locDetails && locDetails.startsWith('http') && (
+                  <a
+                    href={locDetails}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-bold text-[11px] flex items-center gap-1 transition"
+                  >
+                    <span>Rejoindre</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+              {locDetails && !locDetails.startsWith('http') && (
+                <p className="text-[11px] text-neutral-600 pl-1 font-mono">{locDetails}</p>
+              )}
             </div>
           </div>
 
           <a
             href={`https://lien-bio.site/${profile.username}`}
-            className="w-full py-3 px-4 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 transition"
+            className="w-full py-3.5 px-4 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 transition shadow-md"
           >
-            <span>Retourner sur la page de {profile.display_name}</span>
+            <span>Retourner sur le profil de {profile.display_name}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
@@ -314,11 +410,11 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
 
             <div className="border-t border-neutral-200/70 pt-4">
               <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 block mb-2.5">
-                Prestations disponibles
+                {serviceSlug ? 'Détails de la prestation' : 'Prestations disponibles'}
               </span>
 
               {services.length === 0 ? (
-                <div className="p-3 rounded-xl bg-white border border-neutral-200 text-xs text-neutral-700">
+                <div className="p-3.5 rounded-xl bg-white border border-neutral-200 text-xs text-neutral-700">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-semibold block">Séance Découverte</span>
                     <span className="text-[10px] font-bold text-neutral-500 bg-neutral-100 px-1.5 py-0.5 rounded">30 min</span>
@@ -326,19 +422,19 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
                   <span className="text-neutral-500 text-[11px]">Échange de cadrage en visio</span>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   {services.map((srv) => {
                     const isSelected = selectedService?.id === srv.id;
                     const duration = srv.duration_minutes || availability.slot_duration || 30;
                     return (
-                      <button
+                      <div
                         key={srv.id}
-                        type="button"
                         onClick={() => handleSelectService(srv)}
-                        className={`w-full p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col gap-1.5 ${
+                        className={`w-full p-3.5 rounded-2xl border text-left transition flex flex-col gap-2 ${
+                          serviceSlug ? 'bg-white border-neutral-200/90 shadow-2xs' :
                           isSelected
-                            ? 'bg-indigo-50/80 border-indigo-300 ring-1 ring-indigo-200 shadow-2xs'
-                            : 'bg-white border-neutral-200/80 hover:border-neutral-300'
+                            ? 'bg-indigo-50/80 border-indigo-300 ring-1 ring-indigo-200 shadow-2xs cursor-pointer'
+                            : 'bg-white border-neutral-200/80 hover:border-neutral-300 cursor-pointer'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -349,14 +445,26 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] text-neutral-500">
-                          <span className="inline-flex items-center gap-1 font-medium text-neutral-600 bg-neutral-100 px-1.5 py-0.2 rounded text-[10px]">
+
+                        {/* Badges Durée et Lieu */}
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-neutral-500">
+                          <span className="inline-flex items-center gap-1 font-medium text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded text-[10px]">
                             <Clock className="w-3 h-3 text-neutral-400" />
                             <span>{duration} min</span>
                           </span>
-                          {srv.subtitle && <span className="truncate">{srv.subtitle}</span>}
+
+                          <span className="inline-flex items-center gap-1 font-medium text-indigo-700 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px]">
+                            <LocationIcon type={srv.location_type} className="w-3 h-3" />
+                            <span>{getLocationLabel(srv.location_type).split(' ')[0]}</span>
+                          </span>
                         </div>
-                      </button>
+
+                        {srv.subtitle && (
+                          <p className="text-[11px] text-neutral-500 line-clamp-2 mt-0.5">
+                            {srv.subtitle}
+                          </p>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -547,12 +655,13 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
 
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                  Numéro de téléphone (optionnel)
+                  Numéro de téléphone {selectedService?.location_type === 'phone' ? <span className="text-rose-500">*</span> : '(optionnel)'}
                 </label>
                 <div className="relative flex items-center">
                   <Phone className="w-3.5 h-3.5 text-neutral-400 absolute left-3 pointer-events-none" />
                   <input
                     type="tel"
+                    required={selectedService?.location_type === 'phone'}
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
                     placeholder="+33 6 12 34 56 78"
@@ -592,6 +701,11 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       <span>Confirmation...</span>
                     </>
+                  ) : selectedService?.is_paid && selectedService?.price_amount ? (
+                    <>
+                      <span>Payer {selectedService.price_amount} {selectedService.currency || '€'} & Réserver</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </>
                   ) : (
                     <>
                       <span>Confirmer le rendez-vous</span>
@@ -607,4 +721,3 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     </div>
   );
 }
-

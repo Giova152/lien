@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { CalendarWorkspaceClient } from '@/components/calendar/CalendarWorkspaceClient';
 import { Calendar, ArrowRight, CheckCircle2, ShieldCheck, Clock } from '@/components/ui/Icons';
 import { Logo } from '@/components/ui/Logo';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function CalendarHomePage() {
   const supabase = await createClient();
@@ -13,10 +14,25 @@ export default async function CalendarHomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Si l'utilisateur est connecté, afficher directement son espace de travail Calendar Pro
   if (user) {
-    redirect('/dashboard/calendar');
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profile) {
+      return (
+        <CalendarWorkspaceClient
+          initialProfile={profile}
+          userEmail={user.email || ''}
+        />
+      );
+    }
   }
 
+  // Si non connecté, afficher la vitrine / page d'accueil de Calendar Pro
   return (
     <div className="min-h-screen bg-slate-50 text-neutral-900 font-sans flex flex-col justify-between selection:bg-neutral-900 selection:text-white">
       {/* Header */}
@@ -30,18 +46,18 @@ export default async function CalendarHomePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
+            <a
+              href="https://lien-bio.site/login"
               className="text-xs font-semibold text-neutral-600 hover:text-neutral-900 px-3 py-1.5 transition"
             >
               Connexion
-            </Link>
-            <Link
-              href="/register"
+            </a>
+            <a
+              href="https://lien-bio.site/register"
               className="text-xs font-bold bg-neutral-900 hover:bg-neutral-800 text-white px-4 py-2 rounded-xl transition shadow-2xs"
             >
               Créer mon compte
-            </Link>
+            </a>
           </div>
         </div>
       </header>
@@ -61,19 +77,19 @@ export default async function CalendarHomePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-14">
-          <Link
-            href="/register"
+          <a
+            href="https://lien-bio.site/register"
             className="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md"
           >
             <span>Démarrer avec mon Agenda Pro</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/login"
+          </a>
+          <a
+            href="https://lien-bio.site/login"
             className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-neutral-100 text-neutral-800 font-semibold border border-neutral-200 rounded-xl text-xs transition shadow-2xs"
           >
             J'ai déjà un compte
-          </Link>
+          </a>
         </div>
 
         {/* Feature Highlights */}
@@ -117,4 +133,3 @@ export default async function CalendarHomePage() {
     </div>
   );
 }
-

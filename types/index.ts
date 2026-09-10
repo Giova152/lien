@@ -8,6 +8,8 @@ export interface StatItem {
   hidden?: boolean; // Permet de masquer/afficher l'indicateur
 }
 
+export type LocationType = 'google_meet' | 'zoom' | 'phone' | 'physical' | 'custom_link';
+
 export interface ServiceItem {
   id: string;
   title: string;
@@ -18,6 +20,19 @@ export interface ServiceItem {
   button_text?: string; // e.g. "Prendre RDV", "Réserver", "Planifier"
   is_native_booking?: boolean; // True si réservation de créneaux native sur Lien-Bio
   duration_minutes?: number; // Durée du RDV (ex: 30, 45, 60 min)
+  
+  // 📍 Lieu & Modalité du RDV
+  location_type?: LocationType;
+  location_details?: string; // URL Google Meet/Zoom, numéro de téléphone, ou adresse physique
+
+  // 📅 Horaires spécifiques au service
+  has_custom_availability?: boolean;
+  custom_availability?: BookingAvailability;
+
+  // 💳 Paiements & Tarifs
+  is_paid?: boolean;
+  price_amount?: number;
+  currency?: string; // e.g. "EUR", "XOF", "USD"
 }
 
 export interface BookingAvailability {
@@ -30,6 +45,7 @@ export interface BookingAvailability {
 }
 
 export type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled';
+export type AppointmentPaymentStatus = 'free' | 'pending' | 'paid' | 'refunded';
 
 export interface AppointmentBooking {
   id: string;
@@ -43,6 +59,10 @@ export interface AppointmentBooking {
   time_slot: string; // e.g. "14:00"
   status: AppointmentStatus;
   notes?: string;
+  location_type?: LocationType;
+  location_details?: string;
+  is_paid?: boolean;
+  payment_status?: AppointmentPaymentStatus;
   created_at: string;
 }
 
