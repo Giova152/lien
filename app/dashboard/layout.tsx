@@ -345,22 +345,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const navSections = [
+  type NavItem = {
+    href: string;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    external?: boolean;
+    isAction?: 'team';
+  };
+
+  type NavSection = {
+    title: string;
+    items: NavItem[];
+  };
+
+  const navSections: NavSection[] = [
     {
-      title: 'Contenu & Bio',
+      title: 'Ma Page',
       items: [
         { href: '/dashboard/links', label: 'Liens', icon: LinkIcon },
-        { href: '/dashboard/profile', label: 'Profil', icon: User },
-        { href: '/dashboard/services', label: 'Services & RDV', icon: Calendar, badge: 'Pro' },
+        { href: '/dashboard/profile', label: 'Profil & Bio', icon: User },
+        { href: '/dashboard/services', label: 'Services & RDV', icon: Calendar },
         { href: '/dashboard/shop', label: 'Boutique', icon: BookOpen },
         { href: '/dashboard/contact', label: 'Contact (vCard)', icon: PhoneCall },
         { href: '/dashboard/theme', label: 'Thème Visuel', icon: Palette },
       ],
     },
     {
-      title: 'Pilotage & Compte',
+      title: 'Outils',
+      items: [
+        {
+          href: 'https://calendar.lien-bio.site',
+          label: 'Agenda Pro (calendar)',
+          icon: Calendar,
+          external: true,
+        },
+      ],
+    },
+    {
+      title: 'Pilotage',
       items: [
         { href: '/dashboard/analytics', label: 'Statistiques', icon: BarChart3 },
+        { href: '#team', label: 'Équipe & Accès', icon: Users, isAction: 'team' },
         { href: '/dashboard/settings', label: 'Paramètres', icon: Settings },
       ],
     },
@@ -524,7 +549,48 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {sec.items.map((item) => {
                   const Icon = item.icon;
                   const isActive =
-                    pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
+                    !item.external &&
+                    !item.isAction &&
+                    (pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard'));
+
+                  if (item.isAction === 'team') {
+                    return (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => setIsInviteModalOpen(true)}
+                        className="w-full px-3 py-2.5 text-xs font-bold flex items-center justify-between rounded-xl text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 transition-all cursor-pointer text-left"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon className="w-4 h-4 shrink-0 text-neutral-400" />
+                          <span className="truncate">{item.label}</span>
+                        </div>
+                        {profile?.theme?.team_members && profile.theme.team_members.length > 0 && (
+                          <span className="px-1.5 py-0.2 rounded-full bg-neutral-200 text-neutral-700 text-[10px] font-bold">
+                            {profile.theme.team_members.length}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  }
+
+                  if (item.external) {
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-2.5 text-xs font-bold flex items-center justify-between rounded-xl text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 transition-all group cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon className="w-4 h-4 shrink-0 text-indigo-600" />
+                          <span className="truncate">{item.label}</span>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-700 transition-colors shrink-0" />
+                      </a>
+                    );
+                  }
 
                   return (
                     <Link
@@ -540,82 +606,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-neutral-400'}`} />
                         <span className="truncate">{item.label}</span>
                       </div>
-                      {item.badge && !profile?.is_pro && (
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60">
-                          {item.badge}
-                        </span>
-                      )}
                     </Link>
                   );
                 })}
               </div>
             ))}
 
-            {/* COMBO AGENDA PRO WIDGET */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950 via-neutral-900 to-zinc-950 text-white shadow-sm border border-indigo-500/25 relative overflow-hidden group">
-              <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-                    <Calendar className="w-3.5 h-3.5" />
-                  </div>
-                  <span className="text-xs font-bold text-white">Agenda Pro</span>
-                </div>
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
-                  Combo
-                </span>
-              </div>
-              <p className="text-[11px] text-neutral-300 leading-tight mb-2.5">
-                Gérez vos disponibilités et prises de RDV sur calendar.
-              </p>
-              <a
-                href="https://calendar.lien-bio.site"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-1.5 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition text-center shadow-xs cursor-pointer"
-              >
-                <span>Ouvrir l'agenda</span>
-                <ExternalLink className="w-3 h-3 opacity-80" />
-              </a>
-            </div>
-
             {/* PRO Upgrade Callout if not PRO */}
             {profile && !profile.is_pro && (
-              <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-indigo-500/10 to-amber-500/5 border border-amber-300/50 flex flex-col gap-2">
+              <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/70 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-600 fill-amber-500" />
-                  <span className="text-xs font-black text-amber-950">Formule PRO</span>
+                  <Crown className="w-4 h-4 text-amber-600 fill-amber-500 shrink-0" />
+                  <span className="text-xs font-bold text-amber-950">Formule PRO</span>
                 </div>
-                <p className="text-[11px] text-neutral-600 leading-tight">
-                  Prestations illimitées, nom de domaine, statistiques avancées et agenda pro.
+                <p className="text-[11px] text-neutral-600 leading-snug">
+                  Domaine personnalisé, liens illimités et fonctionnalités avancées.
                 </p>
                 <button
                   type="button"
                   onClick={() => setIsUpgradeModalOpen(true)}
-                  className="w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:opacity-95 text-neutral-950 text-xs font-black uppercase tracking-wider shadow-xs transition cursor-pointer"
+                  className="w-full py-1.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold shadow-2xs transition cursor-pointer"
                 >
                   Passer PRO
                 </button>
               </div>
-            )}
-
-            {/* Team Management Shortcut */}
-            {profile?.username && (
-              <button
-                type="button"
-                onClick={() => setIsInviteModalOpen(true)}
-                className="w-full p-2.5 rounded-xl bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-200/60 text-xs font-bold text-indigo-700 flex items-center justify-between transition cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-indigo-600" />
-                  <span>Équipe & Accès</span>
-                </div>
-                {profile.theme?.team_members && profile.theme.team_members.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[10px] font-bold">
-                    {profile.theme.team_members.length}
-                  </span>
-                )}
-              </button>
             )}
           </div>
 
@@ -859,7 +873,52 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {sec.items.map((item) => {
                       const Icon = item.icon;
                       const isActive =
-                        pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
+                        !item.external &&
+                        !item.isAction &&
+                        (pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard'));
+
+                      if (item.isAction === 'team') {
+                        return (
+                          <button
+                            key={item.label}
+                            type="button"
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              setIsInviteModalOpen(true);
+                            }}
+                            className="w-full px-3 py-2.5 text-xs font-bold flex items-center justify-between rounded-xl text-neutral-700 hover:text-neutral-950 hover:bg-neutral-50 transition cursor-pointer text-left"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <Icon className="w-4 h-4 text-neutral-400 shrink-0" />
+                              <span>{item.label}</span>
+                            </div>
+                            {profile?.theme?.team_members && profile.theme.team_members.length > 0 && (
+                              <span className="px-1.5 py-0.2 rounded-full bg-neutral-200 text-neutral-700 text-[10px] font-bold">
+                                {profile.theme.team_members.length}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      }
+
+                      if (item.external) {
+                        return (
+                          <a
+                            key={item.href}
+                            href={item.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="px-3 py-2.5 text-xs font-bold flex items-center justify-between rounded-xl text-neutral-700 hover:text-neutral-950 hover:bg-neutral-50 transition"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <Icon className="w-4 h-4 text-indigo-600 shrink-0" />
+                              <span>{item.label}</span>
+                            </div>
+                            <ExternalLink className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                          </a>
+                        );
+                      }
 
                       return (
                         <Link
@@ -879,40 +938,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     })}
                   </div>
                 ))}
-
-                {/* Combo Agenda Pro Button */}
-                <a
-                  href="https://calendar.lien-bio.site"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="mt-2 px-3.5 py-3 text-xs font-bold flex items-center justify-between rounded-2xl bg-gradient-to-r from-indigo-950 via-neutral-900 to-zinc-950 text-white shadow-xs border border-indigo-500/30"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
-                      <Calendar className="w-3.5 h-3.5" />
-                    </div>
-                    <span>Mon Agenda Pro (calendar)</span>
-                  </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
-                </a>
               </div>
 
               {/* Drawer Bottom Actions */}
               <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
                 {profile?.username && (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        setIsInviteModalOpen(true);
-                      }}
-                      className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 text-xs font-bold text-indigo-700 flex items-center justify-center gap-2 transition cursor-pointer"
-                    >
-                      <Users className="w-4 h-4 text-indigo-600" />
-                      <span>Équipe & Collaborateurs</span>
-                    </button>
 
                     <a
                       href={`/${profile.username}`}
