@@ -70,14 +70,14 @@ export default function SettingsPage() {
   const computeDnsInstructions = (rawDomain: string) => {
     const clean = rawDomain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
     if (!clean) {
-      return { type: 'CNAME', host: 'bio', value: 'cname.lien-bio.site' };
+      return { type: 'CNAME', host: 'votre-sous-domaine (ex: bio, t, link)', value: 'cname.lien-bio.site' };
     }
     const parts = clean.split('.');
     if (parts.length > 2) {
       const host = parts.slice(0, parts.length - 2).join('.');
       return { type: 'CNAME', host, value: 'cname.lien-bio.site' };
     } else {
-      return { type: 'A', host: '@', value: '76.76.21.21' };
+      return { type: 'A', host: '@ (domaine racine)', value: '76.76.21.21' };
     }
   };
 
@@ -729,64 +729,123 @@ export default function SettingsPage() {
                   </form>
                 )}
 
-                {/* 3. DNS Configuration Table & 1-Click Copy */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-neutral-200/90 text-xs space-y-3.5">
+                {/* 3. DNS Configuration Table & SaaS Giant Diagnostic Checklist */}
+                <div className="p-5 rounded-2xl bg-slate-50 border border-neutral-200/90 text-xs space-y-4 shadow-2xs">
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <span className="font-bold text-neutral-900 flex items-center gap-1.5">
-                      <Settings className="w-3.5 h-3.5 text-indigo-600" />
-                      Configuration DNS requise chez votre registrar :
+                    <span className="font-bold text-neutral-900 flex items-center gap-1.5 text-xs sm:text-sm">
+                      <Settings className="w-4 h-4 text-indigo-600" />
+                      Instruction de configuration DNS chez votre registrar :
                     </span>
+                    {activeDomain && (
+                      <button
+                        type="button"
+                        onClick={handleCheckDns}
+                        disabled={checkingDns}
+                        className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-40"
+                      >
+                        {checkingDns ? <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" /> : <Check className="w-3.5 h-3.5 text-indigo-600" />}
+                        <span>{checkingDns ? 'Vérification...' : 'Re-tester les DNS'}</span>
+                      </button>
+                    )}
                   </div>
 
-                  <p className="text-neutral-600 leading-relaxed">
-                    Connectez-vous à votre gestionnaire DNS (GoDaddy, OVH, Cloudflare, Namecheap...) et créez l’enregistrement ci-dessous :
+                  <p className="text-neutral-600 leading-relaxed text-xs">
+                    Rendez-vous sur votre espace d'administration DNS (OVH, GoDaddy, Cloudflare, Namecheap...) et ajoutez l'enregistrement ci-dessous :
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3.5 rounded-xl border border-neutral-200 text-neutral-800 font-mono text-[11px] shadow-2xs">
-                    <div className="space-y-1">
-                      <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-wider">
-                        TYPE :
+                  {/* DNS Record Box */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs text-xs">
+                    <div className="sm:col-span-3 space-y-1">
+                      <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                        TYPE D'ENREGISTREMENT
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold inline-block">
-                        {dnsInfo.type}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 font-extrabold text-xs inline-block">
+                          {dnsInfo.type}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="sm:col-span-4 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-wider">
-                          NOM / HÔTE :
+                        <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                          NOM / HÔTE
                         </span>
                         <button
                           type="button"
                           onClick={() => handleCopyText(dnsInfo.host, 'host')}
-                          className="text-[10px] font-sans font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5 cursor-pointer"
+                          className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
                         >
                           <Copy className="w-3 h-3" />
                           <span>{copiedHost ? 'Copié !' : 'Copier'}</span>
                         </button>
                       </div>
-                      <div className="font-bold text-neutral-900 bg-slate-50 px-2 py-1 rounded border border-neutral-200 flex items-center justify-between">
+                      <div className="font-mono font-bold text-neutral-900 bg-slate-50 px-3 py-1.5 rounded-xl border border-neutral-200/90 text-xs flex items-center justify-between">
                         <span>{dnsInfo.host}</span>
                       </div>
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="sm:col-span-5 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="block text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-wider">
-                          CIBLE / VALEUR :
+                        <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                          CIBLE / VALEUR
                         </span>
                         <button
                           type="button"
                           onClick={() => handleCopyText(dnsInfo.value, 'target')}
-                          className="text-[10px] font-sans font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5 cursor-pointer"
+                          className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
                         >
                           <Copy className="w-3 h-3" />
                           <span>{copiedTarget ? 'Copié !' : 'Copier'}</span>
                         </button>
                       </div>
-                      <div className="font-bold text-neutral-900 bg-slate-50 px-2 py-1 rounded border border-neutral-200 flex items-center justify-between">
+                      <div className="font-mono font-bold text-neutral-900 bg-slate-50 px-3 py-1.5 rounded-xl border border-neutral-200/90 text-xs flex items-center justify-between overflow-x-auto">
                         <span>{dnsInfo.value}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SaaS Giant Live Diagnostic Checklist */}
+                  <div className="pt-3 border-t border-neutral-200/80 space-y-2">
+                    <span className="text-[11px] font-bold text-neutral-700 block uppercase tracking-wider">
+                      Diagnostic de vérification en direct :
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50/80 border border-emerald-200 px-3 py-1.5 rounded-xl font-medium">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>1. Domaine lié à votre compte Lien-Bio</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50/80 border border-emerald-200 px-3 py-1.5 rounded-xl font-medium">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>2. Certificat SSL/HTTPS Vercel provisionné</span>
+                      </div>
+                      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl font-medium border ${
+                        domainStatus === 'active'
+                          ? 'text-emerald-700 bg-emerald-50/80 border-emerald-200'
+                          : 'text-amber-800 bg-amber-50/80 border-amber-200'
+                      }`}>
+                        {domainStatus === 'active' ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        ) : (
+                          <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin shrink-0" />
+                        )}
+                        <span>
+                          {domainStatus === 'active'
+                            ? '3. Résolution DNS valide & active'
+                            : '3. Propagation DNS en cours chez votre registrar'}
+                        </span>
+                      </div>
+                      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl font-medium border ${
+                        domainStatus === 'active'
+                          ? 'text-emerald-700 bg-emerald-50/80 border-emerald-200'
+                          : 'text-neutral-600 bg-neutral-100 border-neutral-200'
+                      }`}>
+                        <Globe className="w-3.5 h-3.5 shrink-0" />
+                        <span>
+                          {domainStatus === 'active'
+                            ? '4. Carte en ligne & accessible en public'
+                            : '4. En attente de la propagation (1 à 24h)'}
+                        </span>
                       </div>
                     </div>
                   </div>
