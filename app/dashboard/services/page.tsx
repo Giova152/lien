@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDashboard } from '@/lib/context/DashboardContext';
 import { createClient } from '@/lib/supabase/client';
-import { ServiceItem, BookingAvailability, AppointmentBooking, AppointmentStatus } from '@/types';
+import { ServiceItem } from '@/types';
 import { formatExternalUrl } from '@/lib/utils';
 import {
   Zap,
@@ -16,34 +16,14 @@ import {
   Layers,
   Award,
   ArrowRight,
-  Clock,
-  User,
-  Mail,
-  Phone,
-  FileText,
-  Loader2,
-  CheckCircle,
-  XCircle,
-  Settings,
-  ListOrdered,
+  Copy,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
-
-const DAYS_LIST = [
-  { id: 'mon', label: 'Lundi' },
-  { id: 'tue', label: 'Mardi' },
-  { id: 'wed', label: 'Mercredi' },
-  { id: 'thu', label: 'Jeudi' },
-  { id: 'fri', label: 'Vendredi' },
-  { id: 'sat', label: 'Samedi' },
-  { id: 'sun', label: 'Dimanche' },
-];
 
 export default function ServicesPage() {
   const { profile, setProfile, refreshDashboard, openUpgradeModal } = useDashboard();
   const supabase = createClient();
 
-  const [activeTab, setActiveTab] = useState<'services' | 'availability' | 'appointments'>('services');
   const [saving, setSaving] = useState(false);
 
   // Services State
@@ -52,53 +32,9 @@ export default function ServicesPage() {
     profile?.theme?.enable_service_categories ?? true
   );
 
-  // Availability State
-  const [availability, setAvailability] = useState<BookingAvailability>(
-    profile?.theme?.booking_availability || {
-      enabled_days: ['mon', 'tue', 'wed', 'thu', 'fri'],
-      start_time: '09:00',
-      end_time: '18:00',
-      slot_duration: 30,
-      break_start: '12:00',
-      break_end: '14:00',
-    }
-  );
-
-  // Appointments State
-  const [appointments, setAppointments] = useState<AppointmentBooking[]>([]);
-  const [loadingAppts, setLoadingAppts] = useState<boolean>(false);
-  const [apptFilter, setApptFilter] = useState<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');
-
   useEffect(() => {
     if (profile?.theme?.services) setServices(profile.theme.services);
-    if (profile?.theme?.booking_availability) setAvailability(profile.theme.booking_availability);
   }, [profile]);
-
-  // Fetch received appointments when switching to appointments tab
-  const fetchAppointments = async () => {
-    if (!profile?.id) return;
-    setLoadingAppts(true);
-    try {
-      const res = await fetch(`/api/appointments?profileId=${profile.id}`);
-      const data = await res.json();
-      if (data?.appointments) {
-        setAppointments(data.appointments);
-      } else {
-        setAppointments(profile.theme?.appointments || []);
-      }
-    } catch (err) {
-      console.error('Error loading appointments:', err);
-      setAppointments(profile.theme?.appointments || []);
-    } finally {
-      setLoadingAppts(false);
-    }
-  };
-
-  useEffect(() => {
-    if (activeTab === 'appointments') {
-      fetchAppointments();
-    }
-  }, [activeTab, profile?.id]);
 
   const handleAddService = (template?: Partial<ServiceItem>) => {
     if (!profile?.is_pro) {
@@ -149,14 +85,6 @@ export default function ServicesPage() {
     }
   };
 
-  const handleToggleDay = (dayId: string) => {
-    const current = availability.enabled_days || [];
-    const updated = current.includes(dayId)
-      ? current.filter((d) => d !== dayId)
-      : [...current, dayId];
-    setAvailability({ ...availability, enabled_days: updated });
-  };
-
   const handleSave = async () => {
     if (!profile) return;
 
@@ -171,7 +99,6 @@ export default function ServicesPage() {
         ...(profile.theme || {}),
         services: cleanedServices,
         enable_service_categories: enableCategories,
-        booking_availability: availability,
       };
 
       const { error } = await supabase
@@ -187,7 +114,7 @@ export default function ServicesPage() {
       setServices(cleanedServices);
 
       if (profile?.is_pro) {
-        toast.success('Services & Agenda enregistrés avec succès !');
+        toast.success('Services & Prestations enregistrés avec succès !');
       } else {
         toast.success('Sauvegardé ! Passez en PRO pour les activer sur votre profil public.', {
           action: {
@@ -204,42 +131,6 @@ export default function ServicesPage() {
     }
   };
 
-  const handleUpdateApptStatus = async (apptId: string, status: AppointmentStatus) => {
-    try {
-      const res = await fetch('/api/appointments', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointmentId: apptId, status }),
-      });
-      if (!res.ok) throw new Error('Erreur lors du changement de statut.');
-
-      setAppointments((prev) =>
-        prev.map((a) => (a.id === apptId ? { ...a, status } : a))
-      );
-      toast.success(`Statut mis à jour : ${status === 'confirmed' ? 'Confirmé' : 'Annulé'}`);
-    } catch (err: any) {
-      toast.error(err.message || 'Impossible de mettre à jour le statut');
-    }
-  };
-
-  const handleDeleteAppt = async (apptId: string) => {
-    try {
-      const res = await fetch(`/api/appointments?id=${apptId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) throw new Error('Erreur lors de la suppression.');
-
-      setAppointments((prev) => prev.filter((a) => a.id !== apptId));
-      toast.success('Rendez-vous supprimé.');
-    } catch (err: any) {
-      toast.error(err.message || 'Impossible de supprimer le rendez-vous');
-    }
-  };
-
-  const filteredAppointments = appointments.filter((a) => {
-    if (apptFilter === 'all') return true;
-    return a.status === apptFilter;
-  });
 
   return (
     <div className="w-full flex flex-col gap-6 text-neutral-900 font-sans max-w-4xl pb-16">
@@ -288,10 +179,10 @@ export default function ServicesPage() {
             </div>
             <div>
               <h4 className="font-bold text-sm text-neutral-900">
-                Fonctionnalité PRO : Agenda Natif & Prises de RDV
+                Combo Suite PRO : Calendrier & RDV inclus
               </h4>
               <p className="text-xs text-neutral-600 mt-0.5">
-                Passez à la formule PRO pour activer la réservation en ligne et l’agenda natif sur votre profil.
+                Passez à la formule PRO pour débloquer votre accès complet à calendar.lien-bio.site et afficher vos prestations.
               </p>
             </div>
           </div>
@@ -307,593 +198,372 @@ export default function ServicesPage() {
         </div>
       )}
 
-      {/* TAB 1: SERVICES LIST */}
-      {activeTab === 'services' && (
-        <div className="flex flex-col gap-5">
-          {/* Quick Templates Bar */}
-          <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
-              <Layers className="w-4 h-4 text-indigo-600" />
-              <span>Modèles rapides en 1 clic :</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddService({
-                    title: 'Séance Découverte (100% Natif)',
-                    category: 'RDV Natif',
-                    subtitle: 'Séance de 30 min réservable directement sur mon profil Lien-Bio.',
-                    price: 'Gratuit',
-                    button_text: 'Réserver un créneau',
-                    is_native_booking: true,
-                    duration_minutes: 30,
-                  })
-                }
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
-              >
-                <Calendar className="w-3.5 h-3.5 text-white" />
-                <span>+ RDV Natif (Sans Calendly)</span>
-              </button>
+      {/* BANNIÈRE GÉANTE : COMBO SUITE CALENDAR.LIEN-BIO.SITE */}
+      {(() => {
+        const username = profile?.username || 'mon-profil';
+        const calendarUserUrl = `https://calendar.lien-bio.site/${username}`;
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddService({
-                    title: 'RDV Calendly / Cal.com',
-                    category: 'RDV',
-                    subtitle: 'Lien vers votre calendrier externe d’origine.',
-                    price: 'Gratuit',
-                    url: 'https://calendly.com',
-                    button_text: 'Prendre RDV',
-                    is_native_booking: false,
-                  })
-                }
-                className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-indigo-500" />
-                <span>+ Lien Calendly Externe</span>
-              </button>
+        return (
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-neutral-900 to-zinc-950 p-6 sm:p-7 text-white shadow-xl border border-indigo-500/30">
+            {/* Background Glow Accents */}
+            <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-600/30 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-purple-600/20 blur-3xl pointer-events-none" />
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddService({
-                    title: 'Consultation WhatsApp',
-                    category: 'Conseil',
-                    subtitle: 'Échange rapide par messages ou vocal.',
-                    price: 'Gratuit',
-                    url: 'https://wa.me/',
-                    button_text: 'Discuter sur WhatsApp',
-                    is_native_booking: false,
-                  })
-                }
-                className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-emerald-400 hover:text-emerald-700 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs"
-              >
-                <Zap className="w-3.5 h-3.5 text-emerald-500" />
-                <span>+ WhatsApp</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Services List */}
-          {services.length === 0 ? (
-            <div className="bg-white border border-neutral-200 rounded-2xl p-10 flex flex-col items-center justify-center text-center shadow-xs">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-3.5">
-                <Calendar className="w-7 h-7" />
-              </div>
-              <h3 className="text-base font-bold text-neutral-900 mb-1">Aucune prestation pour le moment</h3>
-              <p className="text-xs text-neutral-500 max-w-md mb-5 leading-relaxed">
-                Ajoutez un créneau de rendez-vous natif ou un service en ligne. Vos visiteurs pourront réserver directement sur votre profil.
-              </p>
-              <button
-                type="button"
-                onClick={() => handleAddService()}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-sm"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Ajouter ma première prestation</span>
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {services.map((srv, index) => {
-                const formattedTestUrl = srv.url ? formatExternalUrl(srv.url) : '';
-
-                return (
-                  <div
-                    key={srv.id}
-                    className={`bg-white border rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs transition-all duration-200 group ${
-                      srv.is_native_booking ? 'border-indigo-300 ring-2 ring-indigo-500/10' : 'border-neutral-200/80'
-                    }`}
-                  >
-                    {/* Header card */}
-                    <div className="flex items-center justify-between pb-3.5 border-b border-neutral-100">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-700 shadow-2xs">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-neutral-900 block leading-tight">
-                              {srv.title?.trim() || `Prestation #${index + 1}`}
-                            </span>
-                            {srv.is_native_booking && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700">
-                                Agenda Natif Lien-Bio
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-[11px] text-neutral-400 block mt-0.5">
-                            Configuration de la prestation
-                          </span>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteService(srv.id)}
-                        className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
-                        title="Supprimer cette prestation"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    {/* Mode de Réservation Switch */}
-                    <div className="p-3.5 rounded-xl bg-slate-50 border border-neutral-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <Calendar className="w-4 h-4 text-indigo-600 shrink-0" />
-                        <div>
-                          <label className="text-xs font-bold text-neutral-900 block cursor-pointer">
-                            Réservation Native Lien-Bio (100% Natif)
-                          </label>
-                          <span className="text-[11px] text-neutral-500 block">
-                            {srv.is_native_booking
-                              ? 'Les visiteurs choisissent un créneau directement dans votre calendrier sur Lien-Bio.'
-                              : 'Les visiteurs seront redirigés vers un lien externe (Calendly, WhatsApp, etc.).'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleUpdateService(srv.id, 'is_native_booking', !srv.is_native_booking)
-                        }
-                        className={`w-12 h-6 rounded-full transition-colors relative p-0.5 flex items-center shrink-0 ${
-                          srv.is_native_booking ? 'bg-indigo-600' : 'bg-neutral-300'
-                        }`}
-                      >
-                        <div
-                          className={`w-5 h-5 rounded-full bg-white transition-transform shadow-xs ${
-                            srv.is_native_booking ? 'translate-x-6' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Ligne 1 : Titre & Tarif */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
-                      <div className="sm:col-span-8">
-                        <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                          Titre de la prestation ou du RDV <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={srv.title}
-                          onChange={(e) => handleUpdateService(srv.id, 'title', e.target.value)}
-                          placeholder="Ex: Séance découverte (30 min), Audit, Consultation..."
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                        />
-                      </div>
-
-                      <div className="sm:col-span-4">
-                        <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                          Tarif affiché
-                        </label>
-                        <input
-                          type="text"
-                          value={srv.price || ''}
-                          onChange={(e) => handleUpdateService(srv.id, 'price', e.target.value)}
-                          placeholder="Ex: Gratuit, 50 €, Sur devis"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Ligne 2 : Description & Catégorie */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
-                      <div className="sm:col-span-8">
-                        <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                          Description courte
-                        </label>
-                        <input
-                          type="text"
-                          value={srv.subtitle || ''}
-                          onChange={(e) => handleUpdateService(srv.id, 'subtitle', e.target.value)}
-                          placeholder="Ex: Échange de 30 min en visio pour analyser vos besoins..."
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                        />
-                      </div>
-
-                      <div className="sm:col-span-4">
-                        <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                          Catégorie (facultatif)
-                        </label>
-                        <input
-                          type="text"
-                          value={srv.category || ''}
-                          onChange={(e) => handleUpdateService(srv.id, 'category', e.target.value)}
-                          placeholder="Ex: RDV, Coaching, Prestation..."
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Ligne 3 : Natif Duration OR External Link */}
-                    {srv.is_native_booking ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 pt-0.5">
-                        <div className="sm:col-span-6">
-                          <label className="block text-xs font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-indigo-600" />
-                            Durée du rendez-vous (en minutes)
-                          </label>
-                          <select
-                            value={srv.duration_minutes || 30}
-                            onChange={(e) =>
-                              handleUpdateService(srv.id, 'duration_minutes', Number(e.target.value))
-                            }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                          >
-                            <option value={15}>15 minutes</option>
-                            <option value={30}>30 minutes</option>
-                            <option value={45}>45 minutes</option>
-                            <option value={60}>60 minutes (1 heure)</option>
-                            <option value={90}>90 minutes (1h30)</option>
-                          </select>
-                        </div>
-
-                        <div className="sm:col-span-6">
-                          <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                            Texte du bouton sur la carte
-                          </label>
-                          <input
-                            type="text"
-                            value={srv.button_text || ''}
-                            onChange={(e) => handleUpdateService(srv.id, 'button_text', e.target.value)}
-                            placeholder="Ex: Réserver un créneau"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 pt-0.5">
-                        <div className="sm:col-span-8">
-                          <div className="flex items-center justify-between mb-1.5">
-                            <label className="block text-xs font-semibold text-neutral-700">
-                              Lien de redirection (Calendly, WhatsApp, etc.) <span className="text-rose-500">*</span>
-                            </label>
-                            {formattedTestUrl && (
-                              <a
-                                href={formattedTestUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:underline flex items-center gap-1"
-                              >
-                                <ExternalLink className="w-3 h-3" />
-                                <span>Tester le lien</span>
-                              </a>
-                            )}
-                          </div>
-                          <div className="relative flex items-center">
-                            <ExternalLink className="w-3.5 h-3.5 text-neutral-400 absolute left-3.5 pointer-events-none" />
-                            <input
-                              type="text"
-                              value={srv.url || ''}
-                              onChange={(e) => handleUpdateService(srv.id, 'url', e.target.value)}
-                              placeholder="https://calendly.com/... ou https://wa.me/..."
-                              className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-mono focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="sm:col-span-4">
-                          <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                            Texte du bouton
-                          </label>
-                          <input
-                            type="text"
-                            value={srv.button_text || ''}
-                            onChange={(e) => handleUpdateService(srv.id, 'button_text', e.target.value)}
-                            placeholder="Ex: Prendre RDV"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
-                          />
-                        </div>
-                      </div>
-                    )}
+            <div className="relative z-10 flex flex-col gap-5">
+              {/* Top Tag & Title */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[11px] font-black uppercase tracking-wider mb-2">
+                    <Crown className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Suite Pro Tout-en-Un • 100% Inclus</span>
                   </div>
-                );
-              })}
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
+                    <span>Votre Agenda & Réservation Pro</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-neutral-300 mt-1 max-w-2xl leading-relaxed">
+                    Fini les abonnements Calendly à 15$/mois. Votre compte intègre automatiquement votre outil de prise de rendez-vous sur <strong className="text-white">calendar.lien-bio.site</strong>.
+                  </p>
+                </div>
 
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50"
-              >
-                <Check className="w-4 h-4" />
-                <span>{saving ? 'Enregistrement...' : 'Enregistrer mes prestations et agenda'}</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+                <a
+                  href="https://calendar.lien-bio.site"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold shadow-lg hover:shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer shrink-0"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Ouvrir calendar.lien-bio.site</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
 
-      {/* TAB 2: AGENDA & AVAILABILITY SETTINGS */}
-      {activeTab === 'availability' && (
-        <div className="bg-white border border-neutral-200 rounded-2xl p-6 space-y-6 shadow-xs">
-          <div>
-            <h3 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-              <Settings className="w-4 h-4 text-indigo-600" />
-              Configuration des créneaux & Horaires de travail
-            </h3>
-            <p className="text-xs text-neutral-500 mt-1">
-              Définissez vos jours ouvrables et plages horaires d’ouverture pour vos réservations natives Lien-Bio.
-            </p>
-          </div>
+              {/* URL Box & 1-Click Copy */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-400 shrink-0">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] uppercase font-bold text-neutral-400 block tracking-wider">
+                      Votre lien d'agenda public direct
+                    </span>
+                    <span className="font-mono text-xs text-indigo-200 font-semibold truncate block select-all">
+                      {calendarUserUrl}
+                    </span>
+                  </div>
+                </div>
 
-          {/* Jours travaillés */}
-          <div>
-            <label className="block text-xs font-bold text-neutral-700 mb-2.5">
-              1. Jours de disponibilité :
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {DAYS_LIST.map((day) => {
-                const isChecked = availability.enabled_days?.includes(day.id);
-                return (
+                <div className="flex items-center gap-2 shrink-0">
                   <button
-                    key={day.id}
                     type="button"
-                    onClick={() => handleToggleDay(day.id)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold border transition ${
-                      isChecked
-                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-xs'
-                        : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:bg-neutral-100'
-                    }`}
+                    onClick={() => {
+                      navigator.clipboard.writeText(calendarUserUrl);
+                      toast.success('Lien de votre calendrier copié !');
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
                   >
-                    {isChecked ? `✓ ${day.label}` : day.label}
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copier mon lien global</span>
                   </button>
-                );
-              })}
+                </div>
+              </div>
+
+              {/* 3-Step Visual Guide */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                  <div className="w-6 h-6 rounded-lg bg-indigo-500/30 text-indigo-300 font-black text-xs flex items-center justify-center">
+                    1
+                  </div>
+                  <h5 className="font-bold text-white text-xs">Configurez vos créneaux</h5>
+                  <p className="text-[11px] text-neutral-400 leading-snug">
+                    Sur calendar.lien-bio.site, fixez vos jours de dispo et vos types de RDV.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                  <div className="w-6 h-6 rounded-lg bg-indigo-500/30 text-indigo-300 font-black text-xs flex items-center justify-center">
+                    2
+                  </div>
+                  <h5 className="font-bold text-white text-xs">Copiez le lien du RDV</h5>
+                  <p className="text-[11px] text-neutral-400 leading-snug">
+                    Récupérez l'URL du créneau spécifique ou votre lien d'agenda global.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                  <div className="w-6 h-6 rounded-lg bg-indigo-500/30 text-indigo-300 font-black text-xs flex items-center justify-center">
+                    3
+                  </div>
+                  <h5 className="font-bold text-white text-xs">Liez-le à votre carte</h5>
+                  <p className="text-[11px] text-neutral-400 leading-snug">
+                    Collez le lien dans vos prestations ci-dessous. Vos visiteurs réserveront en 1 clic !
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+        );
+      })()}
 
-          {/* Plage Horaires */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
-                Heure de début de journée :
-              </label>
-              <input
-                type="time"
-                value={availability.start_time || '09:00'}
-                onChange={(e) => setAvailability({ ...availability, start_time: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 text-xs font-bold text-neutral-900 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
-                Heure de fin de journée :
-              </label>
-              <input
-                type="time"
-                value={availability.end_time || '18:00'}
-                onChange={(e) => setAvailability({ ...availability, end_time: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 text-xs font-bold text-neutral-900 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+      {/* SERVICES LIST SECTION */}
+      <div className="flex flex-col gap-5">
+        {/* Quick Templates Bar */}
+        <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
+            <Layers className="w-4 h-4 text-indigo-600" />
+            <span>Modèles rapides en 1 clic :</span>
           </div>
-
-          {/* Pause Déjeuner */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-neutral-100">
-            <div>
-              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
-                Pause midi (Début) :
-              </label>
-              <input
-                type="time"
-                value={availability.break_start || '12:00'}
-                onChange={(e) => setAvailability({ ...availability, break_start: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 text-xs font-bold text-neutral-900 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-neutral-700 mb-1.5">
-                Pause midi (Fin) :
-              </label>
-              <input
-                type="time"
-                value={availability.break_end || '14:00'}
-                onChange={(e) => setAvailability({ ...availability, break_end: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 text-xs font-bold text-neutral-900 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50"
-          >
-            <Check className="w-4 h-4" />
-            <span>{saving ? 'Enregistrement...' : 'Enregistrer la configuration de l’agenda'}</span>
-          </button>
-        </div>
-      )}
-
-      {/* TAB 3: APPOINTMENTS LIST */}
-      {activeTab === 'appointments' && (
-        <div className="space-y-4">
-          {/* Status Filters */}
-          <div className="flex items-center justify-between bg-white border border-neutral-200 rounded-2xl p-3 shadow-xs">
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setApptFilter('all')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                  apptFilter === 'all'
-                    ? 'bg-neutral-900 text-white'
-                    : 'text-neutral-600 hover:bg-neutral-100'
-                }`}
-              >
-                Tous ({appointments.length})
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setApptFilter('confirmed')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                  apptFilter === 'confirmed'
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-emerald-700 hover:bg-emerald-50'
-                }`}
-              >
-                Confirmés ({appointments.filter((a) => a.status === 'confirmed').length})
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setApptFilter('cancelled')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                  apptFilter === 'cancelled'
-                    ? 'bg-rose-600 text-white'
-                    : 'text-rose-700 hover:bg-rose-50'
-                }`}
-              >
-                Annulés ({appointments.filter((a) => a.status === 'cancelled').length})
-              </button>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const username = profile?.username || 'mon-profil';
+                handleAddService({
+                  title: 'Séance Découverte (30 min)',
+                  category: 'Rendez-vous',
+                  subtitle: 'Échange de 30 minutes en visio pour étudier votre projet.',
+                  price: 'Gratuit',
+                  url: `https://calendar.lien-bio.site/${username}`,
+                  button_text: 'Réserver mon créneau',
+                });
+              }}
+              className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            >
+              <Calendar className="w-3.5 h-3.5 text-white" />
+              <span>+ RDV calendar.lien-bio.site</span>
+            </button>
 
             <button
               type="button"
-              onClick={fetchAppointments}
-              className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1"
+              onClick={() =>
+                handleAddService({
+                  title: 'Consultation Stratégique (1h)',
+                  category: 'Coaching',
+                  subtitle: 'Session intensive d’accompagnement sur mesure.',
+                  price: '90 €',
+                  url: `https://calendar.lien-bio.site/${profile?.username || 'mon-profil'}`,
+                  button_text: 'Prendre rendez-vous',
+                })
+              }
+              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
             >
-              Actualiser
+              <Award className="w-3.5 h-3.5 text-indigo-500" />
+              <span>+ Consultation Payante</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                handleAddService({
+                  title: 'Échange WhatsApp Direct',
+                  category: 'Conseil',
+                  subtitle: 'Discutez directement avec moi par message ou vocal.',
+                  price: 'Gratuit',
+                  url: 'https://wa.me/',
+                  button_text: 'Discuter sur WhatsApp',
+                })
+              }
+              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-emerald-400 hover:text-emerald-700 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            >
+              <Zap className="w-3.5 h-3.5 text-emerald-500" />
+              <span>+ WhatsApp</span>
             </button>
           </div>
+        </div>
 
-          {loadingAppts ? (
-            <div className="bg-white border border-neutral-200 rounded-2xl p-12 text-center text-neutral-500 text-xs flex items-center justify-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-              Chargement des rendez-vous...
+        {/* Services List */}
+        {services.length === 0 ? (
+          <div className="bg-white border border-neutral-200 rounded-2xl p-10 flex flex-col items-center justify-center text-center shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-3.5">
+              <Calendar className="w-7 h-7" />
             </div>
-          ) : filteredAppointments.length === 0 ? (
-            <div className="bg-white border border-neutral-200 rounded-2xl p-10 text-center text-neutral-500 text-xs">
-              <Calendar className="w-8 h-8 mx-auto mb-2 text-neutral-400" />
-              Aucun rendez-vous trouvé.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredAppointments.map((appt) => {
-                const isCancelled = appt.status === 'cancelled';
+            <h3 className="text-base font-bold text-neutral-900 mb-1">Aucune prestation pour le moment</h3>
+            <p className="text-xs text-neutral-500 max-w-md mb-5 leading-relaxed">
+              Ajoutez votre première prestation ou votre lien de calendrier. Vos visiteurs pourront réserver directement sur votre carte Lien-Bio.
+            </p>
+            <button
+              type="button"
+              onClick={() => handleAddService()}
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-sm cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Ajouter ma première prestation</span>
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {services.map((srv, index) => {
+              const formattedTestUrl = srv.url ? formatExternalUrl(srv.url) : '';
+              const username = profile?.username || 'mon-profil';
+              const userCalendarUrl = `https://calendar.lien-bio.site/${username}`;
 
-                return (
-                  <div
-                    key={appt.id}
-                    className={`bg-white border rounded-2xl p-5 shadow-2xs transition flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-                      isCancelled ? 'opacity-60 border-neutral-200' : 'border-neutral-200 hover:border-neutral-300'
-                    }`}
-                  >
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-200/60 px-2.5 py-0.5 rounded-md">
-                          {appt.service_title}
-                        </span>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                            isCancelled
-                              ? 'bg-rose-100 text-rose-700'
-                              : 'bg-emerald-100 text-emerald-700'
-                          }`}
-                        >
-                          {isCancelled ? 'Annulé' : 'Confirmé'}
+              return (
+                <div
+                  key={srv.id}
+                  className="bg-white border border-neutral-200/90 rounded-2xl p-5 sm:p-6 flex flex-col gap-4 shadow-xs transition-all duration-200 hover:border-neutral-300 group"
+                >
+                  {/* Header card */}
+                  <div className="flex items-center justify-between pb-3.5 border-b border-neutral-100">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-700 shadow-2xs">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-neutral-900 block leading-tight">
+                            {srv.title?.trim() || `Prestation #${index + 1}`}
+                          </span>
+                          {srv.url?.includes('calendar.lien-bio.site') && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700">
+                              Lien Agenda Pro
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-neutral-400 block mt-0.5">
+                          Configuration de la prestation
                         </span>
                       </div>
-
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-700 pt-1">
-                        <div className="flex items-center gap-1.5 font-bold text-neutral-900">
-                          <Calendar className="w-3.5 h-3.5 text-neutral-400" />
-                          {appt.date} à {appt.time_slot}
-                        </div>
-
-                        <div className="flex items-center gap-1.5 font-semibold">
-                          <User className="w-3.5 h-3.5 text-neutral-400" />
-                          {appt.client_name}
-                        </div>
-
-                        <div className="flex items-center gap-1.5 font-mono text-neutral-600">
-                          <Mail className="w-3.5 h-3.5 text-neutral-400" />
-                          {appt.client_email}
-                        </div>
-
-                        {appt.client_phone && (
-                          <div className="flex items-center gap-1.5 font-mono text-neutral-600">
-                            <Phone className="w-3.5 h-3.5 text-neutral-400" />
-                            {appt.client_phone}
-                          </div>
-                        )}
-                      </div>
-
-                      {appt.notes && (
-                        <p className="text-xs text-neutral-500 bg-neutral-50 p-2 rounded-lg border border-neutral-200/60 mt-1 italic">
-                          "{appt.notes}"
-                        </p>
-                      )}
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                      {!isCancelled ? (
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateApptStatus(appt.id, 'cancelled')}
-                          className="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 transition flex items-center gap-1"
-                        >
-                          <XCircle className="w-3.5 h-3.5" />
-                          Annuler
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateApptStatus(appt.id, 'confirmed')}
-                          className="px-3 py-1.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition flex items-center gap-1"
-                        >
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          Rétablir
-                        </button>
-                      )}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteService(srv.id)}
+                      className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer"
+                      title="Supprimer cette prestation"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteAppt(appt.id)}
-                        className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
-                        title="Supprimer la réservation"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                  {/* Ligne 1 : Titre & Tarif */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                    <div className="sm:col-span-8">
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                        Titre de la prestation ou du RDV <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={srv.title}
+                        onChange={(e) => handleUpdateService(srv.id, 'title', e.target.value)}
+                        placeholder="Ex: Séance découverte (30 min), Audit, Consultation..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-4">
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                        Tarif affiché
+                      </label>
+                      <input
+                        type="text"
+                        value={srv.price || ''}
+                        onChange={(e) => handleUpdateService(srv.id, 'price', e.target.value)}
+                        placeholder="Ex: Gratuit, 50 €, Sur devis"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                      />
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+
+                  {/* Ligne 2 : Description & Catégorie */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                    <div className="sm:col-span-8">
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                        Description courte
+                      </label>
+                      <input
+                        type="text"
+                        value={srv.subtitle || ''}
+                        onChange={(e) => handleUpdateService(srv.id, 'subtitle', e.target.value)}
+                        placeholder="Ex: Échange de 30 min en visio pour analyser vos besoins..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-4">
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                        Catégorie (facultatif)
+                      </label>
+                      <input
+                        type="text"
+                        value={srv.category || ''}
+                        onChange={(e) => handleUpdateService(srv.id, 'category', e.target.value)}
+                        placeholder="Ex: RDV, Coaching, Prestation..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-800 text-xs focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Ligne 3 : Lien de réservation & Bouton */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 pt-0.5">
+                    <div className="sm:col-span-8">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-semibold text-neutral-700">
+                          Lien de réservation (calendar.lien-bio.site, Calendly...) <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateService(srv.id, 'url', userCalendarUrl)}
+                            className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer"
+                            title="Utiliser mon adresse calendar.lien-bio.site"
+                          >
+                            + Mon Calendar Pro
+                          </button>
+                          {formattedTestUrl && (
+                            <a
+                              href={formattedTestUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[11px] font-semibold text-neutral-500 hover:text-indigo-600 hover:underline flex items-center gap-1"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>Tester</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      <div className="relative flex items-center">
+                        <Calendar className="w-3.5 h-3.5 text-neutral-400 absolute left-3.5 pointer-events-none" />
+                        <input
+                          type="text"
+                          value={srv.url || ''}
+                          onChange={(e) => handleUpdateService(srv.id, 'url', e.target.value)}
+                          placeholder="Ex: https://calendar.lien-bio.site/votre-nom ou https://wa.me/..."
+                          className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-mono focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-4">
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                        Texte du bouton sur la carte
+                      </label>
+                      <input
+                        type="text"
+                        value={srv.button_text || ''}
+                        onChange={(e) => handleUpdateService(srv.id, 'button_text', e.target.value)}
+                        placeholder="Ex: Réserver mon créneau"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50/50 border border-neutral-200/90 text-neutral-900 text-xs font-medium focus:bg-white focus:outline-none focus:border-indigo-500 transition shadow-2xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50 cursor-pointer"
+            >
+              <Check className="w-4 h-4" />
+              <span>{saving ? 'Enregistrement...' : 'Enregistrer mes prestations'}</span>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

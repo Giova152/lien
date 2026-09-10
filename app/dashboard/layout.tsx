@@ -34,6 +34,7 @@ import {
   Users,
   ChevronDown,
   ShieldCheck,
+  Calendar,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -347,7 +348,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { href: '/dashboard/links', label: 'Liens', icon: LinkIcon },
     { href: '/dashboard/profile', label: 'Profil', icon: User },
-    { href: '/dashboard/services', label: 'Services', icon: Zap },
+    { href: '/dashboard/services', label: 'Services & RDV', icon: Calendar },
     { href: '/dashboard/shop', label: 'Boutique', icon: BookOpen },
     { href: '/dashboard/contact', label: 'Contact (vCard)', icon: PhoneCall },
     { href: '/dashboard/theme', label: 'Thème Visuel', icon: Palette },
@@ -615,25 +616,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Desktop Navigation Sub-bar (Horizontal Tabs) */}
         <nav className="hidden md:block w-full border-b border-neutral-200/70 bg-white sticky top-16 z-30 shadow-2xs overflow-x-auto no-scrollbar">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 py-1.5">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 rounded-xl whitespace-nowrap transition-all duration-200 ${
-                    isActive
-                      ? 'bg-indigo-50 text-indigo-700 shadow-2xs'
-                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/70'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-indigo-600' : 'text-neutral-400'}`} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2 py-1.5">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || (item.href === '/dashboard/links' && pathname === '/dashboard');
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 rounded-xl whitespace-nowrap transition-all duration-200 ${
+                      isActive
+                        ? 'bg-indigo-50 text-indigo-700 shadow-2xs'
+                        : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/70'
+                    }`}
+                  >
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-indigo-600' : 'text-neutral-400'}`} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Direct 1-Click Access to calendar.lien-bio.site */}
+            <a
+              href="https://calendar.lien-bio.site"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-1.5 text-xs font-extrabold flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-xs hover:shadow transition-all shrink-0 group"
+              title="Ouvrir mon agenda pro sur calendar.lien-bio.site"
+            >
+              <Calendar className="w-3.5 h-3.5 text-amber-300" />
+              <span>Agenda Pro</span>
+              <ExternalLink className="w-3 h-3 opacity-80 group-hover:translate-x-0.5 transition-transform" />
+            </a>
           </div>
         </nav>
 
@@ -833,6 +849,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </Link>
                   );
                 })}
+
+                {/* Direct 1-Click to calendar.lien-bio.site */}
+                <a
+                  href="https://calendar.lien-bio.site"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="mt-2 px-3 py-2.5 text-xs font-bold flex items-center justify-between rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-xs"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Calendar className="w-4 h-4 text-amber-300" />
+                    <span>Mon Agenda Pro</span>
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                </a>
               </div>
 
               {/* Drawer Bottom Actions */}
