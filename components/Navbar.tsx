@@ -23,6 +23,17 @@ export function Navbar({ user, profile }: NavbarProps) {
     router.refresh();
   };
 
+  const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', `/#${id}`);
+      }
+    }
+  };
+
   return (
     <header className="w-full border-b border-neutral-200/70 bg-white/75 backdrop-blur-xl sticky top-0 z-40 supports-[backdrop-filter]:bg-white/60 transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -31,9 +42,27 @@ export function Navbar({ user, profile }: NavbarProps) {
 
         {/* Center Nav Links (Desktop) */}
         <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-neutral-600">
-          <a href="#features" className="hover:text-neutral-900 transition-colors">Fonctionnalités</a>
-          <a href="#preview" className="hover:text-neutral-900 transition-colors">Aperçu Live</a>
-          <a href="#pricing" className="hover:text-neutral-900 transition-colors">Tarif Unique</a>
+          <Link
+            href="/#features"
+            onClick={(e) => scrollTo(e, 'features')}
+            className="hover:text-neutral-900 transition-colors cursor-pointer"
+          >
+            Fonctionnalités
+          </Link>
+          <Link
+            href="/#preview"
+            onClick={(e) => scrollTo(e, 'preview')}
+            className="hover:text-neutral-900 transition-colors cursor-pointer"
+          >
+            Aperçu Live
+          </Link>
+          <Link
+            href="/#pricing"
+            onClick={(e) => scrollTo(e, 'pricing')}
+            className="hover:text-neutral-900 transition-colors cursor-pointer"
+          >
+            Tarif Unique
+          </Link>
         </nav>
 
         {/* Auth Buttons / Profile Nav */}

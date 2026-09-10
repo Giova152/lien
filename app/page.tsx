@@ -102,7 +102,8 @@ export default async function HomePage() {
       </section>
 
       {/* Interactive Live Demo Section */}
-      <section id="demo" className="py-12 px-4 bg-slate-50/60 border-y border-neutral-200/70">
+      <section id="preview" className="py-12 px-4 bg-slate-50/60 border-y border-neutral-200/70 scroll-mt-16">
+        <div id="demo" className="sr-only" />
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight mb-2">
@@ -119,7 +120,7 @@ export default async function HomePage() {
       </section>
 
       {/* Features Grid - Clean & Human */}
-      <section className="py-20 px-4 max-w-6xl mx-auto w-full">
+      <section id="features" className="py-20 px-4 max-w-6xl mx-auto w-full scroll-mt-16">
         <div className="text-center max-w-xl mx-auto mb-14">
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 mb-3">
             Tout ce qu'il vous faut pour être contacté rapidement
@@ -223,7 +224,7 @@ export default async function HomePage() {
       </section>
 
       {/* Pricing Section - Grounded & Clear */}
-      <section id="pricing" className="py-20 px-4 bg-slate-50/70 border-t border-neutral-200/80">
+      <section id="pricing" className="py-20 px-4 bg-slate-50/70 border-t border-neutral-200/80 scroll-mt-16">
         <div className="max-w-5xl mx-auto flex flex-col items-center text-center">
           <h2 className="text-3xl font-black text-neutral-900 tracking-tight mb-2">
             Des tarifs simples. Zéro frais cachés.

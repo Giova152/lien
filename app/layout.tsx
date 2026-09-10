@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${outfit.variable} ${playfair.variable} ${spaceGrotesk.variable}`}
+      className={`${inter.variable} ${outfit.variable} ${playfair.variable} ${spaceGrotesk.variable} scroll-smooth`}
     >
       <head>
         <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
