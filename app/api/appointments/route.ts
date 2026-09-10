@@ -526,8 +526,7 @@ export async function PATCH(request: Request) {
     }
 
     // 4. Envoi d'e-mail de notification de changement de statut (notamment Annulation)
-    const resendApiKey = process.env.RESEND_API_KEY;
-    if (resendApiKey && targetAppt) {
+    if (targetAppt) {
       const providerName = ownProfile?.display_name || ownProfile?.username || 'Votre intervenant';
       const clientEmail = targetAppt.client_email;
       const hostEmail = user.email;

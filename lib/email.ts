@@ -19,7 +19,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
   const smtpHost = process.env.SMTP_HOST || 'mail.lien-bio.site';
   const smtpPort = Number(process.env.SMTP_PORT || 465);
   const smtpUser = process.env.SMTP_USER || 'info@lien-bio.site';
-  const smtpPass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
+  const smtpPass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || '@Mido100500@';
   const fromAddress = process.env.SMTP_FROM || `Lien-Bio Calendar <${smtpUser}>`;
 
   if (smtpPass) {

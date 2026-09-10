@@ -132,6 +132,11 @@ export function CalendarWorkspaceClient({ initialProfile, userEmail }: CalendarW
 
   const [availability, setAvailability] = useState<BookingAvailability>(currentAvailability);
 
+  // Modal d'annulation personnalisée
+  const [cancellingAppt, setCancellingAppt] = useState<AppointmentBooking | null>(null);
+  const [cancellationReason, setCancellationReason] = useState('');
+  const [isCancelling, setIsCancelling] = useState(false);
+
   const username = profile?.username || 'mon-profil';
   const calendarPublicUrl = `https://calendar.lien-bio.site/${username}`;
   const isPro = Boolean(profile?.is_pro);
@@ -281,16 +286,18 @@ export function CalendarWorkspaceClient({ initialProfile, userEmail }: CalendarW
     }
   };
 
-  const handleCancelAppointment = async (apptId: string) => {
-    if (!confirm('Confirmez-vous l’annulation de ce rendez-vous ? Un e-mail d’annulation sera automatiquement envoyé au client.')) return;
+  const confirmCancelAppointment = async () => {
+    if (!cancellingAppt) return;
+    setIsCancelling(true);
 
     try {
       const res = await fetch('/api/appointments', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          appointmentId: apptId,
+          appointmentId: cancellingAppt.id,
           status: 'cancelled',
+          reason: cancellationReason.trim() || undefined,
         }),
       });
 
@@ -298,12 +305,16 @@ export function CalendarWorkspaceClient({ initialProfile, userEmail }: CalendarW
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l’annulation');
 
       const updated = appointments.map((a) =>
-        a.id === apptId ? { ...a, status: 'cancelled' as const } : a
+        a.id === cancellingAppt.id ? { ...a, status: 'cancelled' as const } : a
       );
       setAppointments(updated);
       toast.success('Rendez-vous annulé. Les e-mails de notification ont été envoyés.');
+      setCancellingAppt(null);
+      setCancellationReason('');
     } catch (err: any) {
       toast.error(err.message || 'Erreur lors de l’annulation');
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -1041,7 +1052,10 @@ export function CalendarWorkspaceClient({ initialProfile, userEmail }: CalendarW
                       {!isCancelled && (
                         <button
                           type="button"
-                          onClick={() => handleCancelAppointment(appt.id)}
+                          onClick={() => {
+                            setCancellingAppt(appt);
+                            setCancellationReason('');
+                          }}
                           className="px-3.5 py-2 rounded-xl border border-neutral-200 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 text-xs font-semibold text-neutral-600 transition cursor-pointer self-end sm:self-center"
                         >
                           Annuler le RDV
@@ -1218,6 +1232,71 @@ export function CalendarWorkspaceClient({ initialProfile, userEmail }: CalendarW
                   <span>Ouvrir Zoom</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL PERSONNALISÉE D'ANNULATION DU RDV */}
+        {cancellingAppt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-neutral-200 flex flex-col gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-bold text-neutral-900">Annuler ce rendez-vous ?</h3>
+                  <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                    Un e-mail de confirmation d'annulation sera automatiquement envoyé à <strong>{cancellingAppt.client_name}</strong> ({cancellingAppt.client_email}).
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-neutral-50 border border-neutral-200/80 rounded-2xl p-3.5 text-xs text-neutral-700 flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-neutral-500 font-medium">Prestation :</span>
+                  <span className="font-semibold text-neutral-900">{cancellingAppt.service_title}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-neutral-500 font-medium">Date & heure :</span>
+                  <span className="font-semibold text-neutral-900">{cancellingAppt.date} à {cancellingAppt.time_slot}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-neutral-700 mb-1.5">
+                  Motif de l'annulation <span className="text-neutral-400 font-normal">(facultatif, figurera dans l'e-mail)</span> :
+                </label>
+                <textarea
+                  value={cancellationReason}
+                  onChange={(e) => setCancellationReason(e.target.value)}
+                  placeholder="Ex: Imprévu, créneau indisponible..."
+                  rows={2}
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-neutral-100">
+                <button
+                  type="button"
+                  disabled={isCancelling}
+                  onClick={() => {
+                    setCancellingAppt(null);
+                    setCancellationReason('');
+                  }}
+                  className="px-4 py-2.5 rounded-xl border border-neutral-200 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 transition cursor-pointer"
+                >
+                  Retour
+                </button>
+                <button
+                  type="button"
+                  disabled={isCancelling}
+                  onClick={confirmCancelAppointment}
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isCancelling ? 'Annulation en cours...' : 'Confirmer l\'annulation'}
+                </button>
               </div>
             </div>
           </div>
