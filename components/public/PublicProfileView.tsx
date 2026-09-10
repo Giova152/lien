@@ -8,6 +8,7 @@ import { ProfileHeader } from '@/components/public/ProfileHeader';
 import { LinkButton } from '@/components/public/LinkButton';
 import { VCardButton } from '@/components/public/VCardButton';
 import { QrCodeModal } from '@/components/public/QrCodeModal';
+import { BookingModal } from '@/components/public/BookingModal';
 import { ThemeWrapper } from '@/components/public/ThemeWrapper';
 import {
   Award,
@@ -146,6 +147,7 @@ export function PublicProfileView({
 
   // Tab 2 Filter: Services Categories (Facultatif - au choix de l'utilisateur)
   const [serviceCategoryFilter, setServiceCategoryFilter] = useState<string>('all');
+  const [bookingService, setBookingService] = useState<ServiceItem | null>(null);
 
   const theme = profile.theme;
   const isDarkText = isDarkColor(theme.text_color);
@@ -633,8 +635,19 @@ export function PublicProfileView({
                         </p>
                       )}
 
-                      {/* Action Redirection Button */}
-                      {targetUrl ? (
+                      {/* Action Redirection or Native Booking Button */}
+                      {service.is_native_booking ? (
+                        <button
+                          type="button"
+                          onClick={() => setBookingService(service)}
+                          className="w-full mt-1 py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 text-white shadow-sm transition-all active:scale-[0.98] hover:opacity-95 cursor-pointer"
+                          style={{ backgroundColor: accentColor }}
+                        >
+                          <Calendar className="w-4 h-4" />
+                          <span>{service.button_text?.trim() || t.bookCall}</span>
+                          <ArrowRight className="w-3.5 h-3.5 ml-0.5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      ) : targetUrl ? (
                         <a
                           href={targetUrl}
                           target="_blank"
@@ -771,6 +784,17 @@ export function PublicProfileView({
 
           {/* QR Code Trigger */}
           <QrCodeModal profile={profile} lang={lang} />
+
+          {/* Booking Modal */}
+          {bookingService && (
+            <BookingModal
+              isOpen={Boolean(bookingService)}
+              onClose={() => setBookingService(null)}
+              profile={profile}
+              service={bookingService}
+              accentColor={accentColor}
+            />
+          )}
 
           {/* Branding Watermark (Only visible for free accounts; removed for PRO) */}
           {!isPro && (

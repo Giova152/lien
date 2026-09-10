@@ -34,6 +34,7 @@ import {
   ShieldAlert,
   Loader2,
   CheckCircle2,
+  CheckCircle2 as CheckCircle,
   X,
   Menu,
   MoreHorizontal,
@@ -41,6 +42,7 @@ import {
   ArrowRight,
   ArrowLeft,
   ChevronRight,
+  ChevronLeft,
   Smartphone,
   Laptop,
   Monitor,
@@ -65,6 +67,9 @@ import {
   Clock,
   Gift,
   Send,
+  ListOrdered,
+  XCircle,
+  FileText,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -292,6 +297,7 @@ export {
   BookOpen,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
   IconifyIcon,
   Zap,
   ShieldCheck,
@@ -301,4 +307,8 @@ export {
   Clock,
   Gift,
   Send,
+  ListOrdered,
+  XCircle,
+  CheckCircle,
+  FileText,
 };

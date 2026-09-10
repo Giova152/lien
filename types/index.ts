@@ -16,6 +16,34 @@ export interface ServiceItem {
   price?: string; // e.g. "Gratuit" or "49 €"
   url?: string;
   button_text?: string; // e.g. "Prendre RDV", "Réserver", "Planifier"
+  is_native_booking?: boolean; // True si réservation de créneaux native sur Lien-Bio
+  duration_minutes?: number; // Durée du RDV (ex: 30, 45, 60 min)
+}
+
+export interface BookingAvailability {
+  enabled_days: string[]; // e.g. ['mon', 'tue', 'wed', 'thu', 'fri']
+  start_time: string; // e.g. '09:00'
+  end_time: string; // e.g. '18:00'
+  slot_duration: number; // e.g. 30, 45, 60 min
+  break_start?: string; // e.g. '12:00'
+  break_end?: string; // e.g. '14:00'
+}
+
+export type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled';
+
+export interface AppointmentBooking {
+  id: string;
+  profile_id: string;
+  service_id: string;
+  service_title: string;
+  client_name: string;
+  client_email: string;
+  client_phone?: string;
+  date: string; // YYYY-MM-DD
+  time_slot: string; // e.g. "14:00"
+  status: AppointmentStatus;
+  notes?: string;
+  created_at: string;
 }
 
 export interface ShopProduct {
@@ -48,6 +76,9 @@ export interface ThemeConfig {
   products?: ShopProduct[];
   // Team & Collaborators
   team_members?: TeamMember[];
+  // Agenda & Native Appointment Booking
+  booking_availability?: BookingAvailability;
+  appointments?: AppointmentBooking[];
 
   // PRO subscription details stored in JSONB theme
   is_pro?: boolean;
