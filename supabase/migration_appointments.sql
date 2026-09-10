@@ -55,3 +55,4 @@ DROP POLICY IF EXISTS "Consultation publique des créneaux" ON public.appointmen
 CREATE POLICY "Consultation publique des créneaux"
     ON public.appointments FOR SELECT
     USING (true);
+

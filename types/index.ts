@@ -80,6 +80,10 @@ export interface ThemeConfig {
   booking_availability?: BookingAvailability;
   appointments?: AppointmentBooking[];
 
+  // Custom Domain Name (PRO Feature)
+  custom_domain?: string | null;
+  custom_domain_status?: 'pending' | 'active' | 'error' | null;
+
   // PRO subscription details stored in JSONB theme
   is_pro?: boolean;
   plan?: string;
@@ -113,6 +117,8 @@ export interface Profile {
   is_published: boolean;
   is_pro?: boolean;
   plan?: 'free' | 'pro_lifetime' | 'pro_subscription' | string;
+  custom_domain?: string | null;
+  custom_domain_status?: 'pending' | 'active' | 'error' | null;
   stripe_payment_id?: string | null;
   created_at: string;
   updated_at: string;

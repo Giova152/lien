@@ -52,5 +52,34 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Custom Domain Routing (Multi-Tenant Rewrite)
+  const host = (request.headers.get('host') || '').toLowerCase().replace(/:\d+$/, '');
+  const isMainDomain =
+    !host ||
+    host.includes('lien-bio.site') ||
+    host.includes('localhost') ||
+    host.includes('127.0.0.1') ||
+    host.includes('.vercel.app');
+
+  if (!isMainDomain && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+    try {
+      const { data: matchedProfile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('custom_domain', host)
+        .maybeSingle();
+
+      if (matchedProfile?.username) {
+        const username = matchedProfile.username;
+        const targetPath = pathname === '/' ? `/${username}` : `/${username}${pathname}`;
+        const rewriteUrl = new URL(targetPath, request.url);
+        rewriteUrl.search = request.nextUrl.search;
+        return NextResponse.rewrite(rewriteUrl);
+      }
+    } catch (e) {
+      console.warn('Middleware custom domain rewrite error:', e);
+    }
+  }
+
   return supabaseResponse;
 }
