@@ -687,10 +687,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Menu className="w-5 h-5" />
               </button>
 
-              <div>
-                <h1 className="text-sm sm:text-base font-extrabold text-neutral-900 tracking-tight flex items-center gap-2">
-                  <span>{getPageTitle()}</span>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-sm sm:text-base font-extrabold text-neutral-900 tracking-tight">
+                  {getPageTitle()}
                 </h1>
+                {profile && (
+                  <button
+                    type="button"
+                    onClick={handleTogglePublish}
+                    className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200/80 transition cursor-pointer"
+                    title={profile.is_published ? "Votre carte est publique. Cliquer pour la masquer." : "Votre carte est masquée. Cliquer pour la remettre en ligne."}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${profile.is_published ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                    <span className={profile.is_published ? 'text-emerald-700' : 'text-amber-700'}>
+                      {profile.is_published ? 'En ligne' : 'Masquée'}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
 
