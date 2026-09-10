@@ -10,6 +10,8 @@ import {
   Plus,
   Trash2,
   Check,
+  Copy,
+  LinkIcon,
   ExternalLink,
   Calendar,
   Crown,
@@ -30,6 +32,12 @@ export default function ServicesPage() {
   const [enableCategories, setEnableCategories] = useState<boolean>(
     profile?.theme?.enable_service_categories ?? true
   );
+
+  const customDomain = profile?.custom_domain || profile?.theme?.custom_domain;
+  const username = profile?.username || 'mon-profil';
+  const baseUrl = customDomain ? `https://${customDomain}` : `https://lien-bio.site/${username}`;
+  const coachingUrl = `${baseUrl}/coaching`;
+  const accompagnementUrl = `${baseUrl}/accompagnement`;
 
   useEffect(() => {
     if (profile?.theme?.services) setServices(profile.theme.services);
@@ -199,6 +207,56 @@ export default function ServicesPage() {
 
       {/* SERVICES LIST SECTION */}
       <div className="flex flex-col gap-5">
+        {/* Liens Dédiés de Partage (Deep Links) */}
+        <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+              <LinkIcon className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-neutral-800 block">Liens directs à partager</span>
+              <span className="text-[11px] text-neutral-500">Envoyez directement vos prospects vers vos offres ciblées</span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(coachingUrl);
+                toast.success(`Lien Coachings copié : ${coachingUrl}`);
+              }}
+              className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+              title={`Copier ${coachingUrl}`}
+            >
+              <Copy className="w-3.5 h-3.5 text-neutral-500" />
+              <span>Lien Coachings</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(accompagnementUrl);
+                toast.success(`Lien Accompagnements copié : ${accompagnementUrl}`);
+              }}
+              className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+              title={`Copier ${accompagnementUrl}`}
+            >
+              <Copy className="w-3.5 h-3.5 text-neutral-500" />
+              <span>Lien Accompagnements</span>
+            </button>
+
+            <a
+              href={coachingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition"
+              title="Tester l'aperçu du lien direct"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+
         {/* Quick Templates Bar */}
         <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
@@ -209,7 +267,42 @@ export default function ServicesPage() {
             <button
               type="button"
               onClick={() => {
-                const username = profile?.username || 'mon-profil';
+                handleAddService({
+                  title: 'Séance de Coaching 1:1 (60 min)',
+                  category: 'Coaching',
+                  subtitle: 'Session intensive personnalisée en visio pour débloquer vos résultats.',
+                  price: '90 €',
+                  url: `https://calendar.lien-bio.site/${username}`,
+                  button_text: 'Réserver mon créneau',
+                });
+              }}
+              className="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            >
+              <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+              <span>+ Coaching 1:1</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                handleAddService({
+                  title: 'Programme Accompagnement (3 mois)',
+                  category: 'Accompagnement',
+                  subtitle: 'Suivi sur-mesure complet avec points réguliers et support direct.',
+                  price: '450 €/mois',
+                  url: `https://calendar.lien-bio.site/${username}`,
+                  button_text: 'Candidater / Échanger',
+                })
+              }
+              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            >
+              <Award className="w-3.5 h-3.5 text-indigo-500" />
+              <span>+ Accompagnement</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
                 handleAddService({
                   title: 'Séance Découverte (30 min)',
                   category: 'Rendez-vous',
@@ -219,28 +312,10 @@ export default function ServicesPage() {
                   button_text: 'Réserver mon créneau',
                 });
               }}
-              className="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-neutral-300 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
             >
-              <Calendar className="w-3.5 h-3.5 text-indigo-600" />
-              <span>+ Séance Découverte</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                handleAddService({
-                  title: 'Consultation Stratégique (1h)',
-                  category: 'Coaching',
-                  subtitle: 'Session intensive d’accompagnement sur mesure.',
-                  price: '90 €',
-                  url: `https://calendar.lien-bio.site/${profile?.username || 'mon-profil'}`,
-                  button_text: 'Prendre rendez-vous',
-                })
-              }
-              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
-            >
-              <Award className="w-3.5 h-3.5 text-indigo-500" />
-              <span>+ Consultation Payante</span>
+              <Calendar className="w-3.5 h-3.5 text-neutral-500" />
+              <span>+ Découverte</span>
             </button>
 
             <button
