@@ -732,6 +732,48 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
+                {/* Active Domain Info Banner (if saved) */}
+                {activeDomain && (
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-indigo-600 font-bold shrink-0 shadow-2xs">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold font-mono text-neutral-900 text-sm">{activeDomain}</span>
+                          <a
+                            href={`https://${activeDomain}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-400 hover:text-indigo-600 transition"
+                            title="Tester l'accès direct"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                        <span className="text-[11px] text-neutral-500 block">
+                          {isVerified
+                            ? 'Votre carte répond directement sur ce nom de domaine.'
+                            : 'Domaine enregistré dans votre compte. En attente de propagation DNS.'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleDeleteDomain}
+                        disabled={savingDomain}
+                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      >
+                        {savingDomain ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                        <span>Supprimer le domaine</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* DIAGNOSTIC DE VÉRIFICATION EN DIRECT */}
                 <div className="space-y-3 pt-1">
                   <div className="flex items-center justify-between flex-wrap gap-2">
@@ -809,6 +851,21 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Bottom Delete Button if domain is saved */}
+                {activeDomain && (
+                  <div className="flex justify-end pt-2 border-t border-neutral-100">
+                    <button
+                      type="button"
+                      onClick={handleDeleteDomain}
+                      disabled={savingDomain}
+                      className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      {savingDomain ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      <span>Supprimer le nom de domaine</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
