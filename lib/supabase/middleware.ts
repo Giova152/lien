@@ -54,6 +54,15 @@ export async function updateSession(request: NextRequest) {
 
   // Custom Domain Routing (Multi-Tenant Rewrite)
   const host = (request.headers.get('host') || '').toLowerCase().replace(/:\d+$/, '');
+
+  // 1. Calendar Subdomain Routing (calendar.lien-bio.site or calendar.localhost)
+  if (host.startsWith('calendar.') && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+    const targetPath = pathname === '/' ? '/calendar' : `/calendar${pathname}`;
+    const rewriteUrl = new URL(targetPath, request.url);
+    rewriteUrl.search = request.nextUrl.search;
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
   const isMainDomain =
     !host ||
     host.includes('lien-bio.site') ||
