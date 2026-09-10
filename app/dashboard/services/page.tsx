@@ -16,7 +16,6 @@ import {
   Layers,
   Award,
   ArrowRight,
-  Copy,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -198,112 +197,6 @@ export default function ServicesPage() {
         </div>
       )}
 
-      {/* BANNIÈRE GÉANTE : COMBO SUITE CALENDAR.LIEN-BIO.SITE */}
-      {(() => {
-        const username = profile?.username || 'mon-profil';
-        const calendarUserUrl = `https://calendar.lien-bio.site/${username}`;
-
-        return (
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-neutral-900 to-zinc-950 p-6 sm:p-7 text-white shadow-xl border border-indigo-500/30">
-            {/* Background Glow Accents */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-600/30 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-purple-600/20 blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 flex flex-col gap-5">
-              {/* Top Tag & Title */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[11px] font-black uppercase tracking-wider mb-2">
-                    <Crown className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Suite Pro Tout-en-Un • 100% Inclus</span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-                    <span>Votre Agenda & Réservation Pro</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-neutral-300 mt-1 max-w-2xl leading-relaxed">
-                    Fini les abonnements Calendly à 15$/mois. Votre compte intègre automatiquement votre outil de prise de rendez-vous sur <strong className="text-white">calendar.lien-bio.site</strong>.
-                  </p>
-                </div>
-
-                <a
-                  href="https://calendar.lien-bio.site"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold shadow-lg hover:shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer shrink-0"
-                >
-                  <Calendar className="w-4 h-4" />
-                  <span>Ouvrir calendar.lien-bio.site</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-
-              {/* URL Box & 1-Click Copy */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-400 shrink-0">
-                    <Calendar className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <span className="text-[10px] uppercase font-bold text-neutral-400 block tracking-wider">
-                      Votre lien d'agenda public direct
-                    </span>
-                    <span className="font-mono text-xs text-indigo-200 font-semibold truncate block select-all">
-                      {calendarUserUrl}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(calendarUserUrl);
-                      toast.success('Lien de votre calendrier copié !');
-                    }}
-                    className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copier mon lien global</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 3-Step Visual Guide */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-1">
-                  <div className="w-6 h-6 rounded-lg bg-indigo-500/30 text-indigo-300 font-black text-xs flex items-center justify-center">
-                    1
-                  </div>
-                  <h5 className="font-bold text-white text-xs">Configurez vos créneaux</h5>
-                  <p className="text-[11px] text-neutral-400 leading-snug">
-                    Sur calendar.lien-bio.site, fixez vos jours de dispo et vos types de RDV.
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-1">
-                  <div className="w-6 h-6 rounded-lg bg-indigo-500/30 text-indigo-300 font-black text-xs flex items-center justify-center">
-                    2
-                  </div>
-                  <h5 className="font-bold text-white text-xs">Copiez le lien du RDV</h5>
-                  <p className="text-[11px] text-neutral-400 leading-snug">
-                    Récupérez l'URL du créneau spécifique ou votre lien d'agenda global.
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-1">
-                  <div className="w-6 h-6 rounded-lg bg-indigo-500/30 text-indigo-300 font-black text-xs flex items-center justify-center">
-                    3
-                  </div>
-                  <h5 className="font-bold text-white text-xs">Liez-le à votre carte</h5>
-                  <p className="text-[11px] text-neutral-400 leading-snug">
-                    Collez le lien dans vos prestations ci-dessous. Vos visiteurs réserveront en 1 clic !
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
 
       {/* SERVICES LIST SECTION */}
       <div className="flex flex-col gap-5">
