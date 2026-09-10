@@ -30,7 +30,6 @@ const RESERVED_DOMAINS = [
 // DNS Lookup Helper using Node dns.promises
 async function checkDnsConfiguration(domain: string): Promise<boolean> {
   try {
-    // 1. Try CNAME resolution
     try {
       const cnames = await dns.promises.resolveCname(domain);
       const isValidCname = cnames.some(
@@ -42,10 +41,8 @@ async function checkDnsConfiguration(domain: string): Promise<boolean> {
       if (isValidCname) return true;
     } catch {}
 
-    // 2. Try A Record resolution
     try {
       const addresses = await dns.promises.resolve4(domain);
-      // Vercel standard IP or custom server IP
       const isValidIp = addresses.some(
         (ip) => ip === '76.76.21.21' || ip === '76.76.21.98' || ip.startsWith('76.76.')
       );
@@ -55,6 +52,111 @@ async function checkDnsConfiguration(domain: string): Promise<boolean> {
     return false;
   } catch (err) {
     return false;
+  }
+}
+
+// Fetch Vercel Domain Configuration & Verification Records
+async function getVercelDomainDetails(domain: string) {
+  const token = process.env.VERCEL_AUTH_TOKEN;
+  const projectId = process.env.VERCEL_PROJECT_ID;
+
+  const parts = domain.split('.');
+  const host = parts.length > 2 ? parts.slice(0, parts.length - 2).join('.') : '@';
+  const defaultCname = 'cname.lien-bio.site';
+
+  if (!token || !projectId) {
+    return {
+      misconfigured: true,
+      verified: false,
+      records: [
+        {
+          type: host === '@' ? 'A' : 'CNAME',
+          name: host,
+          value: host === '@' ? '76.76.21.21' : defaultCname,
+        },
+      ],
+    };
+  }
+
+  try {
+    // 1. Ensure domain is registered in Vercel project
+    await fetch(`https://api.vercel.com/v9/projects/${projectId}/domains`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: domain }),
+    });
+
+    // 2. Fetch Domain Config from Vercel
+    const configRes = await fetch(`https://api.vercel.com/v6/domains/${domain}/config`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const configData = configRes.ok ? await configRes.json() : null;
+
+    // 3. Fetch Project Domain Status from Vercel
+    const projectRes = await fetch(
+      `https://api.vercel.com/v9/projects/${projectId}/domains/${domain}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const projectData = projectRes.ok ? await projectRes.json() : null;
+
+    const isMisconfigured = configData?.misconfigured ?? true;
+    const isVerified = projectData?.verified ?? false;
+
+    // Build DNS records list
+    const records: { type: string; name: string; value: string }[] = [];
+
+    if (host === '@') {
+      records.push({
+        type: 'A',
+        name: '@',
+        value: '76.76.21.21',
+      });
+    } else {
+      let targetValue = defaultCname;
+      if (configData?.recommendedCNAME && configData.recommendedCNAME.length > 0) {
+        targetValue = configData.recommendedCNAME[0].value.replace(/\.$/, '');
+      }
+      records.push({
+        type: 'CNAME',
+        name: host,
+        value: targetValue,
+      });
+    }
+
+    // Add TXT Verification records if Vercel requires domain verification
+    if (projectData?.verification && Array.isArray(projectData.verification)) {
+      projectData.verification.forEach((v: any) => {
+        if (v.type === 'TXT') {
+          records.push({
+            type: 'TXT',
+            name: v.domain || `_vercel.${domain}`,
+            value: v.value,
+          });
+        }
+      });
+    }
+
+    return {
+      misconfigured: isMisconfigured,
+      verified: isVerified,
+      records,
+    };
+  } catch (e) {
+    console.warn('Error fetching Vercel domain details:', e);
+    return {
+      misconfigured: true,
+      verified: false,
+      records: [
+        {
+          type: host === '@' ? 'A' : 'CNAME',
+          name: host,
+          value: host === '@' ? '76.76.21.21' : defaultCname,
+        },
+      ],
+    };
   }
 }
 
@@ -90,7 +192,10 @@ export async function GET(request: Request) {
     }
 
     const dnsValid = await checkDnsConfiguration(domain);
-    const newStatus = dnsValid ? 'active' : 'pending';
+    const vercelDetails = await getVercelDomainDetails(domain);
+
+    const isFullyActive = dnsValid || (!vercelDetails.misconfigured && vercelDetails.verified);
+    const newStatus = isFullyActive ? 'active' : 'pending';
 
     // Update status in DB if changed
     if (newStatus !== profile.custom_domain_status) {
@@ -114,8 +219,9 @@ export async function GET(request: Request) {
       domain,
       status: newStatus,
       dnsValid,
-      targetCname: 'cname.lien-bio.site',
-      targetIp: '76.76.21.21',
+      misconfigured: vercelDetails.misconfigured,
+      verified: vercelDetails.verified,
+      records: vercelDetails.records,
     });
   } catch (error: any) {
     console.error('Error GET /api/domain:', error);
@@ -164,7 +270,6 @@ export async function POST(request: Request) {
 
     const cleanDomain = cleanDomainName(rawDomain);
 
-    // Domain validation regex
     const domainRegex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/i;
     if (!domainRegex.test(cleanDomain)) {
       return NextResponse.json(
@@ -173,7 +278,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check reserved domains
     if (RESERVED_DOMAINS.some((rd) => cleanDomain.includes(rd))) {
       return NextResponse.json(
         { error: 'Ce nom de domaine est réservé par le système.' },
@@ -184,7 +288,6 @@ export async function POST(request: Request) {
     const supabaseAdmin = getAdminSupabase();
     const activeClient = supabaseAdmin || supabase;
 
-    // Check if domain is already used by another user
     const { data: existingDomainProfile } = await activeClient
       .from('profiles')
       .select('id, username')
@@ -199,11 +302,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Perform initial DNS check
+    const vercelDetails = await getVercelDomainDetails(cleanDomain);
     const dnsValid = await checkDnsConfiguration(cleanDomain);
-    const initialStatus = dnsValid ? 'active' : 'pending';
+    const isFullyActive = dnsValid || (!vercelDetails.misconfigured && vercelDetails.verified);
+    const initialStatus = isFullyActive ? 'active' : 'pending';
 
-    // 1. Save to SQL Table `profiles`
     try {
       await activeClient
         .from('profiles')
@@ -222,33 +325,17 @@ export async function POST(request: Request) {
       console.warn('SQL update for custom_domain failed, using JSONB theme fallback:', e);
     }
 
-    // 2. Register domain with Vercel API if VERCEL_AUTH_TOKEN is provided in environment
-    const vercelToken = process.env.VERCEL_AUTH_TOKEN;
-    const vercelProjectId = process.env.VERCEL_PROJECT_ID;
-
-    if (vercelToken && vercelProjectId) {
-      try {
-        await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${vercelToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name: cleanDomain }),
-        });
-      } catch (e) {
-        console.warn('Vercel domain registration API error:', e);
-      }
-    }
-
     return NextResponse.json({
       success: true,
       domain: cleanDomain,
       status: initialStatus,
       dnsValid,
-      message: dnsValid
+      misconfigured: vercelDetails.misconfigured,
+      verified: vercelDetails.verified,
+      records: vercelDetails.records,
+      message: initialStatus === 'active'
         ? 'Nom de domaine associé et DNS vérifié avec succès !'
-        : 'Nom de domaine enregistré. Veuillez configurer l’enregistrement CNAME dans vos DNS.',
+        : 'Nom de domaine enregistré. Veuillez configurer les enregistrements DNS ci-dessous.',
     });
   } catch (error: any) {
     console.error('Error POST /api/domain:', error);
@@ -286,7 +373,6 @@ export async function DELETE(request: Request) {
     const supabaseAdmin = getAdminSupabase();
     const activeClient = supabaseAdmin || supabase;
 
-    // Reset domain fields in SQL & JSONB
     const updatedTheme = { ...(profile.theme || {}) };
     delete updatedTheme.custom_domain;
     delete updatedTheme.custom_domain_status;
@@ -301,7 +387,6 @@ export async function DELETE(request: Request) {
       })
       .eq('id', user.id);
 
-    // Remove from Vercel API if configured
     const vercelToken = process.env.VERCEL_AUTH_TOKEN;
     const vercelProjectId = process.env.VERCEL_PROJECT_ID;
 
@@ -330,4 +415,3 @@ export async function DELETE(request: Request) {
     );
   }
 }
-

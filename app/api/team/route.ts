@@ -314,13 +314,18 @@ export async function POST(request: Request) {
       }
     }
 
+    const mailtoSubject = `${inviterName} vous invite à gérer sa carte Lien-Bio en tant que ${roleLabel}`;
+    const mailtoBody = `Bonjour,\n\n${inviterName} vous a invité(e) en tant que ${roleLabel} sur sa carte de visite digitale Lien-Bio (${cardTitle}).\n\nCliquez sur ce lien pour accepter l'invitation et accéder à la gestion de la carte :\n${acceptUrl}\n\nÀ très vite !`;
+    const mailtoUrl = `mailto:${encodeURIComponent(trimmedEmail)}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+
     return NextResponse.json({
       success: true,
       emailSent,
       acceptUrl,
+      mailtoUrl,
       message: emailSent
         ? `Collaborateur invité avec succès en tant que ${roleLabel} ! Un e-mail a été transmis.`
-        : `Collaborateur ajouté à l’équipe en tant que ${roleLabel} ! Vous pouvez lui transmettre le lien direct.`,
+        : `Collaborateur ajouté à l’équipe en tant que ${roleLabel} ! Vous pouvez lui transmettre le lien direct ou ouvrir votre messagerie.`,
       member: newMember,
     });
   } catch (error: any) {

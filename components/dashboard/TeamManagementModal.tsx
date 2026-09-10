@@ -42,6 +42,12 @@ export function TeamManagementModal({
   const [memberEmail, setMemberEmail] = useState('');
   const [memberRole, setMemberRole] = useState<TeamRole>('assistant');
   const [isInviting, setIsInviting] = useState(false);
+  const [lastInviteInfo, setLastInviteInfo] = useState<{
+    email: string;
+    acceptUrl: string;
+    mailtoUrl?: string;
+    emailSent?: boolean;
+  } | null>(null);
 
   // Team list state
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -115,7 +121,8 @@ export function TeamManagementModal({
   // Envoi de l'invitation collaborateur (Assistant / Admin)
   const handleInviteCollaborator = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!memberEmail.trim()) {
+    const targetEmail = memberEmail.trim();
+    if (!targetEmail) {
       toast.error('Veuillez renseigner l’adresse e-mail du collaborateur');
       return;
     }
@@ -126,7 +133,7 @@ export function TeamManagementModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: memberEmail.trim(),
+          email: targetEmail,
           role: memberRole,
         }),
       });
@@ -136,7 +143,14 @@ export function TeamManagementModal({
         throw new Error(data.error || 'Erreur lors de l’invitation');
       }
 
-      toast.success(data.message || 'Collaborateur invité avec succès ! 🎉');
+      setLastInviteInfo({
+        email: targetEmail,
+        acceptUrl: data.acceptUrl || `${origin}/login?collab=${encodeURIComponent(profile?.username || '')}`,
+        mailtoUrl: data.mailtoUrl,
+        emailSent: data.emailSent,
+      });
+
+      toast.success(data.message || 'Collaborateur ajouté avec succès ! 🎉');
       setMemberEmail('');
       setMemberRole('assistant');
       await fetchTeamMembers();
@@ -354,6 +368,53 @@ export function TeamManagementModal({
                 </form>
               </div>
 
+              {/* Banner / Card for newly invited collaborator */}
+              {lastInviteInfo && (
+                <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 space-y-3 animate-fade-in">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-xs font-extrabold text-indigo-900 flex items-center gap-1.5">
+                        🎉 Invitation enregistrée pour {lastInviteInfo.email} !
+                      </span>
+                      <p className="text-[11px] text-indigo-700 mt-0.5 leading-relaxed">
+                        Transmettez-lui directement le lien ci-dessous pour qu&apos;il puisse accéder et gérer votre carte :
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setLastInviteInfo(null)}
+                      className="text-indigo-400 hover:text-indigo-700 text-xs font-bold p-1 cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(lastInviteInfo.acceptUrl);
+                        toast.success('Lien d’accès copié ! Envoyer-le par WhatsApp ou message.');
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copier le lien d&apos;accès</span>
+                    </button>
+
+                    {lastInviteInfo.mailtoUrl && (
+                      <a
+                        href={lastInviteInfo.mailtoUrl}
+                        className="px-3 py-1.5 rounded-xl bg-white hover:bg-indigo-100/60 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                      >
+                        <Mail className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Ouvrir mon application E-mail</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Liste des membres actuels */}
               <div>
                 <div className="flex items-center justify-between mb-2.5">
@@ -423,7 +484,7 @@ export function TeamManagementModal({
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
                           <button
                             type="button"
                             onClick={() => {
@@ -431,10 +492,11 @@ export function TeamManagementModal({
                               navigator.clipboard.writeText(acceptUrl);
                               toast.success('Lien d’accès copié ! Transmettez-le à votre collaborateur.');
                             }}
-                            className="p-1.5 rounded-lg text-neutral-500 hover:text-indigo-600 hover:bg-indigo-50 transition cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition text-[11px] font-bold flex items-center gap-1 cursor-pointer"
                             title="Copier le lien d'accès collaborateur"
                           >
-                            <Copy className="w-4 h-4" />
+                            <Copy className="w-3 h-3 text-neutral-500" />
+                            <span className="hidden sm:inline">Lien d&apos;accès</span>
                           </button>
 
                           <button
