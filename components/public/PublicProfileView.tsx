@@ -30,8 +30,6 @@ interface PublicProfileViewProps {
   contact: ContactInfo | null;
   isOwner?: boolean;
   initialLang?: 'fr' | 'en';
-  initialTab?: 'profil' | 'services' | 'shop';
-  initialCategory?: string;
 }
 
 const TRANSLATIONS = {
@@ -110,8 +108,6 @@ export function PublicProfileView({
   contact,
   isOwner,
   initialLang,
-  initialTab,
-  initialCategory,
 }: PublicProfileViewProps) {
   const [lang, setLang] = useState<'fr' | 'en'>(initialLang || 'fr');
 
@@ -143,31 +139,13 @@ export function PublicProfileView({
 
   const t = TRANSLATIONS[lang];
 
-  const [activeTab, setActiveTab] = useState<'profil' | 'services' | 'shop'>(initialTab || 'profil');
+  const [activeTab, setActiveTab] = useState<'profil' | 'services' | 'shop'>('profil');
   const [openServiceAccordion, setOpenServiceAccordion] = useState<string | null>(null);
   // Tab 3 Filter: Boutique / Shop
   const [shopFilter, setShopFilter] = useState<'all' | 'free' | 'paid'>('all');
 
   // Tab 2 Filter: Services Categories (Facultatif - au choix de l'utilisateur)
-  const [serviceCategoryFilter, setServiceCategoryFilter] = useState<string>(initialCategory || 'all');
-
-  // Read URL search params on client mount (?cat=coaching, ?tab=shop, etc.)
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const qTab = params.get('tab');
-      const qCat = params.get('cat') || params.get('category');
-      if (qTab === 'services' || qTab === 'shop' || qTab === 'profil') {
-        setActiveTab(qTab);
-      } else if (qCat) {
-        setActiveTab('services');
-      }
-      if (qCat) {
-        setServiceCategoryFilter(qCat);
-      }
-    } catch {}
-  }, []);
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState<string>('all');
 
   const theme = profile.theme;
   const isDarkText = isDarkColor(theme.text_color);
@@ -297,16 +275,13 @@ export function PublicProfileView({
 
   // Filtered services list according to selected category
   const filteredServices = useMemo(() => {
-    if (serviceCategoryFilter === 'all') {
+    if (!showServiceCategories || serviceCategoryFilter === 'all') {
       return services;
     }
-    const target = serviceCategoryFilter.toLowerCase().trim();
-    const matches = services.filter((s) => {
-      const cat = (s.category || '').toLowerCase().trim();
-      return cat === target || cat.includes(target) || target.includes(cat);
-    });
-    return matches.length > 0 ? matches : services;
-  }, [services, serviceCategoryFilter]);
+    return services.filter(
+      (s) => s.category?.trim().toLowerCase() === serviceCategoryFilter.toLowerCase()
+    );
+  }, [services, showServiceCategories, serviceCategoryFilter]);
 
   const filteredProducts = products.filter((p) => {
     if (shopFilter === 'free') return p.type === 'free';

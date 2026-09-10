@@ -79,11 +79,11 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               </li>
               <li className="flex items-center gap-2 text-neutral-400">
                 <span className="w-4 h-4 rounded-full border border-neutral-300 flex items-center justify-center text-[10px] shrink-0">✕</span>
-                <span className="line-through">Coachings, Formations & RDV</span>
+                <span className="line-through">Services & Rendez-vous</span>
               </li>
               <li className="flex items-center gap-2 text-neutral-400">
                 <span className="w-4 h-4 rounded-full border border-neutral-300 flex items-center justify-center text-[10px] shrink-0">✕</span>
-                <span className="line-through">Liens dédiés & Domaine personnalisé</span>
+                <span className="line-through">Boutique & Produits PDF</span>
               </li>
             </ul>
           </div>
@@ -116,28 +116,28 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               </span>
             </div>
 
-            <p className="text-xs text-neutral-600 mb-5">Idéal pour tester tout le combo professionnel sans engagement.</p>
+            <p className="text-xs text-neutral-600 mb-5">Idéal pour tester toutes les fonctionnalités PRO sans engagement.</p>
 
             <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
-                <span>Coachings, Accompagnements & RDV</span>
+                <span>Tous les thèmes de luxe</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
-                <span>Formations en ligne & Boutique PDF</span>
+                <span>Liens & Réseaux illimités</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
-                <span>Agenda Pro intégré (calendar)</span>
+                <span>Services & Prise de RDV</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
-                <span>Liens dédiés (/coaching, /formations)</span>
+                <span>Boutique & Produits PDF</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0" />
-                <span>Domaine personnalisé & Marque blanche</span>
+                <span>Statistiques complètes</span>
               </li>
             </ul>
           </div>
@@ -184,28 +184,28 @@ export function LandingPricingCards({ user }: LandingPricingCardsProps) {
               </span>
             </div>
 
-            <p className="text-xs text-neutral-600 mb-5">La formule préférée des créateurs, coachs et consultants.</p>
+            <p className="text-xs text-neutral-600 mb-5">La formule préférée des créateurs et professionnels.</p>
 
             <ul className="flex flex-col gap-2.5 text-xs text-neutral-700">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span className="font-semibold text-neutral-900">Combo Tout-en-Un complet</span>
+                <span>Tous les thèmes de luxe</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span>Coachings, Accompagnements & Formations</span>
+                <span>Liens personnalisés illimités</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span>Agenda Pro de réservation synchronisé</span>
+                <span>Services & Prise de RDV Calendly</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span>Liens directs (/coaching, /formations, /rdv)</span>
+                <span>Boutique & Produits Digitaux PDF</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span>Nom de domaine personnalisé inclus</span>
+                <span>Statistiques & Analytics de clics</span>
               </li>
             </ul>
           </div>

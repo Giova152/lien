@@ -10,8 +10,6 @@ import {
   Plus,
   Trash2,
   Check,
-  Copy,
-  LinkIcon,
   ExternalLink,
   Upload,
   Camera,
@@ -32,11 +30,6 @@ export default function ShopPage() {
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [showUrlInputMap, setShowUrlInputMap] = useState<Record<string, boolean>>({});
   const [products, setProducts] = useState<ShopProduct[]>(profile?.theme?.products || []);
-
-  const customDomain = profile?.custom_domain || profile?.theme?.custom_domain;
-  const username = profile?.username || 'mon-profil';
-  const baseUrl = customDomain ? `https://${customDomain}` : `https://lien-bio.site/${username}`;
-  const formationsUrl = `${baseUrl}/formations`;
 
   const handleAddProduct = (type: 'free' | 'paid' = 'free') => {
     if (!profile?.is_pro) {
@@ -221,98 +214,56 @@ export default function ShopPage() {
         </div>
       </div>
 
-      {/* PRO Notice if not PRO */}
+      {/* PRO Upgrade Callout if not PRO */}
       {!profile?.is_pro && (
-        <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-indigo-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-              <Crown className="w-4 h-4 text-amber-700" />
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-semibold text-sm text-neutral-900">
-                Module Formations & Boutique (PRO)
+              <h4 className="font-bold text-sm text-neutral-900">
+                Fonctionnalité PRO : Boutique & Produits Digitaux
               </h4>
               <p className="text-xs text-neutral-600 mt-0.5">
-                Proposez vos formations vidéo, e-books, masterclasses et ressources téléchargeables sur votre profil.
+                Passez à la formule PRO pour vendre vos e-books, templates, formations et fichiers sur votre profil.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => openUpgradeModal?.()}
-            className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shrink-0 cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md shrink-0 cursor-pointer"
           >
-            <span>Débloquer avec PRO</span>
-            <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
+            <Crown className="w-3.5 h-3.5 text-amber-300" />
+            <span>Passer à la formule PRO</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
-      {/* Barre d'actions : Modèles & Partage */}
-      <div className="bg-neutral-50/90 border border-neutral-200/80 rounded-2xl p-3 sm:px-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs font-semibold text-neutral-500 mr-1">Modèles :</span>
-          <button
-            type="button"
-            onClick={() => {
-              if (!profile?.is_pro) {
-                toast.info('⚡ Les formations sont réservées aux membres PRO.');
-                openUpgradeModal?.();
-                return;
-              }
-              const newProd: ShopProduct = {
-                id: Date.now().toString(),
-                title: 'Formation en Ligne & Masterclass',
-                price: '97 €',
-                type: 'paid',
-                url: '',
-                image_url: '',
-              };
-              const updated = [newProd, ...products];
-              setProducts(updated);
-              if (setProfile && profile) {
-                setProfile({
-                  ...profile,
-                  theme: { ...profile.theme, products: updated },
-                });
-              }
-            }}
-            className="px-2.5 py-1.5 rounded-xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-xs font-semibold text-neutral-800 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
-            <span>+ Formation / Masterclass</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleAddProduct('paid')}
-            className="px-2.5 py-1.5 rounded-xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-xs font-semibold text-neutral-800 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
-          >
-            <span>+ E-book Payant</span>
-          </button>
-
+      {/* Quick Add Bar */}
+      <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
+          <Layers className="w-4 h-4 text-indigo-600" />
+          <span>Ajouts rapides :</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => handleAddProduct('free')}
-            className="px-2.5 py-1.5 rounded-xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-xs font-semibold text-neutral-800 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-emerald-400 hover:text-emerald-700 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs"
           >
-            <span>+ Ressource Offerte</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>+ Produit Gratuit (Lead Magnet)</span>
           </button>
-        </div>
-
-        <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-neutral-200/60">
-          <span className="text-xs font-semibold text-neutral-500 mr-0.5">Partager :</span>
           <button
             type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(formationsUrl);
-              toast.success(`Lien copié : ${formationsUrl}`);
-            }}
-            className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-neutral-100 border border-neutral-200/90 text-neutral-700 text-xs font-medium flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
-            title={`Copier ${formationsUrl}`}
+            onClick={() => handleAddProduct('paid')}
+            className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-amber-400 hover:text-amber-800 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs"
           >
-            <Copy className="w-3 h-3 text-neutral-400" />
-            <span>Lien Formations</span>
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span>+ Produit Payant (E-book / Vente)</span>
           </button>
         </div>
       </div>

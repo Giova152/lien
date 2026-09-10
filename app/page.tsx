@@ -40,17 +40,17 @@ export default async function HomePage() {
           {/* Subtle Tag */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-semibold mb-6 border border-neutral-200/60">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>L'écosystème tout-en-un pour créateurs, coachs & consultants</span>
+            <span>Alternative simple et propre à Linktree</span>
           </div>
 
           {/* Headline - Direct and Natural */}
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-neutral-900 mb-5 max-w-3xl leading-[1.12]">
-            Coachings, formations, rendez-vous et liens. Sur une seule vitrine.
+            Tous vos liens, vos contacts et vos offres. Sur une seule page.
           </h1>
 
           {/* Subheading - Realistic Value Proposition */}
           <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mb-8 leading-relaxed font-normal">
-            Remplacez la dispersion entre Linktree, Calendly et plateformes de formation. Partagez des liens directs ciblés, enregistrez votre contact (vCard) et développez votre activité sous votre propre nom de domaine.
+            Partagez facilement votre univers professionnel. Vos interlocuteurs enregistrent votre fiche contact (.vcf) dans leur téléphone en un clic, consultent vos prestations et découvrent vos projets.
           </p>
 
           {/* CTAs */}
