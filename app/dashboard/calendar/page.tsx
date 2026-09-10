@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDashboard } from '@/lib/context/DashboardContext';
 import { createClient } from '@/lib/supabase/client';
-import { AppointmentBooking, BookingAvailability } from '@/types';
+import { AppointmentBooking, BookingAvailability, ServiceItem } from '@/types';
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -18,6 +18,8 @@ import {
   Mail,
   Phone,
   ArrowRight,
+  Plus,
+  Sparkles,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -35,12 +37,36 @@ export default function CalendarDashboardPage() {
   const { profile, setProfile, openUpgradeModal } = useDashboard();
   const supabase = createClient();
 
-  const [activeTab, setActiveTab] = useState<'appointments' | 'availability'>('appointments');
-  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'types' | 'appointments' | 'availability'>('types');
+  const [savingAvailability, setSavingAvailability] = useState(false);
+  const [savingTypes, setSavingTypes] = useState(false);
   const [appointments, setAppointments] = useState<AppointmentBooking[]>([]);
   const [loadingAppts, setLoadingAppts] = useState(true);
 
-  // Disponibilités locales
+  // Types de rendez-vous (Event Types)
+  const initialServices: ServiceItem[] =
+    profile?.theme?.services && profile.theme.services.length > 0
+      ? profile.theme.services
+      : [
+          {
+            id: 'default-call',
+            title: 'Appel découverte',
+            subtitle: 'Échange de cadrage en visio pour discuter de vos besoins.',
+            price: 'Gratuit',
+            duration_minutes: 30,
+            is_native_booking: true,
+          },
+        ];
+
+  const [appointmentTypes, setAppointmentTypes] = useState<ServiceItem[]>(initialServices);
+
+  useEffect(() => {
+    if (profile?.theme?.services && profile.theme.services.length > 0) {
+      setAppointmentTypes(profile.theme.services);
+    }
+  }, [profile?.theme?.services]);
+
+  // Disponibilités globales locales
   const currentAvailability: BookingAvailability = profile?.theme?.booking_availability || {
     enabled_days: ['mon', 'tue', 'wed', 'thu', 'fri'],
     start_time: '09:00',
@@ -83,10 +109,74 @@ export default function CalendarDashboardPage() {
     };
   }, [profile?.id]);
 
+  // Gestion des types de rendez-vous (Quota selon offre)
+  const isPro = Boolean(profile?.is_pro);
+
+  const handleAddAppointmentType = () => {
+    if (!isPro && appointmentTypes.length >= 1) {
+      toast.info('⚡ Le plan Gratuit permet 1 type de rendez-vous. Passez à PRO pour en créer en illimité !');
+      openUpgradeModal?.();
+      return;
+    }
+
+    const newType: ServiceItem = {
+      id: Date.now().toString(),
+      title: 'Consultation & Accompagnement',
+      subtitle: 'Séance sur-mesure pour vous aider à franchir un cap.',
+      price: '50 €',
+      duration_minutes: 45,
+      is_native_booking: true,
+    };
+
+    setAppointmentTypes([...appointmentTypes, newType]);
+  };
+
+  const handleUpdateAppointmentType = (id: string, field: keyof ServiceItem, value: any) => {
+    setAppointmentTypes((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  };
+
+  const handleDeleteAppointmentType = (id: string) => {
+    if (appointmentTypes.length <= 1) {
+      toast.error('Vous devez conserver au minimum un type de rendez-vous.');
+      return;
+    }
+    setAppointmentTypes((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleSaveAppointmentTypes = async () => {
+    if (!profile) return;
+    setSavingTypes(true);
+    try {
+      const updatedTheme = {
+        ...profile.theme,
+        services: appointmentTypes,
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ theme: updatedTheme })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      if (setProfile) {
+        setProfile({ ...profile, theme: updatedTheme });
+      }
+
+      toast.success('Vos types de rendez-vous ont été enregistrés !');
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de la sauvegarde');
+    } finally {
+      setSavingTypes(false);
+    }
+  };
+
   // Sauvegarder les disponibilités
   const handleSaveAvailability = async () => {
     if (!profile) return;
-    setSaving(true);
+    setSavingAvailability(true);
     try {
       const updatedTheme = {
         ...profile.theme,
@@ -108,7 +198,7 @@ export default function CalendarDashboardPage() {
     } catch (err: any) {
       toast.error(err.message || 'Erreur lors de la sauvegarde');
     } finally {
-      setSaving(false);
+      setSavingAvailability(false);
     }
   };
 
@@ -152,7 +242,7 @@ export default function CalendarDashboardPage() {
             Agenda Pro & Rendez-vous
           </h2>
           <p className="text-xs text-neutral-500 mt-1">
-            Gérez vos disponibilités de prise de rendez-vous et consultez vos réservations clients.
+            Gérez vos types d'événements, configurez vos plages horaires et suivez vos réservations.
           </p>
         </div>
 
@@ -184,35 +274,28 @@ export default function CalendarDashboardPage() {
         </div>
       </div>
 
-      {/* PRO Notice if not PRO */}
-      {profile && !profile.is_pro && (
-        <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-              <Crown className="w-4 h-4 text-amber-700" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-sm text-neutral-900">
-                Module Agenda Pro (PRO)
-              </h4>
-              <p className="text-xs text-neutral-600 mt-0.5">
-                La réservation automatique de créneaux en ligne est réservée aux membres PRO.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => openUpgradeModal?.()}
-            className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shrink-0 cursor-pointer"
-          >
-            <span>Débloquer avec PRO</span>
-            <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
-          </button>
-        </div>
-      )}
-
       {/* Tabs Switcher */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab('types')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-2 ${
+            activeTab === 'types'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:bg-neutral-100'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Types de rendez-vous</span>
+          <span
+            className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+              activeTab === 'types' ? 'bg-white/20 text-white' : 'bg-neutral-200 text-neutral-700'
+            }`}
+          >
+            {appointmentTypes.length}
+          </span>
+        </button>
+
         <button
           type="button"
           onClick={() => setActiveTab('appointments')}
@@ -244,6 +327,169 @@ export default function CalendarDashboardPage() {
           <span>Disponibilités & Horaires</span>
         </button>
       </div>
+
+      {/* Tab 1: Types de Rendez-vous */}
+      {activeTab === 'types' && (
+        <div className="flex flex-col gap-5">
+          {/* Header Quota */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50 border border-neutral-200/90 rounded-2xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white border border-neutral-200 flex items-center justify-center text-indigo-600 shrink-0">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-neutral-900">Types d'événements proposés</h4>
+                  {isPro ? (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black">
+                      Illimité (PRO)
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-black">
+                      {appointmentTypes.length} / 1 (Offre Gratuite)
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-neutral-500 mt-0.5">
+                  Chaque type possède sa propre durée et tarif affiché.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleAddAppointmentType}
+                className="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Ajouter un type de RDV</span>
+              </button>
+            </div>
+          </div>
+
+          {!isPro && appointmentTypes.length >= 1 && (
+            <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-amber-900">
+                <Crown className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Vous avez atteint la limite de l'offre gratuite (1 type de RDV). Passez à PRO pour en créer en illimité.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => openUpgradeModal?.()}
+                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shrink-0 transition"
+              >
+                Débloquer
+              </button>
+            </div>
+          )}
+
+          {/* Liste des cartes d'événements */}
+          <div className="grid grid-cols-1 gap-4">
+            {appointmentTypes.map((item, idx) => (
+              <div
+                key={item.id}
+                className="bg-white border border-neutral-200/90 rounded-2xl p-5 shadow-2xs flex flex-col gap-4 relative group"
+              >
+                <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-neutral-100 text-neutral-600 font-black text-xs flex items-center justify-center">
+                      {idx + 1}
+                    </span>
+                    <span className="text-xs font-bold text-neutral-800">
+                      Prestation / Créneau {idx + 1}
+                    </span>
+                  </div>
+                  {appointmentTypes.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteAppointmentType(item.id)}
+                      className="text-neutral-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                      title="Supprimer ce type de RDV"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                      Intitulé du rendez-vous
+                    </label>
+                    <input
+                      type="text"
+                      value={item.title}
+                      onChange={(e) => handleUpdateAppointmentType(item.id, 'title', e.target.value)}
+                      placeholder="Ex: Appel découverte, Session de coaching..."
+                      className="w-full p-2.5 rounded-xl border border-neutral-200 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                        Durée du créneau
+                      </label>
+                      <select
+                        value={item.duration_minutes || 30}
+                        onChange={(e) =>
+                          handleUpdateAppointmentType(item.id, 'duration_minutes', Number(e.target.value))
+                        }
+                        className="w-full p-2.5 rounded-xl border border-neutral-200 text-xs font-semibold bg-white focus:outline-none focus:border-indigo-600"
+                      >
+                        <option value={15}>15 minutes</option>
+                        <option value={30}>30 minutes</option>
+                        <option value={45}>45 minutes</option>
+                        <option value={60}>60 min (1h)</option>
+                        <option value={90}>90 min (1h30)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                        Tarif affiché
+                      </label>
+                      <input
+                        type="text"
+                        value={item.price || ''}
+                        onChange={(e) => handleUpdateAppointmentType(item.id, 'price', e.target.value)}
+                        placeholder="Ex: Gratuit, 50 €, Sur devis"
+                        className="w-full p-2.5 rounded-xl border border-neutral-200 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                    Description courte (visible par vos clients lors du choix)
+                  </label>
+                  <input
+                    type="text"
+                    value={item.subtitle || ''}
+                    onChange={(e) => handleUpdateAppointmentType(item.id, 'subtitle', e.target.value)}
+                    placeholder="Ex: Échange de cadrage en visio pour évaluer vos objectifs."
+                    className="w-full p-2.5 rounded-xl border border-neutral-200 text-xs text-neutral-600 focus:outline-none focus:border-indigo-600"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              disabled={savingTypes}
+              onClick={handleSaveAppointmentTypes}
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-md disabled:opacity-50 cursor-pointer"
+            >
+              <Check className="w-4 h-4" />
+              <span>{savingTypes ? 'Enregistrement...' : 'Enregistrer mes types de rendez-vous'}</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Tab 1: Liste des Rendez-vous */}
       {activeTab === 'appointments' && (
@@ -439,12 +685,12 @@ export default function CalendarDashboardPage() {
           <div className="flex justify-end pt-4 border-t border-neutral-100">
             <button
               type="button"
-              disabled={saving}
+              disabled={savingAvailability}
               onClick={handleSaveAvailability}
               className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-md disabled:opacity-50 cursor-pointer"
             >
               <Check className="w-4 h-4" />
-              <span>{saving ? 'Enregistrement...' : 'Enregistrer mes disponibilités'}</span>
+              <span>{savingAvailability ? 'Enregistrement...' : 'Enregistrer mes disponibilités'}</span>
             </button>
           </div>
         </div>

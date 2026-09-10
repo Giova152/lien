@@ -53,6 +53,12 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     services.length > 0 ? services[0] : null
   );
 
+  // Sélection du service avec réinitialisation du créneau
+  const handleSelectService = (srv: ServiceItem) => {
+    setSelectedService(srv);
+    setSelectedSlot(null);
+  };
+
   // Mois affiché pour le calendrier
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState<Date>(
@@ -143,14 +149,14 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     return days;
   }, [currentMonth, availability.enabled_days, today]);
 
-  // Génération des créneaux horaires possibles pour la journée
+  // Génération des créneaux horaires possibles pour la journée adaptés à la durée du service
   const availableSlots = useMemo(() => {
     if (!selectedDate) return [];
 
     const slots: string[] = [];
     const [startH, startM] = (availability.start_time || '09:00').split(':').map(Number);
     const [endH, endM] = (availability.end_time || '18:00').split(':').map(Number);
-    const duration = availability.slot_duration || 30;
+    const duration = selectedService?.duration_minutes || availability.slot_duration || 30;
 
     let currentMinutes = startH * 60 + startM;
     const endMinutes = endH * 60 + endM;
@@ -183,7 +189,7 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
     }
 
     return slots;
-  }, [selectedDate, availability]);
+  }, [selectedDate, availability, selectedService]);
 
   // Soumission de la réservation
   const handleSubmitBooking = async (e: React.FormEvent) => {
@@ -313,19 +319,23 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
 
               {services.length === 0 ? (
                 <div className="p-3 rounded-xl bg-white border border-neutral-200 text-xs text-neutral-700">
-                  <span className="font-semibold block">Séance Découverte (30 min)</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-semibold block">Séance Découverte</span>
+                    <span className="text-[10px] font-bold text-neutral-500 bg-neutral-100 px-1.5 py-0.5 rounded">30 min</span>
+                  </div>
                   <span className="text-neutral-500 text-[11px]">Échange de cadrage en visio</span>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
                   {services.map((srv) => {
                     const isSelected = selectedService?.id === srv.id;
+                    const duration = srv.duration_minutes || availability.slot_duration || 30;
                     return (
                       <button
                         key={srv.id}
                         type="button"
-                        onClick={() => setSelectedService(srv)}
-                        className={`w-full p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col gap-1 ${
+                        onClick={() => handleSelectService(srv)}
+                        className={`w-full p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col gap-1.5 ${
                           isSelected
                             ? 'bg-indigo-50/80 border-indigo-300 ring-1 ring-indigo-200 shadow-2xs'
                             : 'bg-white border-neutral-200/80 hover:border-neutral-300'
@@ -339,11 +349,13 @@ export function PublicBookingClient({ profile }: PublicBookingClientProps) {
                             </span>
                           )}
                         </div>
-                        {srv.subtitle && (
-                          <span className="text-[11px] text-neutral-500 line-clamp-2">
-                            {srv.subtitle}
+                        <div className="flex items-center gap-2 text-[11px] text-neutral-500">
+                          <span className="inline-flex items-center gap-1 font-medium text-neutral-600 bg-neutral-100 px-1.5 py-0.2 rounded text-[10px]">
+                            <Clock className="w-3 h-3 text-neutral-400" />
+                            <span>{duration} min</span>
                           </span>
-                        )}
+                          {srv.subtitle && <span className="truncate">{srv.subtitle}</span>}
+                        </div>
                       </button>
                     );
                   })}
