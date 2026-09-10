@@ -248,50 +248,10 @@ export default function ShopPage() {
         </div>
       )}
 
-      {/* Liens Dédiés de Partage (Deep Links) */}
-      <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-            <LinkIcon className="w-4 h-4" />
-          </div>
-          <div>
-            <span className="text-xs font-bold text-neutral-800 block">Lien direct de vos Formations</span>
-            <span className="text-[11px] text-neutral-500">Partagez directement l'accès à votre catalogue de formations et e-books</span>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(formationsUrl);
-              toast.success(`Lien Formations copié : ${formationsUrl}`);
-            }}
-            className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
-            title={`Copier ${formationsUrl}`}
-          >
-            <Copy className="w-3.5 h-3.5 text-neutral-500" />
-            <span>Copier le lien Formations</span>
-          </button>
-
-          <a
-            href={formationsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition"
-            title="Tester l'aperçu du lien direct"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        </div>
-      </div>
-
-      {/* Quick Add Bar */}
-      <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
-          <Layers className="w-4 h-4 text-indigo-600" />
-          <span>Modèles rapides en 1 clic :</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Barre d'actions : Modèles & Partage */}
+      <div className="bg-neutral-50/90 border border-neutral-200/80 rounded-2xl p-3 sm:px-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs font-semibold text-neutral-500 mr-1">Modèles :</span>
           <button
             type="button"
             onClick={() => {
@@ -317,28 +277,42 @@ export default function ShopPage() {
                 });
               }
             }}
-            className="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            className="px-2.5 py-1.5 rounded-xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-xs font-semibold text-neutral-800 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
-            <span>+ Formation en Ligne</span>
+            <span>+ Formation / Masterclass</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleAddProduct('paid')}
-            className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-amber-400 hover:text-amber-800 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            className="px-2.5 py-1.5 rounded-xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-xs font-semibold text-neutral-800 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
           >
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
-            <span>+ E-book / Guide Payant</span>
+            <span>+ E-book Payant</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleAddProduct('free')}
-            className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-emerald-400 hover:text-emerald-700 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            className="px-2.5 py-1.5 rounded-xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-xs font-semibold text-neutral-800 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>+ Ressource Offerte (Lead Magnet)</span>
+            <span>+ Ressource Offerte</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-neutral-200/60">
+          <span className="text-xs font-semibold text-neutral-500 mr-0.5">Partager :</span>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(formationsUrl);
+              toast.success(`Lien copié : ${formationsUrl}`);
+            }}
+            className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-neutral-100 border border-neutral-200/90 text-neutral-700 text-xs font-medium flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+            title={`Copier ${formationsUrl}`}
+          >
+            <Copy className="w-3 h-3 text-neutral-400" />
+            <span>Lien Formations</span>
           </button>
         </div>
       </div>
