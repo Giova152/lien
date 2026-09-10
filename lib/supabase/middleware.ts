@@ -6,10 +6,19 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  const host = (request.headers.get('host') || '').toLowerCase().replace(/:\d+$/, '');
+  const isLienBioSite = host.endsWith('lien-bio.site');
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
     {
+      cookieOptions: {
+        domain: isLienBioSite ? '.lien-bio.site' : undefined,
+        path: '/',
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -19,9 +28,13 @@ export async function updateSession(request: NextRequest) {
           supabaseResponse = NextResponse.next({
             request,
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            const mergedOptions = {
+              ...options,
+              domain: isLienBioSite ? '.lien-bio.site' : options?.domain,
+            };
+            supabaseResponse.cookies.set(name, value, mergedOptions);
+          });
         },
       },
     }
@@ -52,15 +65,35 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Custom Domain Routing (Multi-Tenant Rewrite)
-  const host = (request.headers.get('host') || '').toLowerCase().replace(/:\d+$/, '');
-
   // 1. Calendar Subdomain Routing (calendar.lien-bio.site or calendar.localhost)
-  if (host.startsWith('calendar.') && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
-    const targetPath = pathname === '/' ? '/calendar' : `/calendar${pathname}`;
-    const rewriteUrl = new URL(targetPath, request.url);
-    rewriteUrl.search = request.nextUrl.search;
-    return NextResponse.rewrite(rewriteUrl);
+  if (host.startsWith('calendar.')) {
+    // If accessing auth or dashboard routes while on calendar subdomain, redirect to main domain
+    if (
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/login') ||
+      pathname.startsWith('/register') ||
+      pathname.startsWith('/onboarding')
+    ) {
+      const mainHost = host.replace(/^calendar\./, '');
+      const proto =
+        request.headers.get('x-forwarded-proto') ||
+        (host.includes('localhost') ? 'http' : 'https');
+      const targetUrl = new URL(`${proto}://${mainHost}${pathname}${request.nextUrl.search}`);
+      return NextResponse.redirect(targetUrl);
+    }
+
+    if (!pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+      const targetPath = pathname === '/' ? '/calendar' : `/calendar${pathname}`;
+      const rewriteUrl = new URL(targetPath, request.url);
+      rewriteUrl.search = request.nextUrl.search;
+      const rewriteResponse = NextResponse.rewrite(rewriteUrl, {
+        request,
+      });
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        rewriteResponse.cookies.set(cookie);
+      });
+      return rewriteResponse;
+    }
   }
 
   const isMainDomain =
@@ -83,7 +116,13 @@ export async function updateSession(request: NextRequest) {
         const targetPath = pathname === '/' ? `/${username}` : `/${username}${pathname}`;
         const rewriteUrl = new URL(targetPath, request.url);
         rewriteUrl.search = request.nextUrl.search;
-        return NextResponse.rewrite(rewriteUrl);
+        const rewriteResponse = NextResponse.rewrite(rewriteUrl, {
+          request,
+        });
+        supabaseResponse.cookies.getAll().forEach((cookie) => {
+          rewriteResponse.cookies.set(cookie);
+        });
+        return rewriteResponse;
       }
     } catch (e) {
       console.warn('Middleware custom domain rewrite error:', e);
