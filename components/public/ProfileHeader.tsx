@@ -131,61 +131,55 @@ export function ProfileHeader({
         </div>
       )}
 
-      {/* Quick Action Icons Row (Realistic Icons8 3D) */}
-      <div className="flex items-center justify-center gap-3.5 mb-5">
+      {/* Quick Action Icons Row (Realistic Icons8 3D - Fond Transparent) */}
+      <div className="flex items-center justify-center gap-5 mb-5">
         {whatsappUrl && (
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-115 active:scale-95 p-1"
             title="WhatsApp"
           >
-            <div className="w-12 h-12 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] border border-neutral-100 flex items-center justify-center p-2 group-hover:shadow-[0_6px_18px_rgba(37,211,102,0.25)] group-hover:ring-2 group-hover:ring-emerald-500/30 transition-all">
-              <Image
-                src="/icons/icons8-wa-3d-fluency.png"
-                alt="WhatsApp"
-                width={38}
-                height={38}
-                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
-              />
-            </div>
+            <Image
+              src="/icons/icons8-wa-3d-fluency.png"
+              alt="WhatsApp"
+              width={44}
+              height={44}
+              className="w-11 h-11 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_6px_12px_rgba(37,211,102,0.4)] transition-all"
+            />
           </a>
         )}
 
         {phoneUrl && (
           <a
             href={phoneUrl}
-            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-115 active:scale-95 p-1"
             title={lang === 'en' ? 'Call' : 'Appeler'}
           >
-            <div className="w-12 h-12 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] border border-neutral-100 flex items-center justify-center p-2 group-hover:shadow-[0_6px_18px_rgba(0,180,216,0.25)] group-hover:ring-2 group-hover:ring-sky-500/30 transition-all">
-              <Image
-                src="/icons/icons8-phone-3d-fluency.png"
-                alt="Téléphone"
-                width={38}
-                height={38}
-                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
-              />
-            </div>
+            <Image
+              src="/icons/icons8-phone-3d-fluency.png"
+              alt="Téléphone"
+              width={44}
+              height={44}
+              className="w-11 h-11 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_6px_12px_rgba(0,180,216,0.4)] transition-all"
+            />
           </a>
         )}
 
         {emailUrl && (
           <a
             href={emailUrl}
-            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-115 active:scale-95 p-1"
             title="Email"
           >
-            <div className="w-12 h-12 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] border border-neutral-100 flex items-center justify-center p-2 group-hover:shadow-[0_6px_18px_rgba(234,67,53,0.25)] group-hover:ring-2 group-hover:ring-red-500/30 transition-all">
-              <Image
-                src="/icons/icons8-gmail-3d-fluency.png"
-                alt="Email"
-                width={38}
-                height={38}
-                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
-              />
-            </div>
+            <Image
+              src="/icons/icons8-gmail-3d-fluency.png"
+              alt="Email"
+              width={44}
+              height={44}
+              className="w-11 h-11 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_6px_12px_rgba(234,67,53,0.4)] transition-all"
+            />
           </a>
         )}
       </div>
