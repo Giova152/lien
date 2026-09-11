@@ -24,7 +24,7 @@ export default function ContactPage() {
   const [phone, setPhone] = useState(contact?.phone || '');
   const [whatsapp, setWhatsapp] = useState(contact?.whatsapp || '');
   const [email, setEmail] = useState(contact?.email || '');
-  const [address, setAddress] = useState(contact?.address || '');
+  const [address, setAddress] = useState(contact?.address || profile?.theme?.location || '');
   const [website, setWebsite] = useState(contact?.website || '');
   const [saving, setSaving] = useState(false);
 
@@ -33,10 +33,12 @@ export default function ContactPage() {
       setPhone(contact.phone || '');
       setWhatsapp(contact.whatsapp || '');
       setEmail(contact.email || '');
-      setAddress(contact.address || '');
+      setAddress(contact.address || profile?.theme?.location || '');
       setWebsite(contact.website || '');
+    } else if (profile?.theme?.location) {
+      setAddress(profile.theme.location);
     }
-  }, [contact]);
+  }, [contact, profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +70,14 @@ export default function ContactPage() {
 
         if (error) throw error;
       }
+
+      // Synchroniser également dans le thème du profil pour cohérence totale
+      await supabase
+        .from('profiles')
+        .update({
+          theme: { ...(profile.theme || {}), location: address.trim() || null },
+        })
+        .eq('id', profile.id);
 
       toast.success('Coordonnées enregistrées avec succès !');
       if (refreshDashboard) refreshDashboard();
@@ -217,13 +227,14 @@ export default function ContactPage() {
         <div className="pt-5 border-t border-neutral-100">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[11px] font-black uppercase tracking-wider text-neutral-400">
-              Localisation & Bureau
+              Localisation & Ville
             </span>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-700 flex items-center gap-1.5">
-              <span>Adresse Physique / Ville</span>
+            <label className="text-xs font-bold text-neutral-700 flex flex-wrap items-center justify-between gap-1">
+              <span>Localisation / Ville / Adresse</span>
+              <span className="text-neutral-400 font-normal text-[11px]">(affiché sous votre nom & inclus dans la fiche contact .vcf)</span>
             </label>
             <div className="relative flex items-center">
               <div className="absolute left-3 w-7 h-7 rounded-lg bg-amber-50 border border-amber-100/80 flex items-center justify-center text-amber-600 pointer-events-none">
