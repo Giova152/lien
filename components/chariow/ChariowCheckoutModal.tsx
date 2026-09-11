@@ -117,7 +117,7 @@ export function ChariowCheckoutModal({
   if (!isOpen || !productId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl max-w-xl w-full h-[92vh] max-h-[820px] shadow-2xl border border-neutral-200 flex flex-col relative overflow-hidden">
         {/* Header de la modale */}
         <div className="px-5 py-3.5 border-b border-neutral-100 flex items-center justify-between shrink-0 bg-neutral-50/80">

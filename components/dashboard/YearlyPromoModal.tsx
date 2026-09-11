@@ -12,9 +12,10 @@ import {
   ShoppingBag,
   BarChart3,
   Palette,
-  Loader2,
 } from '@/components/ui/Icons';
-import { CHARIOW_STORE_DOMAIN, CHARIOW_PRODUCTS } from '@/lib/chariow-constants';
+import { CHARIOW_PRODUCTS } from '@/lib/chariow-constants';
+import { ChariowCheckoutModal } from '@/components/chariow/ChariowCheckoutModal';
+import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 
 interface YearlyPromoModalProps {
@@ -28,7 +29,21 @@ export function YearlyPromoModal({
   onClose,
   userEmail,
 }: YearlyPromoModalProps) {
-  const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(userEmail || null);
+
+  useEffect(() => {
+    if (userEmail) {
+      setCurrentUserEmail(userEmail);
+    } else {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user?.email) {
+          setCurrentUserEmail(data.user.email);
+        }
+      }).catch(() => {});
+    }
+  }, [userEmail]);
 
   // Close on Escape key
   useEffect(() => {
@@ -36,46 +51,22 @@ export function YearlyPromoModal({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        if (isCheckoutOpen) {
+          setIsCheckoutOpen(false);
+        } else {
+          onClose();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, isCheckoutOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const handleStartCheckout = async () => {
-    try {
-      setLoadingCheckout(true);
-      const res = await fetch('/api/chariow/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'yearly' }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (data?.url) {
-        let finalUrl = data.url;
-        if (userEmail && !finalUrl.includes('email=') && !finalUrl.includes('chw_email=')) {
-          const sep = finalUrl.includes('?') ? '&' : '?';
-          finalUrl += `${sep}email=${encodeURIComponent(userEmail)}`;
-        }
-        window.location.href = finalUrl;
-        return;
-      }
-    } catch (err) {
-      console.warn('[YearlyPromoModal] Checkout API redirect fallback:', err);
-    }
-
-    // Redirection directe vers la page officielle du produit sur la boutique Chariow
-    const storeDomain = CHARIOW_STORE_DOMAIN || 'enfancience-academy.mychariow.shop';
-    const fallbackUrl = `https://${storeDomain}/${CHARIOW_PRODUCTS.YEARLY}${
-      userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''
-    }`;
-    window.location.href = fallbackUrl;
+  const handleStartCheckout = () => {
+    setIsCheckoutOpen(true);
   };
 
   return (
@@ -236,21 +227,11 @@ export function YearlyPromoModal({
         <div className="flex flex-col gap-2 pt-1">
           <button
             type="button"
-            disabled={loadingCheckout}
             onClick={handleStartCheckout}
-            className="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-75 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            {loadingCheckout ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Ouverture du paiement sécurisé...</span>
-              </>
-            ) : (
-              <>
-                <span>Profiter de l&apos;offre PRO 1 An</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
+            <span>Profiter de l&apos;offre PRO 1 An</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
@@ -262,6 +243,21 @@ export function YearlyPromoModal({
           </button>
         </div>
       </div>
+
+      {/* Modale de Paiement In-Page Chariow (Sans redirection) */}
+      <ChariowCheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        productId={CHARIOW_PRODUCTS.YEARLY}
+        planTitle="Formule PRO 1 An (185 $)"
+        userEmail={currentUserEmail}
+        onSuccess={() => {
+          setIsCheckoutOpen(false);
+          onClose();
+          toast.success('Paiement réussi ! Votre formule PRO 1 An est activée.');
+          window.location.href = '/dashboard?payment=success&provider=chariow&plan=yearly';
+        }}
+      />
     </div>
   );
 }
