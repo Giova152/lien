@@ -99,7 +99,7 @@ export function YearlyPromoModal({
                 </span>
               </div>
               <p className="text-[11px] text-indigo-600 font-bold mt-1">
-                Soit ~15 $/mois au lieu de 25 $ • ~110 000 FCFA
+                Soit ~15 $/mois au lieu de 25 $
               </p>
             </div>
             <div className="text-right text-[11px] text-neutral-400 hidden sm:block">
@@ -198,7 +198,7 @@ export function YearlyPromoModal({
           {/* Trust Guarantee */}
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-500 pt-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>Paiement sécurisé par <strong>Wave, Orange, MTN, Moov & CB</strong></span>
+            <span>Paiement sécurisé par <strong>Carte bancaire</strong></span>
           </div>
 
           {/* Action Buttons */}
