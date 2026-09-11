@@ -10,6 +10,7 @@ import { MobilePreview } from '@/components/dashboard/MobilePreview';
 import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
 import { TeamManagementModal } from '@/components/dashboard/TeamManagementModal';
+import { YearlyPromoModal } from '@/components/dashboard/YearlyPromoModal';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
   Crown,
@@ -51,6 +52,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [copied, setCopied] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isYearlyPromoOpen, setIsYearlyPromoOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
 
@@ -85,6 +88,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return;
       }
 
+      if (user.email) {
+        setUserEmail(user.email);
+      }
+
       // 1. Récupérer les cartes où l'utilisateur est collaborateur
       let userDelegatedCards: any[] = [];
       try {
@@ -117,7 +124,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 body: JSON.stringify({ cardUsername: collabParam }),
               });
               targetCollabCard.status = 'accepted';
-              toast.success(`Invitation acceptée ! Vous gérez la carte de ${targetCollabCard.display_name || targetCollabCard.username}. 🎉`);
+              toast.success(`Invitation acceptée ! Vous gérez la carte de ${targetCollabCard.display_name || targetCollabCard.username}.`);
             } catch {}
           }
           if (targetCardId === undefined && !activeCardId) {
@@ -198,6 +205,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         is_pro: isPro,
         theme: normalizedTheme,
       });
+
+      // Afficher le popup promotionnel de l'offre 1 An à chaque entrée dans le dashboard pour les utilisateurs non-PRO
+      const hasPaymentParam =
+        typeof window !== 'undefined' &&
+        (new URLSearchParams(window.location.search).get('payment') === 'success' ||
+          new URLSearchParams(window.location.search).get('upgrade') === 'true');
+
+      if (!isPro && !hasPaymentParam && currentRole === 'owner') {
+        setTimeout(() => {
+          setIsYearlyPromoOpen(true);
+        }, 700);
+      }
 
       // 4. Charger les liens de la carte active
       const { data: lnks } = await supabase
@@ -347,7 +366,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               .eq('id', user.id);
 
             fetchDashboardData();
-            toast.success('Félicitations ! Votre paiement est validé, votre compte PRO est actif 🎉', {
+            toast.success('Félicitations ! Votre paiement est validé, votre compte PRO est actif.', {
               duration: 6000,
             });
             // Clean URL parameter
@@ -1130,6 +1149,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           onClose={() => setIsInviteModalOpen(false)}
           profile={profile}
           onTeamUpdated={fetchDashboardData}
+        />
+
+        {/* Promo Offre 1 An Popup (Entrée Dashboard) */}
+        <YearlyPromoModal
+          isOpen={isYearlyPromoOpen}
+          onClose={() => setIsYearlyPromoOpen(false)}
+          userEmail={userEmail}
         />
       </div>
     </DashboardContext.Provider>
