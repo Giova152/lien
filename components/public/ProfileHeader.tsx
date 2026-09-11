@@ -142,7 +142,7 @@ export function ProfileHeader({
             title="WhatsApp"
           >
             <Image
-              src="/icons/icons8-wa-3d-fluency.png"
+              src="/icons/whatsapp-official.png"
               alt="WhatsApp"
               width={44}
               height={44}
