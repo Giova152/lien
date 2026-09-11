@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -445,10 +446,18 @@ export default function SettingsPage() {
         </div>
 
         {/* Snippet URL box */}
-        <div className="flex items-center gap-2.5 px-3.5 py-2.5 bg-neutral-50 border border-neutral-200/80 rounded-xl text-xs text-neutral-600">
-          <Globe className="w-4 h-4 text-neutral-400 shrink-0" />
-          <span className="text-neutral-400 font-medium">Lien public :</span>
-          <span className="font-mono text-neutral-800 font-medium truncate select-all">{publicUrl}</span>
+        <div className="flex items-center justify-between gap-2.5 px-3.5 py-2.5 bg-neutral-50 border border-neutral-200/80 rounded-xl text-xs text-neutral-600">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Globe className="w-4 h-4 text-neutral-400 shrink-0" />
+            <span className="text-neutral-400 font-medium shrink-0">Lien public :</span>
+            <span className="font-mono text-neutral-800 font-medium truncate select-all">{publicUrl}</span>
+          </div>
+          <Link
+            href="/dashboard/profile"
+            className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline shrink-0 ml-2"
+          >
+            Modifier
+          </Link>
         </div>
 
         {/* Alerte si changement d'email en cours */}
