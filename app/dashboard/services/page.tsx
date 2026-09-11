@@ -200,10 +200,10 @@ export default function ServicesPage() {
       {/* SERVICES LIST SECTION */}
       <div className="flex flex-col gap-5">
         {/* Quick Templates Bar */}
-        <div className="bg-slate-50 border border-neutral-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-neutral-700">
-            <Layers className="w-4 h-4 text-indigo-600" />
-            <span>Modèles rapides en 1 clic :</span>
+        <div className="bg-slate-50/90 border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col lg:flex-row lg:items-center gap-3 shadow-2xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-neutral-700 shrink-0 whitespace-nowrap">
+            <Layers className="w-4 h-4 text-indigo-600 shrink-0" />
+            <span>Modèles rapides en 1 clic&nbsp;:</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -219,9 +219,9 @@ export default function ServicesPage() {
                   button_text: 'Réserver mon créneau',
                 });
               }}
-              className="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200/90 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 flex items-center gap-1.5 transition shadow-2xs whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+              <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
               <span>+ Séance Découverte</span>
             </button>
 
@@ -237,9 +237,9 @@ export default function ServicesPage() {
                   button_text: 'Prendre rendez-vous',
                 })
               }
-              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-white border border-neutral-200 hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <Award className="w-3.5 h-3.5 text-indigo-500" />
+              <Award className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
               <span>+ Consultation Payante</span>
             </button>
 
@@ -255,9 +255,9 @@ export default function ServicesPage() {
                   button_text: 'Discuter sur WhatsApp',
                 })
               }
-              className="px-3 py-1.5 rounded-lg bg-white border border-neutral-200 hover:border-emerald-400 hover:text-emerald-700 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-white border border-neutral-200 hover:border-emerald-400 hover:text-emerald-700 text-xs font-semibold text-neutral-700 flex items-center gap-1.5 transition shadow-2xs whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <Zap className="w-3.5 h-3.5 text-emerald-500" />
+              <Zap className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
               <span>+ WhatsApp</span>
             </button>
           </div>
