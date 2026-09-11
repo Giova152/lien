@@ -14,6 +14,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [collabUser, setCollabUser] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('collab');
+      if (p) setCollabUser(p);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +48,10 @@ export default function LoginPage() {
         const params = new URLSearchParams(window.location.search);
         const redirectParam = params.get('redirect');
         const planParam = params.get('plan');
-        if (redirectParam) {
+        const collabParam = params.get('collab') || collabUser;
+        if (collabParam) {
+          targetUrl = `/dashboard?collab=${encodeURIComponent(collabParam)}`;
+        } else if (redirectParam) {
           targetUrl = redirectParam;
         } else if (planParam) {
           targetUrl = `/dashboard?upgrade=true&plan=${planParam}`;
@@ -66,10 +77,25 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full max-w-md bg-white/90 backdrop-blur-xl border border-neutral-200/80 rounded-3xl p-8 sm:p-9 shadow-2xl shadow-neutral-300/30 relative z-10">
-        <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Bon retour</h1>
-        <p className="text-xs text-neutral-500 text-center mb-7">
-          Accédez à la gestion de votre carte de visite digitale
+        <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">
+          {collabUser ? 'Rejoindre l’équipe' : 'Bon retour'}
+        </h1>
+        <p className="text-xs text-neutral-500 text-center mb-6">
+          {collabUser
+            ? `Connectez-vous pour accéder à la gestion de la carte de ${collabUser}`
+            : 'Accédez à la gestion de votre carte de visite digitale'}
         </p>
+
+        {collabUser && (
+          <div className="mb-5 p-3.5 rounded-2xl bg-indigo-50/90 border border-indigo-200/80 text-left animate-in fade-in duration-300">
+            <p className="text-xs font-bold text-indigo-950 flex items-center gap-1.5 mb-0.5">
+              👥 Invitation Collaborateur
+            </p>
+            <p className="text-[11px] text-indigo-800 leading-snug">
+              Vous avez été invité(e) à gérer la carte <strong>« {collabUser} »</strong>. Connectez-vous avec l’e-mail invité pour activer votre accès.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div>
@@ -127,8 +153,11 @@ export default function LoginPage() {
         <div className="mt-7 pt-6 border-t border-neutral-100 text-center">
           <p className="text-xs text-neutral-500">
             Pas encore de compte ?{' '}
-            <Link href="/register" className="text-indigo-600 font-bold hover:underline">
-              Créer ma carte gratuitement
+            <Link
+              href={collabUser ? `/register?collab=${encodeURIComponent(collabUser)}` : '/register'}
+              className="text-indigo-600 font-bold hover:underline"
+            >
+              {collabUser ? 'Créer un compte pour rejoindre l’équipe' : 'Créer ma carte gratuitement'}
             </Link>
           </p>
         </div>

@@ -17,11 +17,14 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [planParam, setPlanParam] = useState<string | null>(null);
+  const [collabParam, setCollabParam] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search).get('plan');
       if (p) setPlanParam(p);
+      const c = new URLSearchParams(window.location.search).get('collab');
+      if (c) setCollabParam(c);
     }
   }, []);
 
@@ -42,7 +45,11 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
-      const target = planParam ? `/onboarding?plan=${encodeURIComponent(planParam)}` : '/onboarding';
+      const target = collabParam
+        ? `/dashboard?collab=${encodeURIComponent(collabParam)}`
+        : planParam
+        ? `/onboarding?plan=${encodeURIComponent(planParam)}`
+        : '/onboarding';
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -117,10 +124,25 @@ export default function RegisterPage() {
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">Créer ma carte</h1>
+            <h1 className="text-2xl font-black text-neutral-900 text-center tracking-tight mb-1">
+              {collabParam ? 'Rejoindre l’équipe' : 'Créer ma carte'}
+            </h1>
             <p className="text-xs text-neutral-500 text-center mb-6">
-              Obtenez votre URL personnalisée en 60 secondes
+              {collabParam
+                ? `Créez votre compte pour gérer la carte de ${collabParam}`
+                : 'Obtenez votre URL personnalisée en 60 secondes'}
             </p>
+
+            {collabParam && (
+              <div className="mb-5 p-3.5 rounded-2xl bg-indigo-50/90 border border-indigo-200/80 text-left animate-in fade-in duration-300">
+                <p className="text-xs font-bold text-indigo-950 flex items-center gap-1.5 mb-0.5">
+                  👥 Inscription Collaborateur
+                </p>
+                <p className="text-[11px] text-indigo-800 leading-snug">
+                  Vous avez été invité(e) par <strong>{collabParam}</strong>. Créez votre compte avec l&apos;adresse e-mail invitée pour activer vos accès.
+                </p>
+              </div>
+            )}
 
             {planParam && (
               <div className="mb-5 p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-950 shadow-xs">
@@ -205,7 +227,10 @@ export default function RegisterPage() {
         <div className="mt-7 pt-6 border-t border-neutral-100 text-center">
           <p className="text-xs text-neutral-500">
             Déjà inscrit ?{' '}
-            <Link href="/login" className="text-indigo-600 font-bold hover:underline">
+            <Link
+              href={collabParam ? `/login?collab=${encodeURIComponent(collabParam)}` : '/login'}
+              className="text-indigo-600 font-bold hover:underline"
+            >
               Se connecter
             </Link>
           </p>

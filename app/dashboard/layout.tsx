@@ -96,14 +96,65 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
       } catch {}
 
+      // Vérifier si un paramètre collab est présent dans l'URL
+      let collabParam: string | null = null;
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        collabParam = params.get('collab');
+      }
+
+      // Si collab est spécifié, accepter automatiquement l'invitation et sélectionner cette carte
+      if (collabParam) {
+        const targetCollabCard = userDelegatedCards.find(
+          (c) => c.username?.toLowerCase() === collabParam?.toLowerCase()
+        );
+        if (targetCollabCard) {
+          if (targetCollabCard.status === 'pending') {
+            try {
+              await fetch('/api/team', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cardUsername: collabParam }),
+              });
+              targetCollabCard.status = 'accepted';
+              toast.success(`Invitation acceptée ! Vous gérez la carte de ${targetCollabCard.display_name || targetCollabCard.username}. 🎉`);
+            } catch {}
+          }
+          if (targetCardId === undefined && !activeCardId) {
+            targetCardId = targetCollabCard.id;
+          }
+        }
+      }
+
       // 2. Déterminer la carte active (propre carte vs carte déléguée)
-      const selectedId = targetCardId !== undefined ? targetCardId : activeCardId;
+      let selectedId = targetCardId !== undefined ? targetCardId : activeCardId;
+
+      // Si l'utilisateur n'a pas encore de profil personnel mais possède une carte déléguée, basculer directement sur la carte déléguée
+      const { data: ownProfileCheck } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (!ownProfileCheck && userDelegatedCards.length > 0 && (!selectedId || selectedId === user.id)) {
+        selectedId = userDelegatedCards[0].id;
+      }
+
       const effectiveCardId = selectedId && selectedId !== user.id ? selectedId : user.id;
 
       let currentRole: 'owner' | 'admin' | 'assistant' = 'owner';
       if (effectiveCardId !== user.id) {
         const membership = userDelegatedCards.find((c) => c.id === effectiveCardId);
         currentRole = membership?.role === 'admin' ? 'admin' : 'assistant';
+        // Si le statut était pending, l'accepter automatiquement au switch
+        if (membership && membership.status === 'pending') {
+          fetch('/api/team', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cardId: effectiveCardId }),
+          }).catch(() => {});
+          membership.status = 'accepted';
+        }
       }
       setUserRole(currentRole);
       setActiveCardId(effectiveCardId === user.id ? null : effectiveCardId);
@@ -122,6 +173,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       if (!prof) {
         if (effectiveCardId === user.id) {
+          if (userDelegatedCards.length > 0) {
+            handleSwitchCard(userDelegatedCards[0].id);
+            return;
+          }
           router.push('/onboarding');
           return;
         } else {

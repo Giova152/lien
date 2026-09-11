@@ -442,3 +442,109 @@ export async function DELETE(request: Request) {
     );
   }
 }
+
+// PATCH: Accepter une invitation de collaboration (passe le statut de 'pending' à 'accepted')
+export async function PATCH(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+    }
+
+    const userEmail = user.email?.toLowerCase().trim() || '';
+    if (!userEmail) {
+      return NextResponse.json({ error: 'Adresse e-mail non définie' }, { status: 400 });
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const { cardId, cardUsername } = body;
+
+    const db = getAdminSupabase() || supabase;
+
+    // Trouver le profil de la carte hôte
+    let query = db.from('profiles').select('*');
+    if (cardId) {
+      query = query.eq('id', cardId);
+    } else if (cardUsername) {
+      query = query.eq('username', cardUsername);
+    } else {
+      return NextResponse.json(
+        { error: 'Identifiant de carte ou nom d’utilisateur requis' },
+        { status: 400 }
+      );
+    }
+
+    const { data: hostProfile, error: hostErr } = await query.maybeSingle();
+    if (hostErr || !hostProfile) {
+      return NextResponse.json({ error: 'Carte hôte introuvable' }, { status: 404 });
+    }
+
+    const currentTheme = hostProfile.theme || {};
+    const teamMembers: TeamMember[] = currentTheme.team_members || [];
+    const myIndex = teamMembers.findIndex(
+      (m) => m.member_email.toLowerCase() === userEmail
+    );
+
+    if (myIndex === -1) {
+      return NextResponse.json(
+        { error: 'Aucune invitation trouvée pour votre adresse e-mail sur cette carte' },
+        { status: 403 }
+      );
+    }
+
+    // Mettre à jour le membre avec status = 'accepted'
+    const updatedMember: TeamMember = {
+      ...teamMembers[myIndex],
+      status: 'accepted',
+    };
+    teamMembers[myIndex] = updatedMember;
+
+    // 1. Sauvegarder dans profiles.theme.team_members
+    await db
+      .from('profiles')
+      .update({
+        theme: {
+          ...currentTheme,
+          team_members: teamMembers,
+        },
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', hostProfile.id);
+
+    // 2. Mettre à jour dans la table SQL `team_members` si elle existe
+    try {
+      await db
+        .from('team_members')
+        .update({
+          status: 'accepted',
+          member_user_id: user.id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('card_owner_id', hostProfile.id)
+        .eq('member_email', userEmail);
+    } catch {}
+
+    const roleLabel = updatedMember.role === 'admin' ? 'Co-Administrateur' : 'Assistant';
+    return NextResponse.json({
+      success: true,
+      message: `Invitation acceptée ! Vous gérez désormais la carte de ${hostProfile.display_name || hostProfile.username} en tant que ${roleLabel}.`,
+      card: {
+        id: hostProfile.id,
+        username: hostProfile.username,
+        display_name: hostProfile.display_name,
+        role: updatedMember.role,
+        status: 'accepted',
+      },
+    });
+  } catch (err: any) {
+    console.error('Error in PATCH /api/team:', err);
+    return NextResponse.json(
+      { error: err.message || 'Erreur lors de l’acceptation de l’invitation' },
+      { status: 500 }
+    );
+  }
+}
