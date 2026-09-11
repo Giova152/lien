@@ -11,6 +11,8 @@ import {
   Loader2,
   Trash2,
   CheckCircle2,
+  Shield,
+  Crown,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
 
@@ -138,7 +140,7 @@ export function TeamManagementModal({
         emailSent: data.emailSent,
       });
 
-      toast.success(data.message || 'Collaborateur ajouté avec succès ! 🎉');
+      toast.success(data.message || 'Collaborateur ajouté avec succès !');
       setMemberEmail('');
       setMemberRole('assistant');
       await fetchTeamMembers();
@@ -254,26 +256,29 @@ export function TeamManagementModal({
                     <label className="block text-[11px] font-semibold text-neutral-600 mb-1.5">
                       Rôle et niveau d&apos;accès
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2.5">
                       {/* Assistant */}
                       <button
                         type="button"
                         onClick={() => setMemberRole('assistant')}
-                        className={`p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer ${
+                        className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                           memberRole === 'assistant'
-                            ? 'bg-white border-indigo-600 ring-2 ring-indigo-600/10 shadow-xs'
-                            : 'bg-white/60 border-neutral-200 hover:border-neutral-300'
+                            ? 'bg-indigo-50/50 border-indigo-600 ring-2 ring-indigo-600/10 shadow-xs'
+                            : 'bg-white border-neutral-200/90 hover:border-neutral-300 hover:bg-neutral-50/50'
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
-                            🛡️ Assistant(e)
-                          </span>
+                        <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <Shield className={`w-3.5 h-3.5 ${memberRole === 'assistant' ? 'text-indigo-600' : 'text-neutral-500'}`} />
+                            <span className="text-xs font-bold text-neutral-900">
+                              Assistant(e)
+                            </span>
+                          </div>
                           {memberRole === 'assistant' && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                           )}
                         </div>
-                        <p className="text-[10px] text-neutral-500 leading-tight">
+                        <p className="text-[10.5px] text-neutral-500 leading-normal">
                           Gère les liens, contacts, bio et services de votre carte.
                         </p>
                       </button>
@@ -282,21 +287,24 @@ export function TeamManagementModal({
                       <button
                         type="button"
                         onClick={() => setMemberRole('admin')}
-                        className={`p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer ${
+                        className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                           memberRole === 'admin'
-                            ? 'bg-white border-amber-600 ring-2 ring-amber-600/10 shadow-xs'
-                            : 'bg-white/60 border-neutral-200 hover:border-neutral-300'
+                            ? 'bg-amber-50/50 border-amber-600 ring-2 ring-amber-600/10 shadow-xs'
+                            : 'bg-white border-neutral-200/90 hover:border-neutral-300 hover:bg-neutral-50/50'
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
-                            👑 Co-Admin
-                          </span>
+                        <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <Crown className={`w-3.5 h-3.5 ${memberRole === 'admin' ? 'text-amber-600' : 'text-neutral-500'}`} />
+                            <span className="text-xs font-bold text-neutral-900">
+                              Co-Admin
+                            </span>
+                          </div>
                           {memberRole === 'admin' && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                           )}
                         </div>
-                        <p className="text-[10px] text-neutral-500 leading-tight">
+                        <p className="text-[10.5px] text-neutral-500 leading-normal">
                           Gestion complète de la carte (sauf facturation et compte).
                         </p>
                       </button>
@@ -333,7 +341,8 @@ export function TeamManagementModal({
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <span className="text-xs font-extrabold text-indigo-900 flex items-center gap-1.5">
-                        🎉 Invitation enregistrée pour {lastInviteInfo.email} !
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <span>Invitation enregistrée pour {lastInviteInfo.email}</span>
                       </span>
                       <p className="text-[11px] text-indigo-700 mt-0.5 leading-relaxed">
                         Transmettez-lui directement le lien ci-dessous pour qu&apos;il puisse accéder et gérer votre carte :
@@ -412,13 +421,23 @@ export function TeamManagementModal({
                             <div className="flex items-center gap-1.5 mt-0.5">
                               {/* Rôle */}
                               <span
-                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
                                   member.role === 'admin'
                                     ? 'bg-amber-50 text-amber-800 border border-amber-200/60'
                                     : 'bg-indigo-50 text-indigo-800 border border-indigo-200/60'
                                 }`}
                               >
-                                {member.role === 'admin' ? '👑 Administrateur' : '🛡️ Assistant'}
+                                {member.role === 'admin' ? (
+                                  <>
+                                    <Crown className="w-3 h-3 text-amber-600 shrink-0" />
+                                    <span>Administrateur</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Shield className="w-3 h-3 text-indigo-600 shrink-0" />
+                                    <span>Assistant</span>
+                                  </>
+                                )}
                               </span>
 
                               {/* Statut */}
