@@ -158,11 +158,11 @@ export function ProfileHeader({
             title={lang === 'en' ? 'Call' : 'Appeler'}
           >
             <Image
-              src="/icons/icons8-phone-3d-fluency.png"
+              src="/icons/phone-official.png"
               alt="Téléphone"
               width={44}
               height={44}
-              className="w-11 h-11 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_6px_12px_rgba(0,180,216,0.4)] transition-all"
+              className="w-11 h-11 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_6px_12px_rgba(59,130,246,0.4)] transition-all"
             />
           </a>
         )}
