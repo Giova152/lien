@@ -141,7 +141,7 @@ export function ProfileHeader({
             className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
             title="WhatsApp"
           >
-            <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(37,211,102,0.25)] group-hover:ring-2 group-hover:ring-emerald-500/30 transition-all">
+            <div className="w-12 h-12 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] border border-neutral-100 flex items-center justify-center p-2 group-hover:shadow-[0_6px_18px_rgba(37,211,102,0.25)] group-hover:ring-2 group-hover:ring-emerald-500/30 transition-all">
               <Image
                 src="/icons/icons8-wa-3d-fluency.png"
                 alt="WhatsApp"
@@ -159,7 +159,7 @@ export function ProfileHeader({
             className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
             title={lang === 'en' ? 'Call' : 'Appeler'}
           >
-            <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(0,180,216,0.25)] group-hover:ring-2 group-hover:ring-sky-500/30 transition-all">
+            <div className="w-12 h-12 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] border border-neutral-100 flex items-center justify-center p-2 group-hover:shadow-[0_6px_18px_rgba(0,180,216,0.25)] group-hover:ring-2 group-hover:ring-sky-500/30 transition-all">
               <Image
                 src="/icons/icons8-phone-3d-fluency.png"
                 alt="Téléphone"
@@ -177,7 +177,7 @@ export function ProfileHeader({
             className="group relative flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
             title="Email"
           >
-            <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-black/5 dark:border-white/10 flex items-center justify-center p-2 group-hover:shadow-[0_6px_16px_rgba(234,67,53,0.25)] group-hover:ring-2 group-hover:ring-red-500/30 transition-all">
+            <div className="w-12 h-12 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] border border-neutral-100 flex items-center justify-center p-2 group-hover:shadow-[0_6px_18px_rgba(234,67,53,0.25)] group-hover:ring-2 group-hover:ring-red-500/30 transition-all">
               <Image
                 src="/icons/icons8-gmail-3d-fluency.png"
                 alt="Email"
