@@ -373,15 +373,18 @@ export function verifyChariowPulseSignature(
   }
 
   try {
-    const expected =
-      'sha256=' +
-      crypto
-        .createHmac('sha256', secret)
-        .update(rawBody)
-        .digest('hex');
+    const cleanReceived = signatureHeader.startsWith('sha256=')
+      ? signatureHeader.slice(7).trim().toLowerCase()
+      : signatureHeader.trim().toLowerCase();
 
-    const receivedBuffer = Buffer.from(signatureHeader);
-    const expectedBuffer = Buffer.from(expected);
+    const computed = crypto
+      .createHmac('sha256', secret)
+      .update(rawBody)
+      .digest('hex')
+      .toLowerCase();
+
+    const receivedBuffer = Buffer.from(cleanReceived);
+    const expectedBuffer = Buffer.from(computed);
 
     if (receivedBuffer.length !== expectedBuffer.length) {
       return false;

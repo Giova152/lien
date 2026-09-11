@@ -33,20 +33,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payload JSON invalide' }, { status: 400 });
     }
 
-    const event = pulseEvent || payload?.event;
+    const event = pulseEvent || payload?.event || payload?.type;
+    const sale = payload?.sale || payload?.data || payload?.purchase;
+    const saleStatus = sale?.status || payload?.status;
+    const paymentStatus = sale?.payment?.status || payload?.payment?.status;
 
     // Traitement de l'événement d'achat réussi ou de renouvellement d'abonnement
-    if (
+    const isSuccessEvent =
       event === 'successful.sale' ||
       event === 'sale.completed' ||
+      event === 'sale.successful' ||
+      event === 'order.completed' ||
+      event === 'payment.succeeded' ||
+      event === 'payment.success' ||
       event === 'subscription.renewed' ||
-      event === 'subscription.payment_succeeded'
-    ) {
-      const sale = payload?.sale || payload?.data;
+      event === 'subscription.payment_succeeded' ||
+      saleStatus === 'completed' ||
+      paymentStatus === 'success';
+
+    if (isSuccessEvent) {
       const saleId = sale?.id || 'chariow_sale';
-      const metadata = sale?.custom_metadata || payload?.custom_metadata || {};
-      let userId = metadata?.userId;
-      const customerEmail = sale?.customer?.email || payload?.customer?.email;
+      const metadata =
+        sale?.custom_metadata ||
+        payload?.custom_metadata ||
+        sale?.meta ||
+        payload?.meta ||
+        sale?.metadata ||
+        payload?.metadata ||
+        {};
+      let userId = metadata?.userId || metadata?.user_id;
+      const customerEmail =
+        sale?.customer?.email ||
+        payload?.customer?.email ||
+        sale?.email ||
+        payload?.email;
 
       // Déduction du forfait par produit Chariow si non précisé dans metadata
       const productId = sale?.product?.id || sale?.product_id || '';
@@ -85,7 +105,7 @@ export async function POST(req: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
           );
 
-          // Recherche dans contact_info
+          // 1. Recherche dans contact_info
           const { data: contactMatch } = await supabaseAdmin
             .from('contact_info')
             .select('profile_id')
@@ -94,6 +114,17 @@ export async function POST(req: Request) {
 
           if (contactMatch?.profile_id) {
             userId = contactMatch.profile_id;
+          }
+
+          // 2. Recherche dans Supabase Auth
+          if (!userId && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+            const { data: authData } = await supabaseAdmin.auth.admin.listUsers();
+            const matchedUser = authData?.users?.find(
+              (u) => u.email?.toLowerCase() === customerEmail.toLowerCase()
+            );
+            if (matchedUser) {
+              userId = matchedUser.id;
+            }
           }
         } catch (e) {
           console.warn('[Chariow Webhook] Recherche utilisateur par email échouée:', e);
