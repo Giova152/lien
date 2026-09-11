@@ -378,25 +378,25 @@ export function PublicProfileView({
                       : stats.length === 3
                       ? 'grid-cols-3'
                       : 'grid-cols-2 sm:grid-cols-4'
-                  } gap-2`}
+                  } gap-2 items-stretch`}
                 >
                   {stats.map((st) => (
                     <div
                       key={st.id}
-                      className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl p-3 text-center shadow-sm`}
-                      style={{ borderColor: `${accentColor}33` }}
+                      className={`${sectionBoxBg} backdrop-blur-md border rounded-2xl py-3 px-2 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-200 min-h-[78px] sm:min-h-[84px]`}
+                      style={{ borderColor: `${accentColor}2e` }}
                     >
                       <div
-                        className="text-lg sm:text-xl font-black"
+                        className="text-lg sm:text-xl font-black tracking-tight leading-none mb-1.5"
                         style={{ color: accentColor }}
                       >
                         {st.value}
                       </div>
                       <div
-                        className="text-[10px] font-bold uppercase tracking-wider opacity-75"
+                        className="text-[10px] sm:text-[10.5px] font-semibold uppercase tracking-tight leading-tight opacity-75 flex-1 flex items-center justify-center text-center max-w-full w-full"
                         style={{ color: theme.text_color }}
                       >
-                        {translateKpiLabel(st.label, lang)}
+                        <span>{translateKpiLabel(st.label, lang)}</span>
                       </div>
                     </div>
                   ))}
