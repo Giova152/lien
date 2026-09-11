@@ -180,25 +180,25 @@ export default function ShopPage() {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-5">
-        <div>
+        <div className="flex-1 min-w-0">
           <h2 className="text-2xl font-black flex items-center gap-2.5 text-neutral-900 tracking-tight">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
               <BookOpen className="w-5 h-5" />
             </div>
-            Boutique & Produits Digitaux
+            <span>Boutique & Produits Digitaux</span>
           </h2>
           <p className="text-xs text-neutral-500 mt-1">
             Importez les visuels de vos e-books, templates, formations ou fichiers et partagez vos liens de téléchargement.
           </p>
         </div>
 
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-center">
           <button
             type="button"
             onClick={() => handleAddProduct('free')}
-            className="flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-xs"
+            className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-xs whitespace-nowrap shrink-0 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 shrink-0" />
             <span>Ajouter un produit</span>
           </button>
 
@@ -206,9 +206,9 @@ export default function ShopPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50"
+            className="px-4 sm:px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md disabled:opacity-50 whitespace-nowrap shrink-0 cursor-pointer"
           >
-            <Check className="w-4 h-4" />
+            <Check className="w-4 h-4 shrink-0" />
             <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
           </button>
         </div>
