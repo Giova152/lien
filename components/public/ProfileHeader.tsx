@@ -174,7 +174,7 @@ export function ProfileHeader({
             title="Email"
           >
             <Image
-              src="/icons/icons8-gmail-3d-fluency.png"
+              src="/icons/mail-official.png"
               alt="Email"
               width={44}
               height={44}
