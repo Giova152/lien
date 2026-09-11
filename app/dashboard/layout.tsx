@@ -11,6 +11,7 @@ import { PublicProfileView } from '@/components/public/PublicProfileView';
 import { LifetimeUpgradeModal } from '@/components/dashboard/LifetimeUpgradeModal';
 import { TeamManagementModal } from '@/components/dashboard/TeamManagementModal';
 import { YearlyPromoModal } from '@/components/dashboard/YearlyPromoModal';
+import { DEFAULT_THEME } from '@/lib/utils';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
 import {
   Crown,
@@ -131,29 +132,57 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             targetCardId = targetCollabCard.id;
           }
         }
+        // Nettoyer le paramètre collab de l'URL pour ne pas bloquer les futurs changements d'espace
+        if (typeof window !== 'undefined') {
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete('collab');
+          window.history.replaceState({}, document.title, cleanUrl.pathname + (cleanUrl.search || ''));
+        }
       }
 
-      // 2. Déterminer la carte active (propre carte vs carte déléguée)
-      let selectedId = targetCardId !== undefined ? targetCardId : activeCardId;
-
-      // Si l'utilisateur n'a pas encore de profil personnel mais possède une carte déléguée, basculer directement sur la carte déléguée
-      const { data: ownProfileCheck } = await supabase
+      // 2. Vérifier si l'utilisateur possède déjà son profil personnel
+      let { data: ownProfileCheck } = await supabase
         .from('profiles')
-        .select('id, username')
+        .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (!ownProfileCheck && userDelegatedCards.length > 0 && (!selectedId || selectedId === user.id)) {
-        selectedId = userDelegatedCards[0].id;
+      // 3. Déterminer la carte active (carte personnelle vs carte déléguée)
+      // targetCardId === null => clic explicite sur "Ma carte personnelle"
+      // targetCardId === id => clic explicite sur une carte déléguée
+      // targetCardId === undefined => chargement initial (mount)
+      let selectedId: string | null = null;
+      if (targetCardId !== undefined) {
+        selectedId = targetCardId;
+      } else {
+        const savedPref = typeof window !== 'undefined' ? localStorage.getItem('lien_active_card_id') : null;
+        if (savedPref === 'personal') {
+          selectedId = null;
+        } else if (savedPref && userDelegatedCards.some((c) => c.id === savedPref)) {
+          selectedId = savedPref;
+        } else if (activeCardId) {
+          selectedId = activeCardId;
+        } else if (!ownProfileCheck && userDelegatedCards.length > 0) {
+          selectedId = userDelegatedCards[0].id;
+        } else {
+          selectedId = null;
+        }
       }
 
       const effectiveCardId = selectedId && selectedId !== user.id ? selectedId : user.id;
+
+      // Sauvegarder la préférence de carte
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'lien_active_card_id',
+          effectiveCardId === user.id ? 'personal' : effectiveCardId
+        );
+      }
 
       let currentRole: 'owner' | 'admin' | 'assistant' = 'owner';
       if (effectiveCardId !== user.id) {
         const membership = userDelegatedCards.find((c) => c.id === effectiveCardId);
         currentRole = membership?.role === 'admin' ? 'admin' : 'assistant';
-        // Si le statut était pending, l'accepter automatiquement au switch
         if (membership && membership.status === 'pending') {
           fetch('/api/team', {
             method: 'PATCH',
@@ -166,30 +195,76 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setUserRole(currentRole);
       setActiveCardId(effectiveCardId === user.id ? null : effectiveCardId);
 
-      // 3. Charger le profil de la carte active
-      const { data: prof, error: profError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', effectiveCardId)
-        .maybeSingle();
+      // 4. Charger le profil de la carte active
+      let prof: Profile | null = null;
+      if (effectiveCardId === user.id && ownProfileCheck) {
+        prof = ownProfileCheck;
+      } else {
+        const { data: fetchedProf, error: profError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', effectiveCardId)
+          .maybeSingle();
 
-      if (profError) {
-        setErrorMessage(`Erreur Supabase : ${profError.message}`);
-        return;
+        if (profError) {
+          setErrorMessage(`Erreur Supabase : ${profError.message}`);
+          return;
+        }
+        prof = fetchedProf;
+      }
+
+      // Si l'utilisateur est sur sa carte personnelle (effectiveCardId === user.id) et n'a pas encore de profil :
+      // On l'initialise automatiquement pour qu'il puisse gérer sa propre carte immédiatement !
+      if (!prof && effectiveCardId === user.id) {
+        const rawBase = (user.email?.split('@')[0] || 'carte')
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '');
+        let uniqueUsername = rawBase || 'carte';
+        let suffix = 1;
+        while (true) {
+          const { data: existing } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', uniqueUsername)
+            .maybeSingle();
+          if (!existing) break;
+          uniqueUsername = `${rawBase}${suffix}`;
+          suffix++;
+        }
+
+        const defaultDisplayName =
+          user.user_metadata?.full_name ||
+          user.email?.split('@')[0] ||
+          'Ma Carte';
+
+        const { data: createdProf, error: createErr } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            username: uniqueUsername,
+            display_name: defaultDisplayName,
+            theme: DEFAULT_THEME,
+            is_published: true,
+          })
+          .select('*')
+          .single();
+
+        if (!createErr && createdProf) {
+          await supabase.from('contact_info').insert({
+            profile_id: user.id,
+            show_save_contact_button: true,
+          });
+          prof = createdProf;
+          toast.success('Votre carte personnelle a été initialisée avec succès !');
+        } else {
+          router.push('/onboarding');
+          return;
+        }
       }
 
       if (!prof) {
-        if (effectiveCardId === user.id) {
-          if (userDelegatedCards.length > 0) {
-            handleSwitchCard(userDelegatedCards[0].id);
-            return;
-          }
-          router.push('/onboarding');
-          return;
-        } else {
-          toast.error('Carte déléguée introuvable');
-          return;
-        }
+        toast.error('Carte introuvable');
+        return;
       }
 
       const normalizedTheme = {
@@ -561,7 +636,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </div>
                     <div className="min-w-0">
                       <span className="block text-xs font-bold text-neutral-900 truncate">
-                        {activeCardId ? (profile?.display_name || profile?.username) : 'Ma Carte'}
+                        {activeCardId ? (profile?.display_name || profile?.username) : (profile?.display_name || 'Ma carte personnelle')}
                       </span>
                       <span className="block text-[10px] text-neutral-500 truncate">
                         {userRole === 'owner' ? 'Propriétaire' : userRole === 'admin' ? 'Co-Admin' : 'Assistant'}
