@@ -230,7 +230,7 @@ export default async function HomePage() {
             Des tarifs simples. Zéro frais cachés.
           </h2>
           <p className="text-sm text-neutral-500 mb-10">
-            Démarrez sans carte bancaire ou passez au niveau supérieur avec nos 2 offres PRO.
+            Démarrez sans carte bancaire ou passez au niveau supérieur avec nos formules PRO.
           </p>
 
           <LandingPricingCards user={user} />

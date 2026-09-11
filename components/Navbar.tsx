@@ -61,7 +61,7 @@ export function Navbar({ user, profile }: NavbarProps) {
             onClick={(e) => scrollTo(e, 'pricing')}
             className="hover:text-neutral-900 transition-colors cursor-pointer"
           >
-            Tarif Unique
+            Tarifs
           </Link>
         </nav>
 
