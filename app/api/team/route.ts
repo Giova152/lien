@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { TeamMember, TeamRole } from '@/types';
+import { sendEmail } from '@/lib/email';
 
 // Helper to get admin supabase client if configured
 function getAdminSupabase() {
@@ -152,24 +153,36 @@ export async function POST(request: Request) {
     const currentTheme = ownProfile.theme || {};
     const existingMembers: TeamMember[] = currentTheme.team_members || [];
 
-    // Vérifier si déjà invité
-    if (existingMembers.some((m) => m.member_email.toLowerCase() === trimmedEmail)) {
-      return NextResponse.json(
-        { error: 'Ce collaborateur a déjà été invité dans votre équipe' },
-        { status: 400 }
-      );
+    // Vérifier si déjà présent dans l'équipe
+    const existingIndex = existingMembers.findIndex(
+      (m) => m.member_email.toLowerCase() === trimmedEmail
+    );
+
+    let newMember: TeamMember;
+    let updatedMembers: TeamMember[];
+    const isReinvite = existingIndex >= 0;
+
+    if (isReinvite) {
+      // Le membre existe déjà : on met à jour son rôle et on prépare le renvoi de l'invitation
+      const existing = existingMembers[existingIndex];
+      newMember = {
+        ...existing,
+        role: validRole,
+        status: existing.status || 'pending',
+      };
+      updatedMembers = [...existingMembers];
+      updatedMembers[existingIndex] = newMember;
+    } else {
+      newMember = {
+        id: crypto.randomUUID(),
+        card_owner_id: user.id,
+        member_email: trimmedEmail,
+        role: validRole,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      };
+      updatedMembers = [...existingMembers, newMember];
     }
-
-    const newMember: TeamMember = {
-      id: crypto.randomUUID(),
-      card_owner_id: user.id,
-      member_email: trimmedEmail,
-      role: validRole,
-      status: 'pending',
-      created_at: new Date().toISOString(),
-    };
-
-    const updatedMembers = [...existingMembers, newMember];
 
     // Sauvegarde 1 : Dans le JSONB theme (résilient et immédiatement disponible)
     const { error: updateError } = await supabase
@@ -266,9 +279,28 @@ export async function POST(request: Request) {
 
     // Envoi de l'e-mail d'invitation de collaboration
     let emailSent = false;
-    const resendApiKey = process.env.RESEND_API_KEY;
 
-    if (resendApiKey) {
+    // 1. Envoi prioritaire via le service SMTP officiel (mail.lien-bio.site / info@lien-bio.site)
+    try {
+      const emailResult = await sendEmail({
+        to: trimmedEmail,
+        subject: emailSubject,
+        html: emailBodyHtml,
+        from: `Lien-Bio <${process.env.SMTP_USER || 'info@lien-bio.site'}>`,
+        replyTo: user.email || 'info@lien-bio.site',
+      });
+      if (emailResult.success) {
+        emailSent = true;
+      } else {
+        console.warn('sendEmail via SMTP error in /api/team:', emailResult.error);
+      }
+    } catch (err) {
+      console.warn('sendEmail error in /api/team:', err);
+    }
+
+    // 2. Fallback via Resend si API key configurée et SMTP échoué
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!emailSent && resendApiKey) {
       try {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -289,7 +321,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Fallback via Supabase Auth Admin si SERVICE_ROLE_KEY est disponible
+    // 3. Fallback via Supabase Auth Admin si SERVICE_ROLE_KEY est disponible
     const adminSupabase = getAdminSupabase();
     if (!emailSent && adminSupabase) {
       try {
@@ -318,14 +350,21 @@ export async function POST(request: Request) {
     const mailtoBody = `Bonjour,\n\n${inviterName} vous a invité(e) en tant que ${roleLabel} sur sa carte de visite digitale Lien-Bio (${cardTitle}).\n\nCliquez sur ce lien pour accepter l'invitation et accéder à la gestion de la carte :\n${acceptUrl}\n\nÀ très vite !`;
     const mailtoUrl = `mailto:${encodeURIComponent(trimmedEmail)}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
 
+    const message = emailSent
+      ? isReinvite
+        ? `L'e-mail d'invitation a été réexpédié avec succès à ${trimmedEmail} ! ✉️`
+        : `Collaborateur invité avec succès en tant que ${roleLabel} ! Un e-mail d'invitation a été envoyé à ${trimmedEmail}.`
+      : isReinvite
+        ? `Rôle mis à jour. Vous pouvez lui transmettre le lien direct ou ouvrir votre messagerie.`
+        : `Collaborateur ajouté à l’équipe en tant que ${roleLabel} ! Vous pouvez lui transmettre le lien direct ou ouvrir votre messagerie.`;
+
     return NextResponse.json({
       success: true,
       emailSent,
+      isReinvite,
       acceptUrl,
       mailtoUrl,
-      message: emailSent
-        ? `Collaborateur invité avec succès en tant que ${roleLabel} ! Un e-mail a été transmis.`
-        : `Collaborateur ajouté à l’équipe en tant que ${roleLabel} ! Vous pouvez lui transmettre le lien direct ou ouvrir votre messagerie.`,
+      message,
       member: newMember,
     });
   } catch (error: any) {

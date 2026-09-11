@@ -5,6 +5,7 @@ interface SendEmailOptions {
   subject: string;
   html: string;
   replyTo?: string;
+  from?: string;
 }
 
 /**
@@ -12,7 +13,7 @@ interface SendEmailOptions {
  * Priorité 1 : SMTP (LWS / cPanel / Hostinger avec info@lien-bio.site)
  * Priorité 2 : Resend API
  */
-export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions): Promise<{ success: boolean; error?: any }> {
+export async function sendEmail({ to, subject, html, replyTo, from }: SendEmailOptions): Promise<{ success: boolean; error?: any }> {
   const recipients = Array.isArray(to) ? to : [to];
 
   // 1. Essayer d'abord via SMTP (LWS / mail.lien-bio.site)
@@ -20,7 +21,8 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
   const smtpPort = Number(process.env.SMTP_PORT || 465);
   const smtpUser = process.env.SMTP_USER || 'info@lien-bio.site';
   const smtpPass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || '@Mido100500@';
-  const fromAddress = process.env.SMTP_FROM || `Lien-Bio Calendar <${smtpUser}>`;
+  const defaultFrom = process.env.SMTP_FROM || `Lien-Bio <${smtpUser}>`;
+  const fromAddress = from || defaultFrom;
 
   if (smtpPass) {
     try {

@@ -5,19 +5,11 @@ import { Profile, TeamMember, TeamRole } from '@/types';
 import {
   X,
   Copy,
-  Check,
   Mail,
-  UserPlus,
   Users,
   Send,
   Loader2,
-  Share2,
-  WhatsappIcon,
-  LinkIcon,
-  ShieldCheck,
   Trash2,
-  Crown,
-  Clock,
   CheckCircle2,
 } from '@/components/ui/Icons';
 import { toast } from 'sonner';
@@ -35,9 +27,6 @@ export function TeamManagementModal({
   profile,
   onTeamUpdated,
 }: TeamManagementModalProps) {
-  const [activeTab, setActiveTab] = useState<'team' | 'referral'>('team');
-  const [copied, setCopied] = useState(false);
-
   // Collaborator Invite Form state
   const [memberEmail, setMemberEmail] = useState('');
   const [memberRole, setMemberRole] = useState<TeamRole>('assistant');
@@ -53,6 +42,7 @@ export function TeamManagementModal({
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   const fetchTeamMembers = async () => {
     try {
@@ -82,41 +72,39 @@ export function TeamManagementModal({
       ? window.location.origin
       : 'https://www.lien-bio.site';
 
-  const refCode = profile?.username || 'lien';
-  const inviteUrl = `${origin}/register?ref=${encodeURIComponent(refCode)}`;
+  // Renvoyer l'invitation à un membre existant
+  const handleResendInvite = async (member: TeamMember) => {
+    try {
+      setResendingId(member.id);
+      const res = await fetch('/api/team', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: member.member_email,
+          role: member.role,
+        }),
+      });
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(inviteUrl);
-    setCopied(true);
-    toast.success('Lien copié dans le presse-papier !');
-    setTimeout(() => setCopied(false), 2000);
-  };
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur lors du renvoi de l’e-mail');
+      }
 
-  const handleNativeShare = async () => {
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Rejoins-moi sur Lien-Bio',
-          text: `Salut ! Crée ta propre carte de visite digitale et centralise tous tes liens pro en 1 minute sur Lien-Bio :`,
-          url: inviteUrl,
-        });
-        toast.success('Lien partagé !');
-      } catch {}
-    } else {
-      handleCopyLink();
+      setLastInviteInfo({
+        email: member.member_email,
+        acceptUrl: data.acceptUrl || `${origin}/login?collab=${encodeURIComponent(profile?.username || '')}`,
+        mailtoUrl: data.mailtoUrl,
+        emailSent: data.emailSent,
+      });
+
+      toast.success(data.message || `E-mail d’invitation réexpédié avec succès à ${member.member_email} !`);
+      await fetchTeamMembers();
+    } catch (err: any) {
+      toast.error(err.message || 'Impossible de renvoyer l’invitation');
+    } finally {
+      setResendingId(null);
     }
   };
-
-  const whatsappMessage = encodeURIComponent(
-    `Salut ! Je te recommande Lien-Bio pour créer ta propre carte de visite digitale professionnelle et regrouper tous tes liens au même endroit : ${inviteUrl}`
-  );
-  const whatsappUrl = `https://api.whatsapp.com/send?text=${whatsappMessage}`;
-
-  const emailSubject = encodeURIComponent('Invitation à créer ta carte digitale sur Lien-Bio');
-  const emailBody = encodeURIComponent(
-    `Bonjour,\n\nJe t'invite à découvrir Lien-Bio pour créer ta propre carte de visite digitale professionnelle et regrouper tous tes liens au même endroit :\n\n${inviteUrl}\n\nÀ très vite !`
-  );
-  const mailtoUrl = `mailto:?subject=${emailSubject}&body=${emailBody}`;
 
   // Envoi de l'invitation collaborateur (Assistant / Admin)
   const handleInviteCollaborator = async (e: React.FormEvent) => {
@@ -199,17 +187,24 @@ export function TeamManagementModal({
         className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-neutral-200/80 overflow-hidden my-auto animate-scale-up flex flex-col max-h-[90vh]"
       >
         {/* Top Header */}
-        <div className="p-5 pb-3 border-b border-neutral-100 flex items-start justify-between gap-3 shrink-0">
+        <div className="p-5 pb-4 border-b border-neutral-100 flex items-start justify-between gap-3 shrink-0">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-2xl bg-neutral-950 text-white flex items-center justify-center shadow-xs shrink-0">
               <Users className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-neutral-950 tracking-tight leading-snug">
-                Équipe & Collaborateurs
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-neutral-950 tracking-tight leading-snug">
+                  Équipe & Collaborateurs
+                </h2>
+                {members.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-extrabold border border-indigo-200/60">
+                    {members.length} {members.length === 1 ? 'membre' : 'membres'}
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-neutral-500 mt-0.5 leading-relaxed">
-                Déléguez la gestion de votre carte à un assistant ou partagez votre lien.
+                Déléguez la gestion de votre carte à un assistant ou co-administrateur.
               </p>
             </div>
           </div>
@@ -223,44 +218,8 @@ export function TeamManagementModal({
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="px-5 pt-3 border-b border-neutral-100 flex items-center gap-2 shrink-0 bg-neutral-50/60">
-          <button
-            type="button"
-            onClick={() => setActiveTab('team')}
-            className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'team'
-                ? 'border-neutral-950 text-neutral-950'
-                : 'border-transparent text-neutral-400 hover:text-neutral-700'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Membres & Assistants</span>
-            {members.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-extrabold border border-indigo-200/60">
-                {members.length}
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('referral')}
-            className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'referral'
-                ? 'border-neutral-950 text-neutral-950'
-                : 'border-transparent text-neutral-400 hover:text-neutral-700'
-            }`}
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Parrainage d&apos;amis</span>
-          </button>
-        </div>
-
         {/* Modal Scrollable Body */}
         <div className="p-5 sm:p-6 overflow-y-auto space-y-6">
-          {activeTab === 'team' ? (
-            <>
               {/* Formulaire d'invitation d'un collaborateur */}
               <div className="bg-neutral-50/80 border border-neutral-200/80 rounded-2xl p-4 sm:p-5">
                 <div className="flex items-center gap-2 mb-3">
@@ -485,6 +444,25 @@ export function TeamManagementModal({
 
                         {/* Actions */}
                         <div className="flex items-center gap-1.5 shrink-0">
+                          {/* Renvoyer l'e-mail */}
+                          <button
+                            type="button"
+                            onClick={() => handleResendInvite(member)}
+                            disabled={resendingId === member.id}
+                            className="px-2.5 py-1 rounded-lg text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                            title="Renvoyer l'e-mail d'invitation officiel"
+                          >
+                            {resendingId === member.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin text-indigo-600" />
+                            ) : (
+                              <Mail className="w-3 h-3 text-indigo-600" />
+                            )}
+                            <span className="hidden sm:inline">
+                              {resendingId === member.id ? 'Envoi...' : 'Renvoyer e-mail'}
+                            </span>
+                          </button>
+
+                          {/* Copier lien direct */}
                           <button
                             type="button"
                             onClick={() => {
@@ -493,12 +471,13 @@ export function TeamManagementModal({
                               toast.success('Lien d’accès copié ! Transmettez-le à votre collaborateur.');
                             }}
                             className="px-2.5 py-1 rounded-lg text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition text-[11px] font-bold flex items-center gap-1 cursor-pointer"
-                            title="Copier le lien d'accès collaborateur"
+                            title="Copier le lien d'accès direct"
                           >
                             <Copy className="w-3 h-3 text-neutral-500" />
                             <span className="hidden sm:inline">Lien d&apos;accès</span>
                           </button>
 
+                          {/* Supprimer / Révoquer */}
                           <button
                             type="button"
                             onClick={() => handleRevokeMember(member.id, member.member_email)}
@@ -518,79 +497,6 @@ export function TeamManagementModal({
                   </div>
                 )}
               </div>
-            </>
-          ) : (
-            /* Onglet Parrainage */
-            <div className="space-y-5">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1.5">
-                  Votre lien personnel de recommandation
-                </label>
-                <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus-within:border-neutral-900 focus-within:bg-white transition shadow-2xs">
-                  <LinkIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                  <span className="text-xs text-neutral-700 font-mono truncate flex-1 select-all">
-                    {inviteUrl}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleCopyLink}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-2xs ${
-                      copied
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-neutral-950 hover:bg-neutral-900 text-white active:scale-95 cursor-pointer'
-                    }`}
-                  >
-                    {copied ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copied ? 'Copié !' : 'Copier'}</span>
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-2">
-                  Partager directement avec des proches
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold transition hover:border-neutral-300 shadow-2xs group active:scale-95"
-                  >
-                    <WhatsappIcon className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition shrink-0" />
-                    <span className="truncate">WhatsApp</span>
-                  </a>
-
-                  <a
-                    href={mailtoUrl}
-                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold transition hover:border-neutral-300 shadow-2xs group active:scale-95"
-                  >
-                    <Mail className="w-4 h-4 text-neutral-700 group-hover:scale-110 transition shrink-0" />
-                    <span className="truncate">Email</span>
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={handleNativeShare}
-                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold transition hover:border-neutral-300 shadow-2xs group active:scale-95"
-                  >
-                    <Share2 className="w-4 h-4 text-neutral-700 group-hover:scale-110 transition shrink-0" />
-                    <span className="truncate">Partager</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/60">
-                <p className="text-xs font-bold text-amber-900 mb-0.5">
-                  💡 Différence entre Collaborateur et Parrainage
-                </p>
-                <p className="text-[11px] text-amber-800/90 leading-relaxed">
-                  • Utilisez l&apos;onglet <strong>Membres & Assistants</strong> pour autoriser quelqu&apos;un à gérer votre propre carte.<br />
-                  • Utilisez ce lien de <strong>Parrainage</strong> pour qu&apos;un ami crée sa propre carte indépendante.
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

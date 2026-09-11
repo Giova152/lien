@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { sendEmail } from '@/lib/email';
 
 export async function POST(request: Request) {
   try {
@@ -50,12 +51,7 @@ export async function POST(request: Request) {
       emailSubject
     )}&body=${encodeURIComponent(emailBody)}`;
 
-    // 1. Try sending via Resend if API key is configured (Primary transaction method)
-    const resendApiKey = process.env.RESEND_API_KEY;
-    if (resendApiKey) {
-      try {
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'Lien-Bio <contact@lien-bio.site>';
-        const htmlContent = `
+    const htmlContent = `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -111,8 +107,34 @@ export async function POST(request: Request) {
   </div>
 </body>
 </html>
-        `;
+    `;
 
+    // 1. Try sending via SMTP (Direct official service)
+    try {
+      const emailResult = await sendEmail({
+        to: trimmedEmail,
+        subject: emailSubject,
+        html: htmlContent,
+        from: `Lien-Bio <${process.env.SMTP_USER || 'info@lien-bio.site'}>`,
+        replyTo: 'info@lien-bio.site',
+      });
+      if (emailResult.success) {
+        return NextResponse.json({
+          success: true,
+          emailSent: true,
+          provider: 'smtp',
+          message: 'E-mail d’invitation envoyé avec succès ! 🎉',
+        });
+      }
+    } catch (sErr) {
+      console.warn('SMTP invite send error:', sErr);
+    }
+
+    // 2. Try sending via Resend if API key is configured
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (resendApiKey) {
+      try {
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'Lien-Bio <contact@lien-bio.site>';
         const resendRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
