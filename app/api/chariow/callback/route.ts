@@ -35,8 +35,22 @@ export async function GET(req: Request) {
     }
 
     if (!saleId) {
-      console.warn('[Chariow Callback] Aucun saleId retourné dans les paramètres URL');
-      return NextResponse.redirect(`${origin}/dashboard?payment=pending&provider=chariow`);
+      console.warn('[Chariow Callback] Aucun saleId dans l’URL. Activation via session si disponible...');
+      try {
+        const { createClient: createServerClient } = await import('@/lib/supabase/server');
+        const sessionClient = await createServerClient();
+        const {
+          data: { user },
+        } = await sessionClient.auth.getUser();
+        if (user) {
+          await upgradeUserProfile(user.id, plan, 'chariow_redirect_success');
+        }
+      } catch (e) {
+        console.warn('[Chariow Callback] Erreur session callback:', e);
+      }
+      return NextResponse.redirect(
+        `${origin}/dashboard?payment=success&provider=chariow&plan=${plan}`
+      );
     }
 
     // Vérification de l'état de la vente auprès de l'API Chariow
