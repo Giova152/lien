@@ -4,9 +4,14 @@ import React, { useState, useEffect } from 'react';
 import {
   X,
   Sparkles,
-  CheckCircle2,
   ArrowRight,
   ShieldCheck,
+  Globe,
+  Calendar,
+  Zap,
+  ShoppingBag,
+  BarChart3,
+  Palette,
 } from '@/components/ui/Icons';
 import { ChariowCheckoutModal } from '@/components/chariow/ChariowCheckoutModal';
 import { CHARIOW_PRODUCTS } from '@/lib/chariow-constants';
@@ -44,111 +49,164 @@ export function YearlyPromoModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             onClose();
           }
         }}
       >
-        <div className="bg-white border border-neutral-200/90 text-neutral-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative flex flex-col gap-5 overflow-hidden animate-in zoom-in-95 duration-200">
-          {/* Subtle Ambient Background Gradients */}
-          <div className="absolute -top-24 -left-24 w-52 h-52 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-52 h-52 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Close Button */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 p-2 rounded-full bg-neutral-100/80 hover:bg-neutral-200/80 border border-neutral-200/60 transition z-10 cursor-pointer"
-            aria-label="Fermer la promotion"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
-          {/* Header */}
-          <div className="flex flex-col gap-2 relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/70 text-indigo-700 text-[11px] font-bold tracking-wide w-fit">
+        <div className="bg-white border border-neutral-100 text-neutral-900 rounded-[32px] p-6 sm:p-8 max-w-lg w-full shadow-[0_25px_60px_rgba(0,0,0,0.16)] relative flex flex-col gap-5 overflow-hidden animate-in zoom-in-95 duration-200">
+          {/* Top Bar: Badge + Minimal Close Button */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50/90 border border-indigo-100 text-indigo-700 text-[11px] font-bold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-              <span>OFFRE SPÉCIALE • ÉCONOMISEZ 38%</span>
+              <span>OFFRE ANNUELLE • REMISE -38%</span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-neutral-900 leading-tight">
-              Propulsez votre présence avec{' '}
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-400 hover:text-neutral-700 flex items-center justify-center transition cursor-pointer"
+              aria-label="Fermer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Heading */}
+          <div className="space-y-1.5">
+            <h2 className="text-2xl sm:text-[26px] font-black tracking-tight text-neutral-900 leading-tight">
+              Passez à la vitesse supérieure avec{' '}
               <span className="text-indigo-600">Lien-Bio PRO</span>
             </h2>
-
-            <p className="text-xs text-neutral-500 leading-relaxed">
-              Passez à la vitesse supérieure : profitez de toutes les fonctionnalités avancées pendant 1 an complet pour convertir vos visiteurs en clients.
+            <p className="text-xs sm:text-[13px] text-neutral-500 leading-relaxed">
+              Accédez à tous les outils professionnels pour valoriser votre profil, gérer vos réservations et développer votre activité pendant 1 an complet.
             </p>
           </div>
 
-          {/* Pricing Highlight Card */}
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-between gap-3 relative z-10">
+          {/* Clean Pricing Card */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-neutral-50 to-neutral-100/50 border border-neutral-200/70 flex items-center justify-between gap-3">
             <div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl sm:text-3xl font-black text-neutral-900">
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl sm:text-4xl font-black text-neutral-950 tracking-tight">
                   185 $
                 </span>
-                <span className="text-xs text-neutral-500 font-bold">/ an</span>
-                <span className="text-[11px] text-neutral-400 font-normal line-through ml-1">
-                  300 $
+                <span className="text-xs font-bold text-neutral-500">/ an</span>
+                <span className="text-xs text-neutral-400 line-through">300 $</span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px] font-extrabold tracking-wide">
+                  -38%
                 </span>
               </div>
-              <p className="text-[11px] text-indigo-600 font-bold mt-0.5">
+              <p className="text-[11px] text-indigo-600 font-bold mt-1">
                 Soit ~15 $/mois au lieu de 25 $ • ~110 000 FCFA
               </p>
             </div>
-            <div className="text-right shrink-0">
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-extrabold whitespace-nowrap">
-                -38% de remise
-              </span>
+            <div className="text-right text-[11px] text-neutral-400 hidden sm:block">
+              <span className="font-semibold text-neutral-700 block">Paiement unique</span>
+              <span>365 jours d&apos;accès</span>
             </div>
           </div>
 
-          {/* Key Features Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-neutral-700 relative z-10">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Domaine personnalisé (.com)</span>
+          {/* Features Grid with Refined Icon Tiles */}
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 text-left">
+            <div className="flex items-start gap-2.5 p-2 rounded-xl">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                <Globe className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-900 leading-tight">
+                  Nom de domaine
+                </p>
+                <p className="text-[10.5px] text-neutral-500 leading-tight mt-0.5 truncate">
+                  Votre lien .com dédié
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Agenda & Prise de RDV</span>
+
+            <div className="flex items-start gap-2.5 p-2 rounded-xl">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                <Calendar className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-900 leading-tight">
+                  Prise de RDV
+                </p>
+                <p className="text-[10.5px] text-neutral-500 leading-tight mt-0.5 truncate">
+                  Agenda & calendrier en direct
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Liens & Réseaux illimités</span>
+
+            <div className="flex items-start gap-2.5 p-2 rounded-xl">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                <Zap className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-900 leading-tight">
+                  Liens illimités
+                </p>
+                <p className="text-[10.5px] text-neutral-500 leading-tight mt-0.5 truncate">
+                  Aucun quota de contenu
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Boutique & Produits PDF</span>
+
+            <div className="flex items-start gap-2.5 p-2 rounded-xl">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                <ShoppingBag className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-900 leading-tight">
+                  Boutique digitale
+                </p>
+                <p className="text-[10.5px] text-neutral-500 leading-tight mt-0.5 truncate">
+                  Vente de PDF & fichiers
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Statistiques & Analyses</span>
+
+            <div className="flex items-start gap-2.5 p-2 rounded-xl">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                <BarChart3 className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-900 leading-tight">
+                  Statistiques
+                </p>
+                <p className="text-[10.5px] text-neutral-500 leading-tight mt-0.5 truncate">
+                  Visiteurs & provenance
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Thèmes HD sans filigrane</span>
+
+            <div className="flex items-start gap-2.5 p-2 rounded-xl">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                <Palette className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-900 leading-tight">
+                  Design de Luxe
+                </p>
+                <p className="text-[10.5px] text-neutral-500 leading-tight mt-0.5 truncate">
+                  100% sans filigrane
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Payment Trust Note */}
-          <div className="flex items-center justify-between text-[11px] text-neutral-500 pt-1 border-t border-neutral-100 relative z-10">
-            <div className="flex items-center gap-1.5 text-neutral-600 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Paiement sécurisé : Wave, Orange, MTN, Moov, CB</span>
-            </div>
-            <span className="text-[10px] text-neutral-400">Déblocage direct</span>
+          {/* Trust Guarantee */}
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-500 pt-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span>Paiement sécurisé par <strong>Wave, Orange, MTN, Moov & CB</strong></span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-2 relative z-10 pt-1">
+          <div className="flex flex-col gap-2 pt-1">
             <button
               type="button"
               onClick={() => setIsCheckoutOpen(true)}
-              className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-600/20 hover:shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Profiter de l&apos;offre PRO 1 An</span>
               <ArrowRight className="w-4 h-4" />
@@ -157,9 +215,9 @@ export function YearlyPromoModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-1.5 text-xs font-semibold text-neutral-400 hover:text-neutral-700 transition cursor-pointer text-center"
+              className="w-full py-1 text-xs font-medium text-neutral-400 hover:text-neutral-600 transition cursor-pointer text-center"
             >
-              Continuer vers mon espace (Peut-être plus tard)
+              Plus tard, continuer vers mon espace
             </button>
           </div>
         </div>

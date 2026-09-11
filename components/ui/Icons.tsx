@@ -73,6 +73,7 @@ import {
   Clock,
   ArrowLeft,
   ChevronLeft,
+  ShoppingBag,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -308,6 +309,7 @@ export {
   XCircle,
   CheckCircle,
   Send,
+  ShoppingBag,
   DollarSign,
   CreditCard,
   ListOrdered,
