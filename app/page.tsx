@@ -14,14 +14,10 @@ import {
   PhoneCall,
   BarChart3,
   BookOpen,
-  Smartphone,
+  Calendar,
   Check,
   Sparkles,
-  ShieldCheck,
   Star,
-  Globe,
-  Calendar,
-  Zap,
 } from '@/components/ui/Icons';
 import { Logo } from '@/components/ui/Logo';
 
@@ -41,32 +37,23 @@ export default async function HomePage() {
     <div className="min-h-screen flex flex-col bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white">
       <Navbar user={user} profile={profile} />
 
-      {/* Hero Section */}
-      <section className="relative pt-12 sm:pt-20 pb-20 px-4 flex flex-col items-center text-center overflow-hidden bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(99,102,241,0.12),rgba(255,255,255,0))]">
-        {/* Subtle Decorative Background Lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none -z-10" />
-
-        <div className="max-w-4xl mx-auto flex flex-col items-center relative z-10">
-          {/* Subtle Live Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50/90 border border-neutral-200/90 text-neutral-800 text-xs font-semibold mb-6 shadow-xs hover:border-indigo-300 transition-colors">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span>La nouvelle référence pour vos liens & votre carte digitale</span>
-            <ArrowRight className="w-3 h-3 text-neutral-400" />
+      {/* Hero Section - Airy, Minimalist & Quiet Luxury */}
+      <section className="relative pt-16 sm:pt-28 pb-20 sm:pb-28 px-4 flex flex-col items-center text-center bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(99,102,241,0.07),rgba(255,255,255,0))]">
+        <div className="max-w-4xl mx-auto flex flex-col items-center">
+          {/* Subtle Tag */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-50 border border-neutral-200/80 text-neutral-600 text-xs font-semibold mb-8 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Carte de visite digitale & profil professionnel</span>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-neutral-950 mb-6 max-w-4xl leading-[1.08]">
-            Tous vos liens, contacts et offres.{' '}
-            <span className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-900 bg-clip-text text-transparent">
-              Sur une seule page.
-            </span>
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-6xl lg:text-[70px] font-black tracking-[-0.03em] text-neutral-950 mb-6 max-w-4xl leading-[1.08]">
+            Tous vos liens, vos contacts et vos offres.{' '}
+            <span className="text-neutral-400 font-extrabold">Sur une seule page.</span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-base sm:text-xl text-neutral-600 max-w-2xl mb-8 leading-relaxed font-normal">
+          <p className="text-base sm:text-xl text-neutral-600 max-w-2xl mb-10 leading-relaxed font-normal">
             Partagez facilement votre univers professionnel. Vos interlocuteurs enregistrent votre fiche contact (<strong className="font-semibold text-neutral-900">.vcf</strong>) dans leur répertoire en un clic, réservent vos créneaux et découvrent vos services.
           </p>
 
@@ -75,7 +62,7 @@ export default async function HomePage() {
             {user ? (
               <Link
                 href="/dashboard"
-                className="w-full sm:w-auto px-7 py-4 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] text-sm"
+                className="w-full sm:w-auto px-7 py-3.5 bg-neutral-950 hover:bg-neutral-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md text-sm cursor-pointer"
               >
                 <span>Accéder à mon tableau de bord</span>
                 <ArrowRight className="w-4 h-4" />
@@ -83,7 +70,7 @@ export default async function HomePage() {
             ) : (
               <Link
                 href="/register"
-                className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 hover:scale-[1.02] active:scale-[0.98] text-sm"
+                className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 hover:shadow-indigo-600/30 text-sm cursor-pointer"
               >
                 <span>Créer ma page gratuitement</span>
                 <ArrowRight className="w-4 h-4" />
@@ -92,81 +79,62 @@ export default async function HomePage() {
 
             <a
               href="#demo"
-              className="w-full sm:w-auto px-7 py-4 bg-white hover:bg-neutral-50 text-neutral-800 font-bold rounded-2xl text-sm transition-all border border-neutral-200/90 shadow-xs hover:border-neutral-300"
+              className="w-full sm:w-auto px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200/80 text-neutral-800 font-semibold rounded-xl text-sm transition-all border border-neutral-200/80 cursor-pointer"
             >
-              Tester la démo interactive
+              Voir la démo interactive
             </a>
           </div>
 
-          {/* Social Proof Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <div className="flex -space-x-2">
-              <img
-                className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-xs"
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                alt="Utilisatrice Lien-Bio"
-              />
-              <img
-                className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-xs"
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
-                alt="Utilisateur Lien-Bio"
-              />
-              <img
-                className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-xs"
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80"
-                alt="Utilisatrice Lien-Bio"
-              />
-              <img
-                className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-xs"
-                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80"
-                alt="Utilisateur Lien-Bio"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <span className="text-xs font-semibold text-neutral-600">
-                Rejoint par <strong>+1 200 créateurs & indépendants</strong>
-              </span>
-            </div>
+          {/* Reassurance points */}
+          <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-neutral-500 font-medium">
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-neutral-900" />
+              <span>Prêt en 2 minutes</span>
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-neutral-900" />
+              <span>Compatible iPhone & Android</span>
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-neutral-900" />
+              <span>Sans abonnement obligatoire</span>
+            </span>
           </div>
         </div>
       </section>
 
       {/* Interactive Live Demo Section */}
-      <section id="preview" className="py-16 px-4 bg-slate-50/70 border-y border-neutral-200/70 scroll-mt-16 relative">
+      <section id="preview" className="py-20 sm:py-28 px-4 bg-slate-50/60 border-y border-neutral-200/60 scroll-mt-16">
         <div id="demo" className="sr-only" />
         <div className="max-w-4xl mx-auto flex flex-col items-center">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold mb-3">
-              <Sparkles className="w-3.5 h-3.5" />
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-neutral-200/80 text-neutral-700 text-xs font-semibold mb-3 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
               <span>SIMULATION INTERACTIVE</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-neutral-900 tracking-tight mb-2.5">
-              À quoi ressemble votre page ?
+            <h2 className="text-2xl sm:text-4xl font-black text-neutral-950 tracking-tight mb-2.5">
+              À quoi ressemble votre résultat ?
             </h2>
             <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto">
               Testez la navigation ci-dessous comme si vous étiez directement sur le smartphone de votre client.
             </p>
           </div>
 
-          {/* Interactive Mobile Widget */}
+          {/* Real Interactive Widget */}
           <InteractiveLandingDemo />
         </div>
       </section>
 
-      {/* Bento Grid Features - Premium & Asymmetric */}
-      <section id="features" className="py-24 px-4 max-w-6xl mx-auto w-full scroll-mt-16">
+      {/* Features Bento Grid */}
+      <section id="features" className="py-24 sm:py-32 px-4 max-w-6xl mx-auto w-full scroll-mt-16">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-semibold mb-3">
             <span>FONCTIONNALITÉS ESSENTIELLES</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950 mb-3.5">
-            Tout ce qu'il vous faut pour être contacté immédiatement
+            Tout ce qu&apos;il vous faut pour être contacté rapidement
           </h2>
           <p className="text-sm sm:text-base text-neutral-500">
             Conçu sur-mesure pour remplacer les cartes papier et les listes de liens impersonnelles.
@@ -176,142 +144,142 @@ export default async function HomePage() {
         {/* Asymmetric Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Card 1: Fiche Contact .VCF (Large 2 Cols) */}
-          <div className="md:col-span-2 p-7 sm:p-8 rounded-3xl border border-neutral-200/90 bg-gradient-to-br from-white via-white to-slate-50 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-neutral-300 transition-all">
+          <div className="md:col-span-2 p-7 sm:p-9 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-6">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 mb-5 shadow-xs">
-                  <Download className="w-6 h-6" />
+                <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mb-5">
+                  <Download className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-neutral-950 mb-2">
                   Enregistrement de contact direct (.vcf)
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed max-w-md">
-                  En un seul clic, votre client télécharge votre fiche complète directement dans son carnet d'adresses (iPhone Contacts ou Google Contacts) avec nom, numéro, WhatsApp, photo et réseaux. Zéro numéro mal recopié.
+                  En un clic, vos interlocuteurs téléchargent votre fiche complète directement dans leur répertoire (iPhone Contacts ou Google Contacts) avec nom, numéro, WhatsApp, photo et réseaux. Zéro numéro mal recopié.
                 </p>
               </div>
 
               {/* Visual Mini Mockup */}
-              <div className="w-full sm:w-56 p-3.5 rounded-2xl bg-white border border-neutral-200/90 shadow-sm shrink-0 flex flex-col gap-2.5">
+              <div className="w-full sm:w-56 p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 shadow-xs shrink-0 flex flex-col gap-2.5">
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
                     LB
                   </div>
                   <div>
                     <div className="text-xs font-bold text-neutral-900">Fiche Contact Pro</div>
-                    <div className="text-[10px] text-emerald-600 font-medium">✓ Format .vcf iOS & Android</div>
+                    <div className="text-[10px] text-emerald-600 font-medium">✓ Format .vcf universel</div>
                   </div>
                 </div>
-                <div className="py-2 px-3 rounded-xl bg-neutral-900 text-white text-[11px] font-bold text-center flex items-center justify-center gap-1.5">
+                <div className="py-2 px-3 rounded-xl bg-neutral-900 text-white text-[11px] font-bold text-center flex items-center justify-center gap-1.5 shadow-xs">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Enregistrer dans le tél</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-xs font-bold text-neutral-500 pt-2 border-t border-neutral-100">
+            <div className="flex items-center gap-4 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
               <span className="flex items-center gap-1.5 text-emerald-600">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Compatible iPhone & Android</span>
               </span>
               <span>•</span>
-              <span>100% Hors ligne</span>
+              <span>Fonctionne 100% sans application</span>
             </div>
           </div>
 
           {/* Card 2: QR Code HD */}
-          <div className="p-7 sm:p-8 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
+          <div className="p-7 sm:p-9 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100/80 flex items-center justify-center text-amber-600 mb-5 shadow-xs">
-                <QrCode className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 mb-5">
+                <QrCode className="w-5 h-5" />
               </div>
               <h3 className="text-lg sm:text-xl font-black text-neutral-950 mb-2">
                 QR Code haute définition
               </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                Téléchargez votre QR code en haute résolution vectorielle pour vos cartes de visite, devis, vitrines ou stands de salon.
+                Téléchargez votre QR code vectoriel en haute résolution pour l&apos;imprimer sur vos cartes de visite, devis, vitrines ou stands de salon.
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between text-xs font-bold text-indigo-600">
-              <span>Format vectoriel SVG & PNG HD</span>
+            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-bold text-indigo-600 flex items-center justify-between">
+              <span>Format vectoriel SVG & PNG</span>
               <ArrowRight className="w-4 h-4" />
             </div>
           </div>
 
-          {/* Card 3: Boutons Appel & WhatsApp */}
-          <div className="p-7 sm:p-8 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
+          {/* Card 3: Appel & WhatsApp */}
+          <div className="p-7 sm:p-9 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100/80 flex items-center justify-center text-emerald-600 mb-5 shadow-xs">
-                <PhoneCall className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mb-5">
+                <PhoneCall className="w-5 h-5" />
               </div>
               <h3 className="text-lg sm:text-xl font-black text-neutral-950 mb-2">
                 Appel & WhatsApp en 1 clic
               </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                Appel direct, message WhatsApp pré-rédigé ou email. Vos prospects communiquent instantanément avec vous sans barrière.
+                Appel direct, message WhatsApp pré-rédigé ou email. Vos prospects communiquent instantanément sans barrière.
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-bold text-neutral-500">
-              Message d&apos;accueil pré-configuré
+            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-medium text-neutral-500">
+              Message d&apos;accueil personnalisable
             </div>
           </div>
 
-          {/* Card 4: Services & Prise de RDV */}
-          <div className="p-7 sm:p-8 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
+          {/* Card 4: Prise de RDV */}
+          <div className="p-7 sm:p-9 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100/80 flex items-center justify-center text-blue-600 mb-5 shadow-xs">
-                <Calendar className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mb-5">
+                <Calendar className="w-5 h-5" />
               </div>
               <h3 className="text-lg sm:text-xl font-black text-neutral-950 mb-2">
                 Prise de RDV & Calendrier
               </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                Affichez vos forfaits de conseil, coaching ou prestations avec lien de réservation directe (Calendly, Google Meet).
+                Présentez vos forfaits de conseil, séances de coaching ou services avec réservation directe (Calendly, Google Meet).
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-bold text-neutral-500">
-              Synchronisation d&apos;agenda direct
+            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-medium text-neutral-500">
+              Synchronisation de votre agenda
             </div>
           </div>
 
-          {/* Card 5: Boutique Digitale */}
-          <div className="p-7 sm:p-8 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
+          {/* Card 5: Boutique E-books */}
+          <div className="p-7 sm:p-9 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100/80 flex items-center justify-center text-purple-600 mb-5 shadow-xs">
-                <BookOpen className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 mb-5">
+                <BookOpen className="w-5 h-5" />
               </div>
               <h3 className="text-lg sm:text-xl font-black text-neutral-950 mb-2">
-                Boutique E-books & Guides PDF
+                Boutique & Produits PDF
               </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                Vendez vos guides, templates ou fichiers numériques directement sur votre page avec paiement sécurisé CB et Mobile Money.
+                Vendez vos guides, templates ou fichiers numériques avec livraison automatique après paiement sécurisé.
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-bold text-neutral-500">
-              Livraison automatique après achat
+            <div className="mt-6 pt-4 border-t border-neutral-100 text-xs font-medium text-neutral-500">
+              Paiement CB & Mobile Money
             </div>
           </div>
 
-          {/* Card 6: Thèmes de Luxe & Analytics (Large 2 Cols) */}
-          <div className="md:col-span-2 p-7 sm:p-8 rounded-3xl border border-neutral-200/90 bg-gradient-to-br from-white via-white to-slate-50 shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
+          {/* Card 6: Thèmes de Luxe (Large 2 Cols) */}
+          <div className="md:col-span-2 p-7 sm:p-9 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between hover:border-neutral-300 transition-all">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-6">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100/80 flex items-center justify-center text-rose-600 mb-5 shadow-xs">
-                  <Palette className="w-6 h-6" />
+                <div className="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mb-5">
+                  <Palette className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-neutral-950 mb-2">
                   Thèmes de luxe & 100% sans filigrane
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed max-w-md">
-                  Palettes élégantes (Linette Ivoire, Obsidienne, Noir Royal, Blanc Pur), typographies haut de gamme et nom de domaine dédié. Votre image de marque reste immaculée.
+                  Palettes élégantes (Linette Ivoire, Obsidienne, Noir Royal), typographies haut de gamme et nom de domaine dédié. Votre univers reste pur et soigné.
                 </p>
               </div>
 
-              {/* Theme Color Palette Preview */}
-              <div className="flex items-center gap-2 p-3 rounded-2xl bg-white border border-neutral-200/90 shadow-sm shrink-0">
+              {/* Theme Palette Dots */}
+              <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-neutral-50 border border-neutral-200/80 shrink-0">
                 <div className="w-8 h-8 rounded-full bg-[#FAF8F5] border-2 border-amber-200 shadow-xs" title="Ivoire" />
                 <div className="w-8 h-8 rounded-full bg-[#18181B] border-2 border-neutral-700 shadow-xs" title="Obsidienne" />
                 <div className="w-8 h-8 rounded-full bg-[#0F172A] border-2 border-indigo-400 shadow-xs" title="Bleu Nuit" />
@@ -319,144 +287,122 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-xs font-bold text-neutral-500 pt-2 border-t border-neutral-100">
+            <div className="flex items-center gap-4 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
               <span className="flex items-center gap-1.5 text-indigo-600">
                 <BarChart3 className="w-4 h-4" />
-                <span>Statistiques de clics & provenance en temps réel</span>
+                <span>Statistiques précises des clics & visites en temps réel</span>
               </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Comparison Section: Pourquoi Lien-Bio ? */}
-      <section className="py-20 px-4 bg-neutral-950 text-white relative overflow-hidden">
+      {/* Comparison Table - Clean, Light & Objective */}
+      <section className="py-20 sm:py-28 px-4 bg-slate-50/70 border-y border-neutral-200/70">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 text-xs font-bold mb-3">
-              <span>COMPARATIF CLAIR</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-neutral-200 text-neutral-700 text-xs font-semibold mb-3">
+              <span>COMPARATIF OBJECTIF</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-3">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950 mb-3">
               Pourquoi choisir Lien-Bio ?
             </h2>
-            <p className="text-xs sm:text-sm text-neutral-400">
-              Comparez avec les cartes papier traditionnelles et les listes de liens génériques.
+            <p className="text-sm text-neutral-500">
+              Comparez les fonctionnalités concrètes face aux alternatives traditionnelles.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            {/* 1. Carte Papier */}
-            <div className="p-6 rounded-3xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 block mb-2">
-                  Traditionnel
-                </span>
-                <h3 className="text-lg font-black text-white mb-4">Carte de visite papier</h3>
-                <ul className="flex flex-col gap-3 text-xs text-neutral-400">
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Coûteux à imprimer et réimprimer</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Se perd, s&apos;abîme ou finit à la poubelle</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Le client doit recopier votre numéro à la main</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Impossible à modifier une fois imprimé</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="pt-6 mt-6 border-t border-neutral-800 text-[11px] text-neutral-500 font-semibold">
-                Obsolète dès qu&apos;un contact change
-              </div>
-            </div>
-
-            {/* 2. Linktree Basique */}
-            <div className="p-6 rounded-3xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 block mb-2">
-                  Agrégateur classique
-                </span>
-                <h3 className="text-lg font-black text-white mb-4">Linktree & outils basiques</h3>
-                <ul className="flex flex-col gap-3 text-xs text-neutral-400">
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Aucun enregistrement automatique dans le téléphone</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Logo de la plateforme imposé en bas</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Boutons rectangulaires impersonnels</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold shrink-0">✕</span>
-                    <span>Pas de boutique e-book ni de calendrier direct</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="pt-6 mt-6 border-t border-neutral-800 text-[11px] text-neutral-500 font-semibold">
-                Une simple liste de liens froids
-              </div>
-            </div>
-
-            {/* 3. Lien-Bio PRO */}
-            <div className="p-6 rounded-3xl bg-gradient-to-b from-indigo-950/60 to-neutral-900 border-2 border-indigo-500 shadow-xl flex flex-col justify-between relative ring-2 ring-indigo-500/20">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm">
-                ⭐ La Solution Complète
-              </div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 block mb-2">
-                  Lien-Bio
-                </span>
-                <h3 className="text-lg font-black text-white mb-4">Profil & Carte Digitale</h3>
-                <ul className="flex flex-col gap-3 text-xs text-neutral-200">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span><strong>Fiche .vcf enregistrée en 1 clic</strong> dans l&apos;iPhone / Android</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span><strong>QR Code HD permanent</strong> (modifiable à tout moment)</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span><strong>Boutique PDF & Prise de RDV</strong> intégrées</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span><strong>Thèmes de luxe sur-mesure</strong> sans filigrane</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="pt-6 mt-6 border-t border-neutral-800 text-[11px] text-indigo-400 font-bold">
-                Le réflexe moderne pour développer votre réseau
-              </div>
+          {/* Clean Table Container */}
+          <div className="bg-white rounded-3xl border border-neutral-200/80 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-neutral-200 bg-neutral-50/80 text-neutral-700">
+                    <th className="p-4 sm:p-5 font-bold">Fonctionnalité</th>
+                    <th className="p-4 sm:p-5 font-medium text-neutral-500 text-center">Carte papier</th>
+                    <th className="p-4 sm:p-5 font-medium text-neutral-500 text-center">Linktree gratuit</th>
+                    <th className="p-4 sm:p-5 font-black text-indigo-700 bg-indigo-50/60 text-center">
+                      Lien-Bio PRO
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-100 text-neutral-700">
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">Fiche .vcf enregistrée dans le répertoire du téléphone</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ En 1 clic
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">Informations modifiables instantanément à tout moment</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-bold">✓</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ Illimité
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">QR Code HD permanent (ne change jamais)</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ Vectoriel SVG
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">Prise de RDV & synchronisation Calendly intégrée</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ Inclus
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">Boutique digitale & vente de fichiers PDF</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ Inclus
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">Design de luxe sans filigrane ni logo imposé</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ 100% Marque blanche
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 sm:p-5 font-medium">Nom de domaine personnalisé dédié (votre-nom.com)</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-neutral-300 font-bold">—</td>
+                    <td className="p-4 sm:p-5 text-center text-emerald-600 font-black bg-indigo-50/20">
+                      ✓ Inclus PRO
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </section>
 
       {/* Social Proof / Témoignages */}
-      <section className="py-20 px-4 max-w-6xl mx-auto w-full">
+      <section className="py-24 sm:py-32 px-4 max-w-6xl mx-auto w-full">
         <div className="text-center max-w-xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-semibold mb-3">
             <span>ILS EN PARLENT</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950 mb-3">
-            Adopté par les professionnels exigeants
+            Adopté par les créateurs & indépendants
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <div className="p-6 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between">
+          <div className="p-7 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex text-amber-400 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -464,7 +410,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed italic mb-6">
-                « En rendez-vous client, je fais simplement flasher mon QR Code. En 2 secondes, mon contact complet avec mon WhatsApp et ma photo est enregistré dans leur répertoire. C&apos;est infiniment plus efficace qu&apos;une carte papier. »
+                « En rendez-vous, je fais simplement flasher mon QR Code. En 2 secondes, mon contact complet avec mon WhatsApp et ma photo est enregistré dans leur répertoire. C&apos;est 100 fois plus efficace qu&apos;une carte papier. »
               </p>
             </div>
             <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
@@ -478,7 +424,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between">
+          <div className="p-7 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex text-amber-400 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -486,7 +432,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed italic mb-6">
-                « J&apos;ai remplacé mon Linktree par Lien-Bio pour mon activité photo. Mes clients peuvent réserver leur séance et commander directement mes presets. Le design Linette est sublime. »
+                « J&apos;ai remplacé mon Linktree par Lien-Bio pour mon studio photo. Mes clients peuvent réserver directement leur séance et commander mes presets. Le design Linette est superbe. »
               </p>
             </div>
             <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
@@ -500,7 +446,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl border border-neutral-200/90 bg-white shadow-xs flex flex-col justify-between">
+          <div className="p-7 rounded-3xl border border-neutral-200/80 bg-white shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex text-amber-400 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -508,7 +454,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed italic mb-6">
-                « Tout est propre, rapide et sans fioritures. L&apos;enregistrement direct de la fiche contact dans le téléphone du prospect augmente radicalement le taux de retour et de relance. »
+                « C&apos;est propre, rapide et sans fioritures. L&apos;enregistrement direct de la fiche contact dans le téléphone du prospect augmente radicalement le taux de rappel et de relance. »
               </p>
             </div>
             <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
@@ -517,7 +463,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="text-xs font-bold text-neutral-900">Julien B.</div>
-                <div className="text-[11px] text-neutral-500">Directeur d&apos;Agence Web</div>
+                <div className="text-[11px] text-neutral-500">Directeur d&apos;Agence</div>
               </div>
             </div>
           </div>
@@ -525,15 +471,15 @@ export default async function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-4 bg-slate-50/70 border-t border-neutral-200/80 scroll-mt-16">
-        <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-200/80 text-neutral-700 text-xs font-bold mb-3">
+      <section id="pricing" className="py-24 sm:py-32 px-4 bg-slate-50/70 border-t border-neutral-200/80 scroll-mt-16">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-200/80 text-neutral-700 text-xs font-semibold mb-3">
             <span>TARIFICATION CLAIRE</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-neutral-950 tracking-tight mb-2">
             Des tarifs simples. Zéro frais cachés.
           </h2>
-          <p className="text-sm text-neutral-500 mb-12 max-w-lg">
+          <p className="text-sm text-neutral-500 mb-14 max-w-lg">
             Démarrez gratuitement sans carte bancaire ou passez au niveau supérieur avec nos formules PRO.
           </p>
 
@@ -542,9 +488,9 @@ export default async function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 px-4 max-w-5xl mx-auto w-full scroll-mt-16">
+      <section id="faq" className="py-24 sm:py-32 px-4 max-w-5xl mx-auto w-full scroll-mt-16">
         <div className="text-center max-w-xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-semibold mb-3">
             <span>RÉPONSES À VOS QUESTIONS</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950 mb-3">
@@ -558,18 +504,10 @@ export default async function HomePage() {
         <LandingFaq />
       </section>
 
-      {/* Final Irresistible Call To Action Card */}
+      {/* Final Call To Action Banner */}
       <section className="py-16 px-4 max-w-5xl mx-auto w-full">
         <div className="rounded-[36px] bg-neutral-950 text-white p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl border border-neutral-800">
-          {/* Subtle Ambient Glow */}
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-600/25 rounded-full blur-3xl pointer-events-none" />
-
           <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold mb-5 border border-indigo-500/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Prêt en moins de 2 minutes</span>
-            </div>
-
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
               Donnez une première impression inoubliable.
             </h2>
@@ -580,7 +518,7 @@ export default async function HomePage() {
 
             <Link
               href={user ? '/dashboard' : '/register'}
-              className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold rounded-2xl text-sm sm:text-base transition-all shadow-xl shadow-indigo-600/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+              className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold rounded-2xl text-sm sm:text-base transition-all shadow-xl shadow-indigo-600/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>{user ? 'Accéder à mon espace' : 'Créer ma page gratuitement'}</span>
               <ArrowRight className="w-4 h-4" />
