@@ -281,16 +281,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         theme: normalizedTheme,
       });
 
-      // Afficher le popup promotionnel de l'offre 1 An à chaque entrée dans le dashboard pour les utilisateurs non-PRO
+      // Afficher le popup promotionnel de l'offre 1 An une seule fois par session pour les utilisateurs non-PRO
       const hasPaymentParam =
         typeof window !== 'undefined' &&
         (new URLSearchParams(window.location.search).get('payment') === 'success' ||
           new URLSearchParams(window.location.search).get('upgrade') === 'true');
 
-      if (!isPro && !hasPaymentParam && currentRole === 'owner') {
+      const alreadyShownThisSession =
+        typeof window !== 'undefined' && sessionStorage.getItem('lien_yearly_promo_shown') === 'true';
+
+      if (!isPro && !hasPaymentParam && currentRole === 'owner' && !alreadyShownThisSession) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('lien_yearly_promo_shown', 'true');
+        }
         setTimeout(() => {
           setIsYearlyPromoOpen(true);
-        }, 700);
+        }, 800);
       }
 
       // 4. Charger les liens de la carte active
