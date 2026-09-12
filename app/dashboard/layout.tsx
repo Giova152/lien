@@ -802,8 +802,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="p-1.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer shrink-0"
-                title="Déconnexion"
+                className="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-200/70 rounded-xl transition cursor-pointer shrink-0"
+                title="Se déconnecter"
+                aria-label="Se déconnecter"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -1110,9 +1111,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="w-full py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-xs font-bold text-rose-600 flex items-center justify-center gap-2 transition cursor-pointer"
+                  className="w-full py-2.5 px-3 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 text-xs font-semibold text-neutral-700 hover:text-neutral-900 flex items-center justify-center gap-2 border border-neutral-200/80 transition cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-4 h-4 text-neutral-500" />
                   <span>Se déconnecter</span>
                 </button>
               </div>

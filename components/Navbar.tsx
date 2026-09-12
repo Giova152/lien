@@ -95,11 +95,13 @@ export function Navbar({ user, profile }: NavbarProps) {
               </Link>
 
               <button
+                type="button"
                 onClick={handleSignOut}
-                className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
-                title="Déconnexion"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100/90 rounded-xl transition-all cursor-pointer border border-transparent hover:border-neutral-200/80"
+                title="Se déconnecter"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5 text-neutral-400" />
+                <span className="hidden sm:inline">Déconnexion</span>
               </button>
             </>
           ) : (
