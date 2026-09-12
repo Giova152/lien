@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X, Loader2, ShieldCheck, CheckCircle2 } from '@/components/ui/Icons';
-import { CHARIOW_STORE_DOMAIN, CHARIOW_PRODUCTS } from '@/lib/chariow-constants';
+import { X, Loader2, ShieldCheck, CheckCircle2, ExternalLink } from '@/components/ui/Icons';
+import { CHARIOW_STORE_DOMAIN } from '@/lib/chariow-constants';
 import { toast } from 'sonner';
 
 interface ChariowCheckoutModalProps {
@@ -47,8 +47,22 @@ export function ChariowCheckoutModal({
   useEffect(() => {
     if (!isOpen) return;
 
+    // Timeout de sécurité pour ne jamais laisser l'utilisateur bloqué sur un spinner
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
     const handleMessage = (event: MessageEvent) => {
       if (!event.data || typeof event.data !== 'object') return;
+
+      // Détection de chargement ou hauteur d'iframe Chariow
+      if (
+        event.data.type === 'chariow-iframe-height' ||
+        event.data.type === 'chariow-checkout-loaded' ||
+        event.data.type === 'chariow-ready'
+      ) {
+        setLoading(false);
+      }
 
       // 1. Déclenchement de la redirection vers la passerelle de paiement (Wave, Orange Money, 3D Secure...)
       if (
@@ -58,7 +72,7 @@ export function ChariowCheckoutModal({
         try {
           const targetUrl = new URL(event.data.url);
           if (targetUrl.protocol === 'https:') {
-            toast.loading('Connexion sécurisée au prestataire de paiement...');
+            toast.loading('Connexion sécurisée à votre opérateur de paiement...');
             window.location.href = event.data.url;
             return;
           }
@@ -96,6 +110,7 @@ export function ChariowCheckoutModal({
 
     window.addEventListener('message', handleMessage);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('message', handleMessage);
     };
   }, [isOpen, onClose, onSuccess]);
@@ -117,36 +132,50 @@ export function ChariowCheckoutModal({
   if (!isOpen || !productId) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl max-w-xl w-full h-[92vh] max-h-[820px] shadow-2xl border border-neutral-200 flex flex-col relative overflow-hidden">
         {/* Header de la modale */}
-        <div className="px-5 py-3.5 border-b border-neutral-100 flex items-center justify-between shrink-0 bg-neutral-50/80">
-          <div className="flex items-center gap-2.5">
+        <div className="px-4 sm:px-5 py-3 border-b border-neutral-100 flex items-center justify-between shrink-0 bg-neutral-50/90">
+          <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
               <ShieldCheck className="w-4 h-4" />
             </div>
-            <div>
-              <span className="text-xs font-black text-neutral-900 block leading-tight">
+            <div className="min-w-0">
+              <span className="text-xs font-black text-neutral-900 block leading-tight truncate">
                 {planTitle || 'Paiement Sécurisé Chariow'}
               </span>
-              <span className="text-[10px] text-neutral-500 font-medium">
-                Carte bancaire
+              <span className="text-[10px] text-neutral-500 font-medium truncate block">
+                Carte bancaire & Mobile Money
               </span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 transition cursor-pointer"
-            aria-label="Fermer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Bouton de secours Plein Écran si le navigateur restreint les iframes */}
+            <a
+              href={checkoutUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 rounded-xl text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/70 border border-neutral-200 text-[11px] font-semibold flex items-center gap-1 transition"
+              title="Ouvrir dans une nouvelle page sécurisée si l'affichage est bloqué"
+            >
+              <ExternalLink className="w-3 h-3 text-neutral-500" />
+              <span className="hidden sm:inline">Nouvel onglet</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-xl text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 transition cursor-pointer"
+              aria-label="Fermer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Corps : Iframe du Widget Chariow */}
-        <div className="relative flex-1 w-full bg-slate-50 overflow-hidden">
+        <div className="relative flex-1 w-full bg-slate-50 overflow-y-auto overscroll-contain">
           {loading && !success && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white">
               <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
@@ -173,21 +202,19 @@ export function ChariowCheckoutModal({
           <iframe
             src={checkoutUrl}
             title="Paiement Sécurisé Chariow"
-            className="w-full h-full border-0 block"
+            className="w-full h-full min-h-[520px] border-0 block"
             loading="eager"
-            allow="payment; camera; microphone; geolocation"
+            allow="payment; camera; microphone; geolocation; clipboard-write"
             onLoad={() => setLoading(false)}
           />
         </div>
 
         {/* Footer info de sécurité */}
-        <div className="px-4 py-2 border-t border-neutral-100 bg-neutral-50 text-center shrink-0">
-          <p className="text-[10px] text-neutral-400">
-            🔒 Transaction chiffrée SSL 256-bit assurée par Chariow
-          </p>
+        <div className="px-4 py-2 border-t border-neutral-100 bg-neutral-50 text-center shrink-0 flex items-center justify-between text-[10px] text-neutral-400">
+          <span>🔒 Transaction chiffrée SSL 256-bit</span>
+          <span className="hidden sm:inline">Paiement certifié Chariow</span>
         </div>
       </div>
     </div>
   );
 }
-
