@@ -1,185 +1,379 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  PhoneCall,
-  Download,
-  ArrowRight,
-  Whatsapp,
-  Calendar,
-  Check,
-  ExternalLink,
-} from '@/components/ui/Icons';
+import { PublicProfileView } from '@/components/public/PublicProfileView';
+import { Profile, LinkItem, ContactInfo } from '@/types';
+import { Signal, Wifi, Battery, Smartphone } from '@/components/ui/Icons';
 
-interface Persona {
+interface PersonaData {
   id: string;
   tabLabel: string;
-  name: string;
-  badge: string;
-  role: string;
-  location: string;
-  avatar: string;
-  coverGradient: string;
-  themeBg: string;
-  themeCard: string;
-  themeText: string;
-  themeSubtext: string;
-  themeAccent: string;
-  themeButtonBg: string;
   isDark?: boolean;
-  stats: { val: string; label: string }[];
-  tags: string[];
-  links: { label: string; sub: string; url: string }[];
-  services: { title: string; price: string; desc: string }[];
-  shop: { title: string; price: string; type: string }[];
+  profile: Profile;
+  links: LinkItem[];
+  contact: ContactInfo;
 }
 
-const PERSONAS: Persona[] = [
+const PERSONAS: PersonaData[] = [
   {
     id: 'consulting',
-    tabLabel: 'Cabinet & Conseil',
-    name: 'Sophie Martin',
-    badge: 'Stratégie',
-    role: 'Conseil en gouvernance d’entreprise & Financement',
-    location: 'Paris & Genève',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80',
-    coverGradient: 'from-stone-200 via-amber-50 to-stone-100',
-    themeBg: '#FAF8F5',
-    themeCard: '#FFFFFF',
-    themeText: '#1C1917',
-    themeSubtext: '#78716C',
-    themeAccent: '#292524',
-    themeButtonBg: '#F5F2EC',
+    tabLabel: 'Sophie • Cabinet Conseil',
     isDark: false,
-    stats: [
-      { val: '15 min', label: 'réponse moyenne' },
-      { val: 'Paris / Visio', label: 'disponibilité' },
-      { val: 'vCard .vcf', label: 'format universel' },
-    ],
-    tags: ['STRATÉGIE', 'AUDIT', 'M&A'],
+    profile: {
+      id: 'demo-sophie',
+      username: 'sophiemartin',
+      display_name: 'Sophie Martin',
+      title: 'Conseil en Gouvernance & Stratégie',
+      company: 'Martin & Associés',
+      bio: 'J’accompagne les dirigeants et fondateurs dans le cadrage de leur vision, la négociation stratégique et la gouvernance d’entreprise.',
+      avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
+      cover_url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80',
+      is_published: true,
+      is_pro: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      theme: {
+        background_type: 'color',
+        background_value: '#FAF8F5',
+        button_style: 'rounded-xl',
+        button_color: '#F5F2EC',
+        button_text_color: '#1C1917',
+        button_border_color: '#E8E2D5',
+        font_family: 'Inter',
+        text_color: '#1C1917',
+        accent_color: '#B45309',
+        is_pro: true,
+        location: 'Paris & Genève',
+        stats: [
+          { id: '1', value: '15 min', label: 'réponse moyenne' },
+          { id: '2', value: 'Paris / Visio', label: 'disponibilité' },
+          { id: '3', value: 'vCard .vcf', label: 'format universel' },
+        ],
+        expertise_tags: ['✦ Stratégie', '✦ Gouvernance', '✦ Conseil M&A', '✦ Financement'],
+        services: [
+          {
+            id: 's1',
+            title: 'Cadrage stratégique (1h30)',
+            subtitle: 'Session intensive en visio ou présentiel pour valider votre feuille de route.',
+            price: '250 €',
+            url: 'https://calendly.com',
+            button_text: 'Prendre RDV',
+          },
+          {
+            id: 's2',
+            title: 'Accompagnement trimestriel',
+            subtitle: 'Comité de direction mensuel et assistance WhatsApp directe.',
+            price: 'Sur devis',
+            url: 'https://wa.me/33612345678',
+            button_text: 'Demander un devis',
+          },
+        ],
+        products: [
+          {
+            id: 'p1',
+            title: 'Guide pratique : Négociation d’actionnaires',
+            price: '29 €',
+            type: 'paid',
+            image_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400&auto=format&fit=crop&q=80',
+            url: '#',
+          },
+          {
+            id: 'p2',
+            title: 'Checklist d’audit de gouvernance 2026',
+            price: 'Gratuit',
+            type: 'free',
+            url: '#',
+          },
+        ],
+      },
+    },
+    contact: {
+      profile_id: 'demo-sophie',
+      phone: '+33 6 12 34 56 78',
+      whatsapp: '+33 6 12 34 56 78',
+      email: 'sophie@martin-associes.com',
+      address: 'Paris 8e & Genève',
+      website: 'https://martin-associes.com',
+      show_save_contact_button: true,
+    },
     links: [
-      { label: 'Réserver un point d’échange (30 min)', sub: 'Synchronisé avec Google Calendar', url: '#' },
-      { label: 'Profil vérifié LinkedIn', sub: 'Mises à jour professionnelles', url: '#' },
-      { label: 'Présentation du cabinet 2026', sub: 'Brochure PDF téléchargeable', url: '#' },
-    ],
-    services: [
-      { title: 'Session de cadrage stratégique', price: '250 €', desc: 'Revue approfondie de votre modèle et plan de déploiement.' },
-      { title: 'Mission de conseil trimestrielle', price: 'Sur devis', desc: 'Accompagnement continu avec comité mensuel et support direct.' },
-    ],
-    shop: [
-      { title: 'Matrice d’audit stratégique', price: 'Gratuit', type: 'Modèle' },
-      { title: 'Guide pratique de levée de fonds', price: '29 €', type: 'E-book PDF' },
+      {
+        id: 'l1',
+        profile_id: 'demo-sophie',
+        type: 'custom',
+        label: 'Prendre rendez-vous en ligne (Agenda)',
+        url: 'https://calendly.com',
+        position: 1,
+        is_active: true,
+        click_count: 245,
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 'l2',
+        profile_id: 'demo-sophie',
+        type: 'social',
+        platform: 'linkedin',
+        label: 'Profil vérifié LinkedIn',
+        url: 'https://linkedin.com',
+        position: 2,
+        is_active: true,
+        click_count: 512,
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 'l3',
+        profile_id: 'demo-sophie',
+        type: 'custom',
+        label: 'Consulter la brochure du cabinet 2026',
+        url: '#',
+        position: 3,
+        is_active: true,
+        click_count: 118,
+        created_at: '',
+        updated_at: '',
+      },
     ],
   },
   {
     id: 'studio',
-    tabLabel: 'Studio Photo & Création',
-    name: 'Thomas Laurent',
-    badge: 'Direction Photo',
-    role: 'Portraits corporate, mode & reportages d’équipe',
-    location: 'Lyon & Déplacements',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
-    coverGradient: 'from-zinc-200 via-stone-200 to-neutral-200',
-    themeBg: '#F4F4F5',
-    themeCard: '#FFFFFF',
-    themeText: '#09090B',
-    themeSubtext: '#71717A',
-    themeAccent: '#18181B',
-    themeButtonBg: '#E4E4E7',
+    tabLabel: 'Thomas • Photographe Studio',
     isDark: false,
-    stats: [
-      { val: 'Studio Lyon', label: 'lieu de tournage' },
-      { val: '48h', label: 'livraison HD' },
-      { val: 'RAW & JPEG', label: 'qualité studio' },
-    ],
-    tags: ['PORTRAIT', 'CORPORATE', 'MARQUE'],
+    profile: {
+      id: 'demo-thomas',
+      username: 'thomaslaurent',
+      display_name: 'Thomas Laurent',
+      title: 'Photographe Éditorial & Corporate',
+      company: 'Studio Laurent',
+      bio: 'Création de portraits dirigeants, campagnes de marque et reportages d’entreprise en France et à l’international.',
+      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+      cover_url: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&auto=format&fit=crop&q=80',
+      is_published: true,
+      is_pro: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      theme: {
+        background_type: 'color',
+        background_value: '#F4F4F5',
+        button_style: 'rounded-xl',
+        button_color: '#FFFFFF',
+        button_text_color: '#09090B',
+        button_border_color: '#E4E4E7',
+        font_family: 'Inter',
+        text_color: '#09090B',
+        accent_color: '#18181B',
+        is_pro: true,
+        location: 'Lyon & Déplacements',
+        stats: [
+          { id: '1', value: 'Studio Lyon', label: 'lieu de shooting' },
+          { id: '2', value: '48h', label: 'livraison HD' },
+          { id: '3', value: 'RAW / TIFF', label: 'qualité studio' },
+        ],
+        expertise_tags: ['✦ Portrait Corporate', '✦ Éditorial', '✦ Direction Artistique'],
+        services: [
+          {
+            id: 'ts1',
+            title: 'Pack Portrait Dirigeant (Studio)',
+            subtitle: '1h de prise de vue, 5 photos retouchées en haute résolution.',
+            price: '220 €',
+            url: '#',
+            button_text: 'Réserver un créneau',
+          },
+          {
+            id: 'ts2',
+            title: 'Reportage d’entreprise (Demi-journée)',
+            subtitle: 'Immersion dans vos locaux, portraits d’équipe et ambiance.',
+            price: '650 €',
+            url: '#',
+            button_text: 'Demande de devis',
+          },
+        ],
+        products: [
+          {
+            id: 'tp1',
+            title: 'Pack de 8 Presets Lightroom Studio',
+            price: '19 €',
+            type: 'paid',
+            image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&auto=format&fit=crop&q=80',
+            url: '#',
+          },
+        ],
+      },
+    },
+    contact: {
+      profile_id: 'demo-thomas',
+      phone: '+33 4 72 00 00 00',
+      whatsapp: '+33 6 00 00 00 00',
+      email: 'contact@studio-laurent.fr',
+      address: 'Lyon 6e',
+      website: 'https://studio-laurent.fr',
+      show_save_contact_button: true,
+    },
     links: [
-      { label: 'Portfolio complet & séries récentes', sub: 'Accéder à la galerie haute résolution', url: '#' },
-      { label: 'Demande de devis pour un shooting', sub: 'Réponse sous 24h ouvrées', url: '#' },
-      { label: 'Instagram professionnel', sub: 'Aperçus coulisses et publications', url: '#' },
-    ],
-    services: [
-      { title: 'Pack Portrait Dirigeant & Presse', price: '220 €', desc: 'Séance 1h, 5 visuels retouchés en haute résolution pour LinkedIn et presse.' },
-      { title: 'Reportage d’entreprise (demi-journée)', price: '650 €', desc: 'Ambiance de travail, collaborateurs et locaux en situation.' },
-    ],
-    shop: [
-      { title: 'Presets Lightroom « Tons Chauds »', price: '19 €', type: 'Presets' },
-      { title: 'Checklist de préparation shooting', price: 'Gratuit', type: 'PDF' },
+      {
+        id: 'tl1',
+        profile_id: 'demo-thomas',
+        type: 'custom',
+        label: 'Consulter mon portfolio 2026',
+        url: '#',
+        position: 1,
+        is_active: true,
+        click_count: 420,
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 'tl2',
+        profile_id: 'demo-thomas',
+        type: 'social',
+        platform: 'instagram',
+        label: 'Instagram @thomaslaurent_photo',
+        url: 'https://instagram.com',
+        position: 2,
+        is_active: true,
+        click_count: 890,
+        created_at: '',
+        updated_at: '',
+      },
     ],
   },
   {
     id: 'craft',
-    tabLabel: 'Architecture & Tech (Dark)',
-    name: 'Karim Benali',
-    badge: 'Design & Code',
-    role: 'Architecture logicielle & Design de produits digitaux',
-    location: 'Bruxelles & Remote',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
-    coverGradient: 'from-neutral-900 via-zinc-900 to-neutral-950',
-    themeBg: '#09090B',
-    themeCard: '#18181B',
-    themeText: '#FAFAFA',
-    themeSubtext: '#A1A1AA',
-    themeAccent: '#E4E4E7',
-    themeButtonBg: '#27272A',
+    tabLabel: 'Karim • Design & Code (Dark)',
     isDark: true,
-    stats: [
-      { val: 'Next.js', label: 'stack principale' },
-      { val: 'Remote', label: 'zone horaire CET' },
-      { val: '99.9%', label: 'uptime garanti' },
-    ],
-    tags: ['FULLSTACK', 'SYSTEM DESIGN', 'API'],
+    profile: {
+      id: 'demo-karim',
+      username: 'karimbenali',
+      display_name: 'Karim Benali',
+      title: 'Product Designer & Architecte Front',
+      company: 'Indépendant',
+      bio: 'Design de plateformes web, design systems et architecture Next.js / Tailwind pour startups et scale-ups.',
+      avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
+      cover_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80',
+      is_published: true,
+      is_pro: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      theme: {
+        background_type: 'color',
+        background_value: '#09090B',
+        button_style: 'rounded-xl',
+        button_color: '#18181B',
+        button_text_color: '#FAFAFA',
+        button_border_color: '#27272A',
+        font_family: 'Inter',
+        text_color: '#FAFAFA',
+        accent_color: '#E4E4E7',
+        is_pro: true,
+        location: 'Bruxelles & Remote',
+        stats: [
+          { id: '1', value: 'Next.js', label: 'stack principale' },
+          { id: '2', value: 'CET', label: 'fuseau horaire' },
+          { id: '3', value: '100%', label: 'disponibilité' },
+        ],
+        expertise_tags: ['✦ Design System', '✦ UI/UX', '✦ Next.js', '✦ Tailwind'],
+        services: [
+          {
+            id: 'ks1',
+            title: 'Audit Ergonomie & UI (1h visio)',
+            subtitle: 'Revue complète de vos écrans et plan d’action priorisé.',
+            price: '180 €',
+            url: '#',
+            button_text: 'Prendre un créneau',
+          },
+          {
+            id: 'ks2',
+            title: 'Sprint Design & Prototype (5 jours)',
+            subtitle: 'Conception de flux complets Figma prêts pour la production.',
+            price: 'Sur devis',
+            url: '#',
+            button_text: 'Contacter',
+          },
+        ],
+        products: [
+          {
+            id: 'kp1',
+            title: 'Kit UI Figma & Tokens Tailwind 2026',
+            price: '39 €',
+            type: 'paid',
+            image_url: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=400&auto=format&fit=crop&q=80',
+            url: '#',
+          },
+          {
+            id: 'kp2',
+            title: 'Guide d’accessibilité pour SaaS',
+            price: 'Gratuit',
+            type: 'free',
+            url: '#',
+          },
+        ],
+      },
+    },
+    contact: {
+      profile_id: 'demo-karim',
+      phone: '+32 2 000 00 00',
+      whatsapp: '+32 4 000 00 00',
+      email: 'karim@benali-design.com',
+      address: 'Bruxelles',
+      website: 'https://benali-design.com',
+      show_save_contact_button: true,
+    },
     links: [
-      { label: 'Projets récents & études de cas', sub: 'Démos interactives en production', url: '#' },
-      { label: 'Réserver un audit technique (45 min)', sub: 'Créneaux disponibles cette semaine', url: '#' },
-      { label: 'Dépôts open-source GitHub', sub: 'Composants et packages réutilisables', url: '#' },
-    ],
-    services: [
-      { title: 'Architecture & Audit de performance', price: '950 €', desc: 'Revue de code, optimisation Core Web Vitals et recommandations de scalabilité.' },
-      { title: 'Sprint de développement sur mesure', price: 'Sur devis', desc: 'Développement d’une fonctionnalité critique en 5 jours.' },
-    ],
-    shop: [
-      { title: 'Kit d’icônes vectorielles SVG', price: 'Gratuit', type: 'Ressource' },
-      { title: 'Starter Template Next.js Fullstack', price: '39 €', type: 'Code source' },
+      {
+        id: 'kl1',
+        profile_id: 'demo-karim',
+        type: 'custom',
+        label: 'Études de cas & Démo interactive',
+        url: '#',
+        position: 1,
+        is_active: true,
+        click_count: 630,
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 'kl2',
+        profile_id: 'demo-karim',
+        type: 'social',
+        platform: 'github',
+        label: 'Dépôts GitHub open-source',
+        url: 'https://github.com',
+        position: 2,
+        is_active: true,
+        click_count: 410,
+        created_at: '',
+        updated_at: '',
+      },
     ],
   },
 ];
 
 export function InteractiveLandingDemo() {
   const [activePersonaIndex, setActivePersonaIndex] = useState(0);
-  const [currentTab, setCurrentTab] = useState<'profil' | 'services' | 'shop'>('profil');
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const persona = PERSONAS[activePersonaIndex];
 
-  const triggerFeedback = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
-  };
-
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Segmented Persona Switcher */}
-      <div className="inline-flex p-1 rounded-2xl bg-neutral-100 border border-neutral-200/80 mb-8 shadow-xs">
+      {/* Persona Switcher Buttons */}
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-8 p-1.5 rounded-2xl bg-neutral-100 border border-neutral-200/80 shadow-xs">
         {PERSONAS.map((p, idx) => {
           const isActive = activePersonaIndex === idx;
           return (
             <button
               key={p.id}
               type="button"
-              onClick={() => {
-                setActivePersonaIndex(idx);
-                setCurrentTab('profil');
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              onClick={() => setActivePersonaIndex(idx)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
                 isActive
-                  ? 'bg-white text-neutral-900 shadow-xs border border-neutral-200/60'
-                  : 'text-neutral-500 hover:text-neutral-900'
+                  ? 'bg-white text-neutral-950 shadow-xs border border-neutral-200/80 scale-[1.02]'
+                  : 'text-neutral-600 hover:text-neutral-900'
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  p.isDark ? 'bg-neutral-900 ring-1 ring-neutral-400' : 'bg-neutral-400'
+                  p.isDark ? 'bg-neutral-950 ring-1 ring-neutral-400' : idx === 0 ? 'bg-amber-600' : 'bg-neutral-600'
                 }`}
               />
               <span>{p.tabLabel}</span>
@@ -188,299 +382,42 @@ export function InteractiveLandingDemo() {
         })}
       </div>
 
-      {/* Realistic Interactive Phone Shell */}
-      <div className="relative">
-        <div className="relative w-full max-w-[370px] rounded-[48px] bg-neutral-950 p-3 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.22)] border-[5px] border-neutral-800 ring-1 ring-black/40">
-          {/* Dynamic Island */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-4.5 bg-black rounded-full z-30 flex items-center justify-end px-3 gap-1.5 pointer-events-none shadow-sm">
-            <div className="w-2.5 h-2.5 rounded-full bg-neutral-900 border border-neutral-800" />
-            <div className="w-1.5 h-1.5 rounded-full bg-neutral-800" />
-          </div>
+      {/* Realistic Smartphone Frame rendering the REAL PublicProfileView engine */}
+      <div className="w-[330px] sm:w-[360px] h-[720px] rounded-[52px] bg-neutral-900 border-[9px] border-neutral-900 shadow-[0_25px_60px_-12px_rgba(0,0,0,0.22),0_4px_12px_-2px_rgba(0,0,0,0.08)] overflow-hidden relative flex flex-col ring-1 ring-black/20 text-left">
+        {/* Dynamic Island */}
+        <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-4 bg-black rounded-full z-30 flex items-center justify-end px-2 gap-1.5 shadow-inner pointer-events-none">
+          <div className="w-2 h-2 rounded-full bg-neutral-800" />
+          <div className="w-1.5 h-1.5 rounded-full bg-neutral-800" />
+        </div>
 
-          {/* Interactive Phone Screen */}
-          <div
-            className="w-full rounded-[38px] overflow-hidden p-4 pt-8 flex flex-col items-center text-center transition-all duration-300 min-h-[570px] select-none relative"
-            style={{ backgroundColor: persona.themeBg, color: persona.themeText }}
-          >
-            {/* Live Feedback Toast */}
-            {toastMessage && (
-              <div className="absolute top-4 left-4 right-4 z-40 bg-neutral-900/95 backdrop-blur text-white px-3.5 py-2.5 rounded-2xl shadow-xl flex items-center justify-between text-xs animate-in fade-in slide-in-from-top-3 duration-200 border border-neutral-800">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="font-medium text-[11px] text-left">{toastMessage}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Cover Header */}
-            <div
-              className={`w-full h-18 rounded-2xl bg-gradient-to-r ${persona.coverGradient} mb-[-32px] border border-black/5 shadow-inner`}
-            />
-
-            {/* Avatar */}
-            <div className="relative z-10 mb-2">
-              <div
-                className={`w-18 h-18 rounded-full overflow-hidden shadow-md ${
-                  persona.isDark ? 'border-4 border-neutral-900' : 'border-4 border-white'
-                } bg-neutral-100`}
-              >
-                <img
-                  src={persona.avatar}
-                  alt={persona.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-
-            {/* Name & Badge */}
-            <div className="flex items-center gap-1.5 justify-center mb-0.5">
-              <h4
-                className={`font-bold text-sm tracking-tight ${
-                  persona.isDark ? 'text-white' : 'text-neutral-950'
-                }`}
-              >
-                {persona.name}
-              </h4>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-neutral-200/70 text-neutral-800">
-                {persona.badge}
-              </span>
-            </div>
-
-            <p
-              className="text-[11px] font-normal max-w-[240px] leading-tight mb-1"
-              style={{ color: persona.themeSubtext }}
-            >
-              {persona.role}
-            </p>
-            <p className="text-[10px] text-neutral-400 font-medium mb-3">
-              {persona.location}
-            </p>
-
-            {/* Main Contact Action Buttons */}
-            <div className="flex items-center gap-2 w-full mb-3.5">
-              <button
-                type="button"
-                onClick={() => triggerFeedback(`Fiche vCard prête : ${persona.name}.vcf`)}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition cursor-pointer ${
-                  persona.isDark
-                    ? 'bg-white hover:bg-neutral-100 text-neutral-900'
-                    : 'bg-neutral-900 hover:bg-neutral-800 text-white'
-                }`}
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Enregistrer le contact</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => triggerFeedback('Ouverture de WhatsApp avec message prêt')}
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition ${
-                  persona.isDark
-                    ? 'bg-neutral-900 border-neutral-800 text-white hover:bg-neutral-800'
-                    : 'bg-white border-neutral-200 text-neutral-800 hover:bg-neutral-50'
-                }`}
-                title="WhatsApp"
-              >
-                <Whatsapp className="w-4 h-4 text-emerald-600" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => triggerFeedback('Numéro de téléphone prêt à composer')}
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition ${
-                  persona.isDark
-                    ? 'bg-neutral-900 border-neutral-800 text-white hover:bg-neutral-800'
-                    : 'bg-white border-neutral-200 text-neutral-800 hover:bg-neutral-50'
-                }`}
-                title="Téléphone"
-              >
-                <PhoneCall className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            {/* In-Screen Navigation Tabs */}
-            <div
-              className={`flex p-1 rounded-xl border w-full mb-3 text-[11px] font-semibold ${
-                persona.isDark
-                  ? 'bg-neutral-900/90 border-neutral-800'
-                  : 'bg-black/5 border-black/5'
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() => setCurrentTab('profil')}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
-                  currentTab === 'profil'
-                    ? persona.isDark
-                      ? 'bg-neutral-800 text-white shadow-xs'
-                      : 'bg-white text-neutral-900 shadow-xs'
-                    : 'text-neutral-500 hover:text-neutral-800'
-                }`}
-              >
-                Liens
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentTab('services')}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
-                  currentTab === 'services'
-                    ? persona.isDark
-                      ? 'bg-neutral-800 text-white shadow-xs'
-                      : 'bg-white text-neutral-900 shadow-xs'
-                    : 'text-neutral-500 hover:text-neutral-800'
-                }`}
-              >
-                Prestations
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentTab('shop')}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
-                  currentTab === 'shop'
-                    ? persona.isDark
-                      ? 'bg-neutral-800 text-white shadow-xs'
-                      : 'bg-white text-neutral-900 shadow-xs'
-                    : 'text-neutral-500 hover:text-neutral-800'
-                }`}
-              >
-                Fichiers & PDF
-              </button>
-            </div>
-
-            {/* Tab: Liens */}
-            {currentTab === 'profil' && (
-              <div className="flex flex-col gap-2 w-full animate-in fade-in duration-200">
-                <div
-                  className={`grid grid-cols-3 gap-1 p-2 rounded-xl border mb-1 ${
-                    persona.isDark
-                      ? 'bg-neutral-900/70 border-neutral-800'
-                      : 'bg-white/70 border-neutral-200/60'
-                  }`}
-                >
-                  {persona.stats.map((s, i) => (
-                    <div key={i} className="text-center">
-                      <div
-                        className={`font-bold text-[11px] ${
-                          persona.isDark ? 'text-white' : 'text-neutral-900'
-                        }`}
-                      >
-                        {s.val}
-                      </div>
-                      <div className="text-[8px] text-neutral-500 leading-tight">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {persona.links.map((link, i) => (
-                  <div
-                    key={i}
-                    onClick={() => triggerFeedback(`Lien sélectionné : ${link.label}`)}
-                    className={`py-2.5 px-3.5 rounded-xl border text-left flex items-center justify-between shadow-2xs hover:border-neutral-400 transition cursor-pointer ${
-                      persona.isDark
-                        ? 'bg-neutral-900 border-neutral-800 hover:bg-neutral-850'
-                        : 'bg-white border-neutral-200/80 hover:bg-neutral-50'
-                    }`}
-                  >
-                    <div className="flex flex-col min-w-0">
-                      <span
-                        className={`text-[11px] font-semibold truncate ${
-                          persona.isDark ? 'text-white' : 'text-neutral-900'
-                        }`}
-                      >
-                        {link.label}
-                      </span>
-                      <span className="text-[9px] text-neutral-500">{link.sub}</span>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-neutral-400 shrink-0 ml-2" />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Tab: Prestations */}
-            {currentTab === 'services' && (
-              <div className="flex flex-col gap-2 w-full text-left animate-in fade-in duration-200">
-                {persona.services.map((svc, i) => (
-                  <div
-                    key={i}
-                    onClick={() => triggerFeedback(`Option choisie : ${svc.title}`)}
-                    className={`p-3 rounded-xl border shadow-2xs flex flex-col gap-1 cursor-pointer transition ${
-                      persona.isDark
-                        ? 'bg-neutral-900 border-neutral-800 hover:border-neutral-700'
-                        : 'bg-white border-neutral-200/80 hover:border-neutral-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={`text-[11px] font-bold ${
-                          persona.isDark ? 'text-white' : 'text-neutral-900'
-                        }`}
-                      >
-                        {svc.title}
-                      </span>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          persona.isDark
-                            ? 'bg-neutral-800 text-white'
-                            : 'bg-neutral-100 text-neutral-800'
-                        }`}
-                      >
-                        {svc.price}
-                      </span>
-                    </div>
-                    <p className="text-[9px] leading-normal" style={{ color: persona.themeSubtext }}>
-                      {svc.desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Tab: Boutique */}
-            {currentTab === 'shop' && (
-              <div className="flex flex-col gap-2 w-full text-left animate-in fade-in duration-200">
-                {persona.shop.map((item, i) => (
-                  <div
-                    key={i}
-                    onClick={() => triggerFeedback(`Téléchargement de : ${item.title}`)}
-                    className={`p-3 rounded-xl border shadow-2xs flex items-center justify-between cursor-pointer transition ${
-                      persona.isDark
-                        ? 'bg-neutral-900 border-neutral-800 hover:border-neutral-700'
-                        : 'bg-white border-neutral-200/80 hover:border-neutral-300'
-                    }`}
-                  >
-                    <div>
-                      <span className="text-[8px] font-semibold text-neutral-500 uppercase tracking-wider block">
-                        {item.type}
-                      </span>
-                      <span
-                        className={`text-[11px] font-bold ${
-                          persona.isDark ? 'text-white' : 'text-neutral-900'
-                        }`}
-                      >
-                        {item.title}
-                      </span>
-                    </div>
-                    <span
-                      className={`text-[10px] font-bold px-2.5 py-1 rounded-lg shrink-0 ml-2 ${
-                        persona.isDark
-                          ? 'bg-white text-neutral-900'
-                          : 'bg-neutral-900 text-white'
-                      }`}
-                    >
-                      {item.price}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+        {/* Status Bar */}
+        <div className="w-full h-8 px-6 pt-1 flex items-center justify-between text-[10px] font-semibold text-neutral-800 z-20 select-none pointer-events-none">
+          <span className="font-medium">09:41</span>
+          <div className="flex items-center gap-1.5 opacity-80">
+            <Signal className="w-3 h-3" />
+            <Wifi className="w-3 h-3" />
+            <Battery className="w-3.5 h-3.5" />
           </div>
         </div>
+
+        {/* Screen Scrollable Viewport rendering the REAL PublicProfileView */}
+        <div className="flex-1 w-full h-full overflow-y-auto no-scrollbar">
+          <PublicProfileView
+            profile={persona.profile}
+            links={persona.links}
+            contact={persona.contact}
+            initialLang="fr"
+          />
+        </div>
+
+        {/* Home Bar Indicator */}
+        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-black/30 rounded-full z-30 pointer-events-none" />
       </div>
 
-      <p className="text-xs text-neutral-400 mt-4 text-center">
-        Interface interactive : cliquez sur les onglets et boutons ci-dessus pour tester la réactivité.
-      </p>
+      <div className="flex items-center gap-2 mt-5 text-xs text-neutral-500 font-medium">
+        <Smartphone className="w-3.5 h-3.5 text-neutral-400" />
+        <span>Rendu 100% réel et identique à votre future page publique (scrollable, onglets interactifs et QR Code fonctionnels).</span>
+      </div>
     </div>
   );
 }

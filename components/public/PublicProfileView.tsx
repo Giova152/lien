@@ -364,6 +364,18 @@ export function PublicProfileView({
             lang={lang}
           />
 
+          {/* VCard Download Button */}
+          {contact && contact.show_save_contact_button !== false && (
+            <div className="w-full flex justify-center mb-4 px-2">
+              <VCardButton
+                profile={profile}
+                contact={contact}
+                theme={theme}
+                label={t.saveContact}
+              />
+            </div>
+          )}
+
           {/* Tab 1: PROFIL */}
           {activeTab === 'profil' && (
             <div className="w-full flex flex-col gap-4 animate-in fade-in duration-300">
