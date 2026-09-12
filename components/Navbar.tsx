@@ -63,6 +63,13 @@ export function Navbar({ user, profile }: NavbarProps) {
           >
             Tarifs
           </Link>
+          <Link
+            href="/#faq"
+            onClick={(e) => scrollTo(e, 'faq')}
+            className="hover:text-neutral-900 transition-colors cursor-pointer"
+          >
+            FAQ
+          </Link>
         </nav>
 
         {/* Auth Buttons / Profile Nav */}
