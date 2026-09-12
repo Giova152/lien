@@ -74,6 +74,10 @@ import {
   ArrowLeft,
   ChevronLeft,
   ShoppingBag,
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  RefreshCw,
 } from 'lucide-react';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -319,4 +323,8 @@ export {
   Clock,
   ArrowLeft,
   ChevronLeft,
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  RefreshCw,
 };
